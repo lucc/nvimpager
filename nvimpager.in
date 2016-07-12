@@ -6,6 +6,7 @@ if [ ! -t 1 ]; then
 fi
 
 RUNTIME=.
+export RUNTIME
 # TODO see what option less provides
 
 if [ $# -eq 0 ]; then
@@ -14,7 +15,7 @@ fi
 
 nvim \
   -u NONE \
-  --cmd "set rtp+=$RUNTIME" \
+  --cmd 'set rtp+=$RUNTIME' \
   --cmd 'call pager#start()' \
   -c 'call pager#start2()' \
   "$@"
