@@ -29,7 +29,10 @@ function! s:Set_options()
 endfunction
 
 function! s:Set_maps()
-  nnoremap q :quitall!<CR>
+  nnoremap <buffer> q :quitall!<CR>
+  nnoremap <buffer> <Space> <PageDown>
+  nnoremap <buffer> <S-Space> <PageUp>
+  nnoremap <buffer> g gg
 endfunction
 
 function! s:Unset_maps()
