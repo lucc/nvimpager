@@ -1,6 +1,6 @@
 DESTDIR ?=
 PREFIX ?= /usr/local
-RUNTIME = $(DESTDIR)$(PREFIX)/share/nvimpager/runtime
+RUNTIME = $(PREFIX)/share/nvimpager/runtime
 
 nvimpager: nvimpager.in
 	sed 's#^RUNTIME=.$$#RUNTIME='"'$(RUNTIME)'"'#' < $< > $@
@@ -8,4 +8,4 @@ nvimpager: nvimpager.in
 
 install: nvimpager
 	install -D nvimpager $(DESTDIR)$(PREFIX)/bin
-	install -D autoload/pager.vim $(RUNTIME)/autoload
+	install -D autoload/pager.vim $(DESTDIR)$(RUNTIME)/autoload
