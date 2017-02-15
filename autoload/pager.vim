@@ -53,3 +53,35 @@ function! s:detect_man_page_in_current_buffer()
   keepjumps call cursor(l:pos)
   return match != 0
 endfunction
+
+function! s:detect_doc_viewer_from_pstree()
+  let pslist = systemlist('ps aw -o pid= -o ppid= -o command=')
+  if type(pslist) == type('') && pslist == ''
+    return 0
+  endif
+  let pstree = {}
+  for line in pslist
+    let [pid, ppid, cmd; _] = split(line)
+    let cmd = substitute(cmd, '^.*/', '', '')
+    let pstree[pid] = {'ppid': ppid, 'cmd': cmd}
+  endfor
+  let cur = pstree[getpid()]
+  while cur.ppid != 1
+    if cur.cmd =~ '^man'
+      return 'man'
+    elseif cur.cmd =~ '\v\C^[Pp]y(thon|doc)?[0-9.]*'
+      return 'pydoc'
+    elseif cur.cmd =~ '\v\C^[Rr](uby|i)[0-9.]*'
+      return 'ri'
+    elseif cur.cmd =~ '\v\C^perl(doc)?'
+      return 'perdoc'
+    else
+      try
+        let cur = pstree[cur.ppid]
+      catch 'E716'
+        return 'none'
+      endtry
+    endif
+  endwhile
+  return 'none'
+endfunction
