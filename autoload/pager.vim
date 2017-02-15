@@ -37,6 +37,9 @@ endfunction
 
 function! s:Unset_maps()
   nunmap q
+  nunmap <Space>
+  nunmap <S-Space>
+  nunmap g
 endfunction
 
 function! s:Help()
