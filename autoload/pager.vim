@@ -100,3 +100,21 @@ function! s:detect_doc_viewer_from_pstree()
   endwhile
   return 'none'
 endfunction
+
+function! s:strip_ansi_escape_sequences_from_current_buffer()
+  let mod = &modifiable
+  let position = getpos('.')
+  set modifiable
+  keepjumps silent %substitute/\v\e\[[;?]*[0-9.;]*[a-z]//egi
+  call setpos('.', position)
+  let &modifiable = mod
+endfunction
+
+function! s:strip_overstike_from_current_buffer()
+  let mod = &modifiable
+  let position = getpos('.')
+  set modifiable
+  keepjumps silent %substitute/\v.\b//eg
+  call setpos('.', position)
+  let &modifiable = mod
+endfunction
