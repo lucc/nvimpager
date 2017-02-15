@@ -4,9 +4,24 @@ function! pager#start()
 endfunction
 
 function! pager#start2()
+  call s:Detect_file_type()
   call s:Set_options()
   call s:Set_maps()
   redraw!
+endfunction
+
+function! s:Detect_file_type()
+  let mod = &modifiable
+  set modifiable
+  let doc = s:detect_doc_viewer_from_pstree()
+  if doc == 'none'
+    if s:detect_man_page_in_current_buffer()
+      setfiletype man
+    endif
+  else
+    execute 'setfiletype ' doc
+  endif
+  let &modifiable = mod
 endfunction
 
 function! s:Set_options()
