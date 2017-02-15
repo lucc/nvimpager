@@ -44,3 +44,12 @@ endfunction
 
 function! s:Help()
 endfunction
+
+function! s:detect_man_page_in_current_buffer()
+  let pattern = '\v\C^N(\b.)?A(\b.)?M(\b.)?E(\b.)?[ \t]*$'
+  let l:pos = getpos('.')
+  keepjumps call cursor(1, 1)
+  let match = search(pattern, 'cnW', 12, 100)
+  keepjumps call cursor(l:pos)
+  return match != 0
+endfunction
