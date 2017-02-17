@@ -5,7 +5,7 @@ if [ ! -t 1 ]; then
   exec cat "$@"
 fi
 
-RUNTIME=.
+RUNTIME=${0%/*}
 export RUNTIME
 # TODO see what option less provides
 
