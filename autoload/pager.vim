@@ -1,6 +1,7 @@
 " vim: ft=vim
 
 function! pager#start()
+  autocmd VimEnter * call pager#start3()
 endfunction
 
 function! pager#start2()
@@ -11,6 +12,9 @@ function! pager#start2()
 endfunction
 
 function! pager#start3()
+  if &filetype == ''
+    call s:try_ansi_esc()
+  endif
   set nomodifiable
   set nomodified
 endfunction
@@ -115,4 +119,11 @@ function! s:strip_overstike_from_current_buffer()
   keepjumps silent %substitute/\v.\b//eg
   call setpos('.', position)
   let &modifiable = mod
+endfunction
+
+function! s:try_ansi_esc()
+  let ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
+  if search(ansi_regex, 'cnW', 100) != 0
+    AnsiEsc
+  endif
 endfunction

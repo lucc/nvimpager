@@ -14,7 +14,7 @@ if [ $# -eq 0 -o ! -t 0 ]; then
 fi
 
 nvim \
-  -u NONE \
+  -u NORC \
   --cmd 'set rtp^=$RUNTIME' \
   --cmd 'call pager#start()' \
   -c 'call pager#start2()' \
