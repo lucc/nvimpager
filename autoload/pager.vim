@@ -16,8 +16,6 @@ function! pager#start3()
 endfunction
 
 function! s:Detect_file_type()
-  let mod = &modifiable
-  set modifiable
   let doc = s:detect_doc_viewer_from_pstree()
   if doc == 'none'
     if s:detect_man_page_in_current_buffer()
@@ -26,7 +24,6 @@ function! s:Detect_file_type()
   else
     execute 'setfiletype ' doc
   endif
-  let &modifiable = mod
 endfunction
 
 function! s:Set_options()
@@ -42,7 +39,6 @@ function! s:Set_options()
   let s:lz = &lz
   set lazyredraw
   set laststatus=0
-
 endfunction
 
 function! s:Set_maps()
