@@ -15,7 +15,7 @@ fi
 
 nvim \
   -u NONE \
-  --cmd 'set rtp+=$RUNTIME' \
+  --cmd 'set rtp^=$RUNTIME' \
   --cmd 'call pager#start()' \
   -c 'call pager#start2()' \
   "$@"
