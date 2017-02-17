@@ -10,6 +10,11 @@ function! pager#start2()
   redraw!
 endfunction
 
+function! pager#start3()
+  set nomodifiable
+  set nomodified
+endfunction
+
 function! s:Detect_file_type()
   let mod = &modifiable
   set modifiable
@@ -25,9 +30,6 @@ function! s:Detect_file_type()
 endfunction
 
 function! s:Set_options()
-  set nomodifiable
-  set nomodified
-
   syntax on
   set scrolloff=0
   set hlsearch
