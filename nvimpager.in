@@ -9,8 +9,8 @@ RUNTIME=.
 export RUNTIME
 # TODO see what option less provides
 
-if [ $# -eq 0 ]; then
-  set -- -
+if [ $# -eq 0 -o ! -t 0 ]; then
+  set -- "$@" -
 fi
 
 nvim \
