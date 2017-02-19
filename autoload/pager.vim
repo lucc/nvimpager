@@ -50,6 +50,8 @@ function! s:Set_maps()
   nnoremap <buffer> <Space> <PageDown>
   nnoremap <buffer> <S-Space> <PageUp>
   nnoremap <buffer> g gg
+  nnoremap <buffer> <Up> <C-Y>
+  nnoremap <buffer> <Down> <C-E>
 endfunction
 
 function! s:Unset_maps()
@@ -57,6 +59,8 @@ function! s:Unset_maps()
   nunmap <Space>
   nunmap <S-Space>
   nunmap g
+  nunmap <Up>
+  nunmap <Down>
 endfunction
 
 function! s:Help()
