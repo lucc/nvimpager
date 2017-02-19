@@ -26,6 +26,9 @@ function! s:Detect_file_type()
       setfiletype man
     endif
   else
+    if doc == 'git'
+      call s:strip_ansi_escape_sequences_from_current_buffer()
+    endif
     execute 'setfiletype ' doc
   endif
 endfunction
@@ -96,6 +99,8 @@ function! s:detect_doc_viewer_from_pstree()
       return 'ri'
     elseif cur.cmd =~ '\v\C^perl(doc)?'
       return 'perdoc'
+    elseif cur.cmd =~ '\C^git'
+      return 'git'
     else
       try
         let cur = pstree[cur.ppid]
