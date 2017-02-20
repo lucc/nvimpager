@@ -1,7 +1,11 @@
 " vim: ft=vim
 
+augroup NvimPager
+  autocmd!
+augroup END
+
 function! pager#start() abort
-  autocmd VimEnter * call pager#start3()
+  autocmd NvimPager VimEnter * call pager#start3()
 endfunction
 
 function! pager#start2() abort
