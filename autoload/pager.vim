@@ -1,17 +1,17 @@
 " vim: ft=vim
 
-function! pager#start()
+function! pager#start() abort
   autocmd VimEnter * call pager#start3()
 endfunction
 
-function! pager#start2()
+function! pager#start2() abort
   call s:Detect_file_type()
   call s:Set_options()
   call s:Set_maps()
   redraw!
 endfunction
 
-function! pager#start3()
+function! pager#start3() abort
   if &filetype == ''
     call s:try_ansi_esc()
   endif
@@ -19,7 +19,7 @@ function! pager#start3()
   set nomodified
 endfunction
 
-function! s:Detect_file_type()
+function! s:Detect_file_type() abort
   let doc = s:detect_doc_viewer_from_pstree()
   if doc == 'none'
     if s:detect_man_page_in_current_buffer()
@@ -33,7 +33,7 @@ function! s:Detect_file_type()
   endif
 endfunction
 
-function! s:Set_options()
+function! s:Set_options() abort
   syntax on
   set scrolloff=0
   set hlsearch
@@ -48,7 +48,7 @@ function! s:Set_options()
   set laststatus=0
 endfunction
 
-function! s:Set_maps()
+function! s:Set_maps() abort
   nnoremap <buffer> q :quitall!<CR>
   nnoremap <buffer> <Space> <PageDown>
   nnoremap <buffer> <S-Space> <PageUp>
@@ -57,7 +57,7 @@ function! s:Set_maps()
   nnoremap <buffer> <Down> <C-E>
 endfunction
 
-function! s:Unset_maps()
+function! s:Unset_maps() abort
   nunmap q
   nunmap <Space>
   nunmap <S-Space>
@@ -66,10 +66,10 @@ function! s:Unset_maps()
   nunmap <Down>
 endfunction
 
-function! s:Help()
+function! s:Help() abort
 endfunction
 
-function! s:detect_man_page_in_current_buffer()
+function! s:detect_man_page_in_current_buffer() abort
   let pattern = '\v\C^N(\b.)?A(\b.)?M(\b.)?E(\b.)?[ \t]*$'
   let l:pos = getpos('.')
   keepjumps call cursor(1, 1)
@@ -78,7 +78,7 @@ function! s:detect_man_page_in_current_buffer()
   return match != 0
 endfunction
 
-function! s:detect_doc_viewer_from_pstree()
+function! s:detect_doc_viewer_from_pstree() abort
   let pslist = systemlist('ps aw -o pid= -o ppid= -o command=')
   if type(pslist) == type('') && pslist == ''
     return 0
@@ -112,7 +112,7 @@ function! s:detect_doc_viewer_from_pstree()
   return 'none'
 endfunction
 
-function! s:strip_ansi_escape_sequences_from_current_buffer()
+function! s:strip_ansi_escape_sequences_from_current_buffer() abort
   let mod = &modifiable
   let position = getpos('.')
   set modifiable
@@ -121,7 +121,7 @@ function! s:strip_ansi_escape_sequences_from_current_buffer()
   let &modifiable = mod
 endfunction
 
-function! s:strip_overstike_from_current_buffer()
+function! s:strip_overstike_from_current_buffer() abort
   let mod = &modifiable
   let position = getpos('.')
   set modifiable
@@ -130,7 +130,7 @@ function! s:strip_overstike_from_current_buffer()
   let &modifiable = mod
 endfunction
 
-function! s:try_ansi_esc()
+function! s:try_ansi_esc() abort
   let ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
   if search(ansi_regex, 'cnW', 100) != 0
     AnsiEsc
