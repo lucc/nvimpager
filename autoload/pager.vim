@@ -47,7 +47,6 @@ function! s:Set_options() abort
   set shada=
   set nowrapscan
   " Inhibit screen updates while searching
-  let s:lz = &lz
   set lazyredraw
   set laststatus=0
 endfunction
