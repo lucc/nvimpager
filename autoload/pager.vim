@@ -16,7 +16,7 @@ function! pager#start2() abort
 endfunction
 
 function! pager#start3() abort
-  if &filetype == ''
+  if &filetype ==# ''
     call s:try_ansi_esc()
   endif
   set nomodifiable
@@ -25,12 +25,12 @@ endfunction
 
 function! s:Detect_file_type() abort
   let doc = s:detect_doc_viewer_from_pstree()
-  if doc == 'none'
+  if doc ==# 'none'
     if s:detect_man_page_in_current_buffer()
       setfiletype man
     endif
   else
-    if doc == 'git'
+    if doc ==# 'git'
       call s:strip_ansi_escape_sequences_from_current_buffer()
     endif
     execute 'setfiletype ' doc
@@ -83,7 +83,7 @@ endfunction
 
 function! s:detect_doc_viewer_from_pstree() abort
   let pslist = systemlist('ps aw -o pid= -o ppid= -o command=')
-  if type(pslist) == type('') && pslist == ''
+  if type(pslist) ==# type('') && pslist ==# ''
     return 0
   endif
   let pstree = {}
@@ -94,15 +94,15 @@ function! s:detect_doc_viewer_from_pstree() abort
   endfor
   let cur = pstree[getpid()]
   while cur.ppid != 1
-    if cur.cmd =~ '^man'
+    if cur.cmd =~# '^man'
       return 'man'
-    elseif cur.cmd =~ '\v\C^[Pp]y(thon|doc)?[0-9.]*'
+    elseif cur.cmd =~# '\v\C^[Pp]y(thon|doc)?[0-9.]*'
       return 'pydoc'
-    elseif cur.cmd =~ '\v\C^[Rr](uby|i)[0-9.]*'
+    elseif cur.cmd =~# '\v\C^[Rr](uby|i)[0-9.]*'
       return 'ri'
-    elseif cur.cmd =~ '\v\C^perl(doc)?'
+    elseif cur.cmd =~# '\v\C^perl(doc)?'
       return 'perdoc'
-    elseif cur.cmd =~ '\C^git'
+    elseif cur.cmd =~# '\C^git'
       return 'git'
     else
       try
