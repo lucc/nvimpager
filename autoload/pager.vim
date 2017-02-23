@@ -32,6 +32,9 @@ function! s:Detect_file_type() abort
   else
     if l:doc ==# 'git'
       call s:strip_ansi_escape_sequences_from_current_buffer()
+    elseif l:doc ==# 'pydoc'
+      call s:strip_overstike_from_current_buffer()
+      let l:doc = 'man'
     endif
     execute 'setfiletype ' l:doc
   endif
