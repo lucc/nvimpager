@@ -42,6 +42,7 @@ endfunction
 
 function! s:Set_options() abort
   syntax on
+  set mouse=a
   set scrolloff=0
   set hlsearch
   set incsearch
