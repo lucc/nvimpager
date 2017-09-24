@@ -35,6 +35,10 @@ function! s:Detect_file_type() abort
     elseif l:doc ==# 'pydoc'
       call s:strip_overstike_from_current_buffer()
       let l:doc = 'man'
+    elseif l:doc ==# 'perldoc'
+      call s:strip_ansi_escape_sequences_from_current_buffer()
+      call s:strip_overstike_from_current_buffer()
+      let l:doc = 'man'
     endif
     execute 'setfiletype ' l:doc
   endif
@@ -105,7 +109,7 @@ function! s:detect_doc_viewer_from_pstree() abort
     elseif l:cur.cmd =~# '\v\C^[Rr](uby|i)[0-9.]*'
       return 'ri'
     elseif l:cur.cmd =~# '\v\C^perl(doc)?'
-      return 'perdoc'
+      return 'perldoc'
     elseif l:cur.cmd =~# '\C^git'
       return 'git'
     else
