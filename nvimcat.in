@@ -8,7 +8,7 @@ export RUNTIME
 TTY=$(tty) \
   || TTY=$(tty </proc/$$/fd/1) \
   || TTY=$(tty </proc/$$/fd/2) \
-  || (echo "Can not find terminal." >/dev/tty; exit 3)
+  || (echo "Can not find terminal." >/dev/tty; exit 1) || exit 3
 export TTY
 
 if [ $# -eq 0 -o ! -t 0 ]; then
