@@ -7,8 +7,8 @@ RUNTIME = $(PREFIX)/share/nvimpager/runtime
 	chmod +x $@
 
 install: nvimpager nvimcat
-	install -D nvimpager nvimcat $(DESTDIR)$(PREFIX)/bin
-	install -D autoload/pager.vim autoload/cat.vim $(DESTDIR)$(RUNTIME)/autoload
+	install -D --target-directory=$(DESTDIR)$(PREFIX)/bin nvimpager nvimcat
+	install -D --target-directory=$(DESTDIR)$(RUNTIME)/autoload autoload/pager.vim autoload/cat.vim
 
 AnsiEsc.vba:
 	curl http://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \
