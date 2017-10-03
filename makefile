@@ -3,7 +3,7 @@ PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 
 %: %.in
-	sed 's#^RUNTIME=.$$#RUNTIME='"'$(RUNTIME)'"'#' < $< > $@
+	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#' < $< > $@
 	chmod +x $@
 
 install: nvimpager nvimcat
