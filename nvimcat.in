@@ -1,0 +1,14 @@
+#!/bin/sh
+
+RUNTIME=${0%/*}
+export RUNTIME
+TTY=$(tty)
+export TTY
+
+nvim \
+  -R \
+  -u NORC \
+  --cmd 'set rtp^=$RUNTIME' \
+  -c 'call cat#run()' \
+  "$@" \
+  >/dev/null

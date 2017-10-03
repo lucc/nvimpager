@@ -12,7 +12,8 @@ let s:ansicache = {}
 let s:type = 'cterm'
 
 function! cat#run()
-  " TODO
+  call s:highlight($TTY)
+  quitall!
 endfunction
 
 function! s:highlight(outfile)
