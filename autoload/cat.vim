@@ -16,11 +16,13 @@ function! cat#prepare()
 endfunction
 
 function! cat#run()
+  " Write output directly to stdout of the parent process (the shell script).
+  let outfile = '/proc/'.$PID.'/fd/1'
   while bufnr('%') < bufnr('$')
-    call s:highlight($TTY)
+    call s:highlight(outfile)
     bdelete
   endwhile
-  call s:highlight($TTY)
+  call s:highlight(outfile)
   quitall!
 endfunction
 

@@ -2,14 +2,10 @@
 
 RUNTIME=${0%/*}
 export RUNTIME
-# Try to find the terminal device.  If input is piped into the script we have
-# to find the terminal device on stdout and not stdin.  If stdout is
-# redirected we also try to find the terminal on stderr.
-TTY=$(tty) \
-  || TTY=$(tty </proc/$$/fd/1) \
-  || TTY=$(tty </proc/$$/fd/2) \
-  || (echo "Can not find terminal." >/dev/tty; exit 1) || exit 3
-export TTY
+# Save the current process ID to enable the nvim process to write to our
+# stdout via the proc filesystem.
+PID=$$
+export PID
 
 if [ $# -eq 0 -o ! -t 0 ]; then
   set -- "$@" -
