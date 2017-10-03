@@ -25,6 +25,11 @@ function! cat#run()
 endfunction
 
 function! s:highlight(outfile)
+  " Detect an empty buffer, see :help line2byte().
+  if line2byte(line('$')+1) == -1
+    return
+  endif
+
   let retv = []
 
   for lnum in range(1, line('$'))
