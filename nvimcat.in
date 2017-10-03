@@ -19,6 +19,8 @@ nvim \
   -R \
   -u NORC \
   --cmd 'set rtp^=$RUNTIME' \
-  -c 'call cat#run()' \
+  --cmd 'call pager#start()' \
+  -c 'call pager#start2()' \
+  -c 'call cat#prepare()' \
   "$@" \
   >/dev/null

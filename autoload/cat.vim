@@ -11,6 +11,10 @@ let s:ansicache = {}
 " I suspect that we will never see anything other than this.
 let s:type = 'cterm'
 
+function! cat#prepare()
+  autocmd NvimPager VimEnter * call cat#run()
+endfunction
+
 function! cat#run()
   while bufnr('%') < bufnr('$')
     call s:highlight($TTY)
