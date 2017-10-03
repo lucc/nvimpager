@@ -12,6 +12,10 @@ let s:ansicache = {}
 let s:type = 'cterm'
 
 function! cat#run()
+  while bufnr('%') < bufnr('$')
+    call s:highlight($TTY)
+    bdelete
+  endwhile
   call s:highlight($TTY)
   quitall!
 endfunction
