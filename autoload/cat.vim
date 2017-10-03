@@ -11,11 +11,11 @@ let s:ansicache = {}
 " I suspect that we will never see anything other than this.
 let s:type = 'cterm'
 
-function! cat#prepare()
+function! cat#prepare() abort
   autocmd NvimPager VimEnter * call cat#run()
 endfunction
 
-function! cat#run()
+function! cat#run() abort
   " Write output directly to stdout of the parent process (the shell script).
   let outfile = '/proc/'.$PID.'/fd/1'
   while bufnr('%') < bufnr('$')
@@ -26,7 +26,7 @@ function! cat#run()
   quitall!
 endfunction
 
-function! s:highlight(outfile)
+function! s:highlight(outfile) abort
   " Detect an empty buffer, see :help line2byte().
   if line2byte(line('$')+1) == -1
     return
@@ -61,7 +61,7 @@ function! s:highlight(outfile)
   return writefile(retv, a:outfile)
 endfunction
 
-function! s:group_to_ansi(groupnum)
+function! s:group_to_ansi(groupnum) abort
   let groupnum = a:groupnum
 
   if groupnum == 0
