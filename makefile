@@ -2,13 +2,13 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 
-nvimpager: nvimpager.in
-	sed 's#^RUNTIME=.$$#RUNTIME='"'$(RUNTIME)'"'#' < $< > $@
+%: %.in
+	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#' < $< > $@
 	chmod +x $@
 
-install: nvimpager
-	install -D nvimpager $(DESTDIR)$(PREFIX)/bin
-	install -D autoload/pager.vim $(DESTDIR)$(RUNTIME)/autoload
+install: nvimpager nvimcat
+	install -D --target-directory=$(DESTDIR)$(PREFIX)/bin nvimpager nvimcat
+	install -D --target-directory=$(DESTDIR)$(RUNTIME)/autoload autoload/pager.vim autoload/cat.vim
 
 AnsiEsc.vba:
 	curl http://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \

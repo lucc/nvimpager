@@ -9,8 +9,21 @@ RUNTIME=${0%/*}
 export RUNTIME
 # TODO see what option less provides
 
+file=
 if [ $# -eq 0 -o ! -t 0 ]; then
-  set -- "$@" -
+  file=$(mktemp)
+  trap 'rm -f "$file"' TERM QUIT HUP
+  cat > "$file"
+  set -- "$file"
+fi
+LINES=${LINES:-$(tput lines)}
+if [ "$(cat "$@" | wc -l)" -le $LINES ]; then
+  folder=${0%/*}
+  folder=${folder:+$folder/}
+  script=${0##*/}
+  script=${script//pager/cat}
+  "$folder$script" "$@" </dev/tty
+  exit
 fi
 
 rc=~/.config/nvim/pagerrc.vim
