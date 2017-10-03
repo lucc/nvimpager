@@ -12,7 +12,7 @@ export RUNTIME
 file=
 if [ $# -eq 0 -o ! -t 0 ]; then
   file=$(mktemp)
-  trap 'rm -f "$file"' TERM QUIT HUP
+  trap 'rm -f "$file"' TERM QUIT HUP INT EXIT
   cat > "$file"
   set -- "$file"
 fi
