@@ -1,5 +1,13 @@
 #!/bin/sh
 
+name=nvimpager
+version=0.1
+
+if [ "$1" = -v ]; then
+  echo "$name $version"
+  exit
+fi
+
 # If we are not on a tty just "be" cat.
 if [ ! -t 1 ]; then
   exec cat "$@"
