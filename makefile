@@ -6,8 +6,8 @@ RUNTIME = $(PREFIX)/share/nvimpager/runtime
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#' < $< > $@
 	chmod +x $@
 
-install: nvimpager nvimcat
-	install -D --target-directory=$(DESTDIR)$(PREFIX)/bin nvimpager nvimcat
+install: nvimpager
+	install -D --target-directory=$(DESTDIR)$(PREFIX)/bin nvimpager
 	install -D --target-directory=$(DESTDIR)$(RUNTIME)/autoload autoload/pager.vim autoload/cat.vim
 
 AnsiEsc.vba:

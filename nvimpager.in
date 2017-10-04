@@ -9,6 +9,11 @@ RUNTIME=${0%/*}
 export RUNTIME
 # TODO see what option less provides
 
+rc=~/.config/nvim/pagerrc.vim
+if [ ! -r "$rc" ]; then
+  rc=NORC
+fi
+
 file=
 if [ $# -eq 0 -o ! -t 0 ]; then
   file=$(mktemp)
@@ -16,24 +21,27 @@ if [ $# -eq 0 -o ! -t 0 ]; then
   cat > "$file"
   set -- "$file"
 fi
+
 LINES=${LINES:-$(tput lines)}
 if [ "$(cat "$@" | wc -l)" -le $LINES ]; then
-  folder=${0%/*}
-  folder=${folder:+$folder/}
-  script=${0##*/}
-  script=${script//pager/cat}
-  "$folder$script" "$@" </dev/tty
-  exit
+  # Save the current process ID to enable the nvim process to write to our
+  # stdout via the proc filesystem.
+  PID=$$
+  export PID
+  nvim \
+    -R \
+    -u "$rc" \
+    --cmd 'set rtp^=$RUNTIME' \
+    --cmd 'call pager#start()' \
+    -c 'call pager#start2()' \
+    -c 'call cat#prepare()' \
+    "$@" \
+    >/dev/null
+else
+  nvim \
+    -u "$rc" \
+    --cmd 'set rtp^=$RUNTIME' \
+    --cmd 'call pager#start()' \
+    -c 'call pager#start2()' \
+    "$@"
 fi
-
-rc=~/.config/nvim/pagerrc.vim
-if [ ! -r "$rc" ]; then
-  rc=NORC
-fi
-
-nvim \
-  -u "$rc" \
-  --cmd 'set rtp^=$RUNTIME' \
-  --cmd 'call pager#start()' \
-  -c 'call pager#start2()' \
-  "$@"
