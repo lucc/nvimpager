@@ -1,9 +1,10 @@
 DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
+VERSION = $(patsubst v%,%,$(shell git describe))
 
 %: %.in
-	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#' < $< > $@
+	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#^version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
 
 install: nvimpager
