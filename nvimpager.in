@@ -22,16 +22,24 @@ if [[ ! -r "$rc" ]]; then
   rc=NORC
 fi
 
-file=
-if [[ $# -eq 0 || ! -t 0 ]]; then
-  file=$(mktemp)
-  trap 'rm -f "$file"' TERM QUIT HUP INT EXIT
-  cat > "$file"
-  set -- "$file"
+files=()
+options=()
+for arg in "$@"; do
+  if [[ -f "$arg" ]]; then
+    files+=("$arg")
+  else
+    options+=("$arg")
+  fi
+done
+
+if [[ ${#files} -eq 0 || ! -t 0 ]]; then
+  files=($(mktemp))
+  trap 'rm -f "$files"' TERM QUIT HUP INT EXIT
+  cat > "$files"
 fi
 
 LINES=${LINES:-$(tput lines)}
-if [[ "$(cat "$@" | wc -l)" -le $LINES ]]; then
+if [[ "$(cat "${files[@]}" | wc -l)" -le $LINES ]]; then
   # Save the current process ID to enable the nvim process to write to our
   # stdout via the proc filesystem.
   PID=$$
@@ -43,7 +51,7 @@ if [[ "$(cat "$@" | wc -l)" -le $LINES ]]; then
     --cmd 'call pager#start()' \
     -c 'call pager#start2()' \
     -c 'call cat#prepare()' \
-    "$@" \
+    "${options[@]}" "${files[@]}" \
     >/dev/null
 else
   nvim \
@@ -51,5 +59,5 @@ else
     --cmd 'set rtp^=$RUNTIME' \
     --cmd 'call pager#start()' \
     -c 'call pager#start2()' \
-    "$@"
+    "${options[@]}" "${files[@]}"
 fi
