@@ -5,12 +5,14 @@ augroup NvimPager
 augroup END
 
 function! pager#start() abort
+  " Some options have to be set early
+  call s:Set_options1()
   autocmd NvimPager VimEnter * call pager#start3()
 endfunction
 
 function! pager#start2() abort
   call s:Detect_file_type()
-  call s:Set_options()
+  call s:Set_options2()
   call s:Set_maps()
   redraw!
 endfunction
@@ -44,8 +46,7 @@ function! s:Detect_file_type() abort
   endif
 endfunction
 
-function! s:Set_options() abort
-  syntax on
+function! s:Set_options1() abort
   set mouse=a
   set scrolloff=0
   set hlsearch
@@ -57,6 +58,12 @@ function! s:Set_options() abort
   " Inhibit screen updates while searching
   set lazyredraw
   set laststatus=0
+  " prevent messages when opening files (especially for the cat version)
+  set shortmess+=F
+endfunction
+
+function! s:Set_options2() abort
+  syntax on
 endfunction
 
 function! s:Set_maps() abort
