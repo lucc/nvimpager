@@ -38,6 +38,13 @@ if [[ ${#files} -eq 0 || ! -t 0 ]]; then
   cat > "$files"
 fi
 
+default_args=(
+  -R
+  -u "$rc"
+  --cmd 'set rtp^=$RUNTIME'
+  --cmd 'call pager#start()'
+  -c 'call pager#start2()'
+)
 LINES=${LINES:-$(tput lines)}
 if [[ "$(cat "${files[@]}" | wc -l)" -le $LINES ]]; then
   # Save the current process ID to enable the nvim process to write to our
@@ -45,19 +52,10 @@ if [[ "$(cat "${files[@]}" | wc -l)" -le $LINES ]]; then
   PID=$$
   export PID
   nvim \
-    -R \
-    -u "$rc" \
-    --cmd 'set rtp^=$RUNTIME' \
-    --cmd 'call pager#start()' \
-    -c 'call pager#start2()' \
+    "${default_args[@]}" \
     -c 'call cat#prepare()' \
     "${options[@]}" "${files[@]}" \
     >/dev/null
 else
-  nvim \
-    -u "$rc" \
-    --cmd 'set rtp^=$RUNTIME' \
-    --cmd 'call pager#start()' \
-    -c 'call pager#start2()' \
-    "${options[@]}" "${files[@]}"
+  nvim "${default_args[@]}" "${options[@]}" "${files[@]}"
 fi
