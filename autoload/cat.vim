@@ -47,9 +47,7 @@ function! s:highlight() abort
         let output .= s:group_to_ansi(last)
       endif
 
-      let output .= matchstr(line, '\%(\zs.\)\{'.cnum.'}')
-      "let line = substitute(line, '.', '', '')
-            "let line = matchstr(line, '^\@<!.*')
+      let output .= line[cnum-1]
     endfor
     let retv += [output]
   endfor
