@@ -52,11 +52,6 @@ if [[ "$(cat "${files[@]}" | wc -l)" -le $LINES ]]; then
   # stdout via the proc filesystem.
   PID=$$
   export PID
-  nvim \
-    "${default_args[@]}" \
-    -c 'call cat#prepare()' \
-    "${options[@]}" "${files[@]}" \
-    >/dev/null
-else
-  nvim "${default_args[@]}" "${options[@]}" "${files[@]}"
+  default_args+=(--headless -c 'call cat#prepare()')
 fi
+nvim "${default_args[@]}" "${options[@]}" "${files[@]}"
