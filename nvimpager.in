@@ -48,10 +48,6 @@ default_args=(
 )
 LINES=${LINES:-$(tput lines)}
 if [[ "$(cat "${files[@]}" | wc -l)" -le $LINES ]]; then
-  # Save the current process ID to enable the nvim process to write to our
-  # stdout via the proc filesystem.
-  PID=$$
-  export PID
   default_args+=(--headless -c 'call cat#prepare()')
 fi
 nvim "${default_args[@]}" "${options[@]}" "${files[@]}"
