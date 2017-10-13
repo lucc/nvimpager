@@ -40,6 +40,7 @@ fi
 
 default_args=(
   -R
+  --noplugin
   -u "$rc"
   --cmd 'set rtp^=$RUNTIME'
   --cmd 'call pager#start()'
