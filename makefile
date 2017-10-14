@@ -23,5 +23,9 @@ install-ansiesc: AnsiEsc.vba
 	  -S AnsiEsc.vba \
 	  -c qa!
 
+cleanall: clean clean-ansiesc
+clean:
+	$(RM) nvimpager
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
+.PHONY: cleanall clean clean-ansiesc
