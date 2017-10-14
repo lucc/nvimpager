@@ -28,6 +28,10 @@ function! s:highlight() abort
   " Detect an empty buffer, see :help line2byte().
   if line2byte(line('$')+1) == -1
     return
+  elseif pager#check_escape_sequences()
+    "return writefile(readfile(bufname('%')), '/dev/stdout')
+    silent %write >> /dev/stdout
+    return
   endif
 
   let retv = []

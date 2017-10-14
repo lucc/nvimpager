@@ -148,9 +148,13 @@ function! s:strip_overstike_from_current_buffer() abort
   let &modifiable = l:mod
 endfunction
 
-function! s:try_ansi_esc() abort
+function! pager#check_escape_sequences() abort
   let l:ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
-  if search(l:ansi_regex, 'cnW', 100) != 0
+  return search(l:ansi_regex, 'cnW', 100) != 0
+endfunction
+
+function! s:try_ansi_esc() abort
+  if pager#check_escape_sequences()
     runtime plugin/AnsiEscPlugin.vim
     runtime plugin/cecutil.vim
     AnsiEsc
