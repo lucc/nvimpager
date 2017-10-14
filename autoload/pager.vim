@@ -151,6 +151,8 @@ endfunction
 function! s:try_ansi_esc() abort
   let l:ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
   if search(l:ansi_regex, 'cnW', 100) != 0
+    runtime plugin/AnsiEscPlugin.vim
+    runtime plugin/cecutil.vim
     AnsiEsc
   endif
 endfunction
