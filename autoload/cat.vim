@@ -40,8 +40,8 @@ function! s:highlight() abort
     let last = hlID('Normal')
     let output = s:group_to_ansi(last) . "\<Esc>[K" " Clear to right
 
-        " Hopefully fix highlighting sync issues
-    exe "norm! " . lnum . "G$"
+    " Hopefully fix highlighting sync issues
+    execute 'normal! ' . lnum . 'G$'
 
     let line = getline(lnum)
 
