@@ -3,7 +3,7 @@
 name=nvimpager
 version=0.1
 
-if [ "$1" = -v ]; then
+if [[ "$1" = -v ]]; then
   echo "$name $version"
   exit
 fi
