@@ -6,13 +6,16 @@ augroup END
 
 function! pager#start() abort
   " Some options have to be set early
-  call s:Set_options1()
+  " Don't remember file names and positions
+  set shada=
+  " prevent messages when opening files (especially for the cat version)
+  set shortmess+=F
   autocmd NvimPager VimEnter * call pager#start3()
 endfunction
 
 function! pager#start2() abort
   call s:Detect_file_type()
-  call s:Set_options2()
+  call s:Set_options()
   call s:Set_maps()
   redraw!
 endfunction
@@ -46,23 +49,16 @@ function! s:Detect_file_type() abort
   endif
 endfunction
 
-function! s:Set_options1() abort
+function! s:Set_options() abort
   set mouse=a
   set scrolloff=0
   set hlsearch
   set incsearch
   nohlsearch
-  " Don't remember file names and positions
-  set shada=
   set nowrapscan
   " Inhibit screen updates while searching
   set lazyredraw
   set laststatus=0
-  " prevent messages when opening files (especially for the cat version)
-  set shortmess+=F
-endfunction
-
-function! s:Set_options2() abort
   syntax on
 endfunction
 
