@@ -1,8 +1,6 @@
 nvimpager
 nvimcat
 .VimballRecord
-AnsiEsc.vba
-autoload/AnsiEsc.vim
-doc/AnsiEsc.txt
+AnsiEsc*
 doc/tags
 plugin/
