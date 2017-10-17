@@ -47,8 +47,9 @@ function! s:highlight() abort
     let line = getline(lnum)
 
     for cnum in range(1, col('.'))
-      if synIDtrans(synID(lnum, cnum, 1)) != last
-        let last = synIDtrans(synID(lnum, cnum, 1))
+      let curid = synIDtrans(synID(lnum, cnum, 1))
+      if curid != last
+        let last = curid
         let output .= s:group_to_ansi(last)
       endif
 
