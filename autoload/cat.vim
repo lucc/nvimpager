@@ -12,6 +12,7 @@ let s:ansicache = {}
 let s:type = 'cterm'
 
 function! cat#prepare() abort
+  call pager#detect_file_type()
   autocmd NvimPager VimEnter * call cat#run()
 endfunction
 

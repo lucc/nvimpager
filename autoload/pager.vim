@@ -14,7 +14,7 @@ function! pager#start() abort
 endfunction
 
 function! pager#start2() abort
-  call s:Detect_file_type()
+  call pager#detect_file_type()
   call s:Set_options()
   call s:Set_maps()
   redraw!
@@ -28,7 +28,7 @@ function! pager#start3() abort
   set nomodified
 endfunction
 
-function! s:Detect_file_type() abort
+function! pager#detect_file_type() abort
   let l:doc = s:detect_doc_viewer_from_pstree()
   if l:doc ==# 'none'
     if s:detect_man_page_in_current_buffer()
