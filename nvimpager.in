@@ -33,6 +33,9 @@ description () {
 	arguments is smaller than the terminal size, cat mode is used,
 	otherwise pager mode is used.  If any none file argument (neovim
 	option) is given pager mode is implied.
+
+	If the init file does not exist it is silently replaced with "NORC" to
+	prevent nvim from loading the users init.vim.
 	EOF
 }
 
