@@ -6,6 +6,7 @@ augroup END
 " Setup function to ba called from --cmd.  Some early options for both pager
 " and cat mode are set here.
 function! pager#start() abort
+  call s:fix_runtimepath()
   " Don't remember file names and positions
   set shada=
   " prevent messages when opening files (especially for the cat version)
@@ -28,6 +29,27 @@ function! pager#start3() abort
   endif
   set nomodifiable
   set nomodified
+endfunction
+
+function! s:fix_runtimepath() abort
+  let runtimepath = nvim_list_runtime_paths()
+  let original = (empty($XDG_CONFIG_HOME) ? $HOME.'/.config' : $XDG_CONFIG_HOME).'/nvim'
+  let new = original.'pager'
+  call s:replace_prefix_in_string_list(runtimepath, original, new)
+  let original = (empty($XDG_DATA_HOME) ? $HOME.'/.local/share' : $XDG_DATA_HOME).'/nvim'
+  let new = original.'pager'
+  call s:replace_prefix_in_string_list(runtimepath, original, new)
+  let &runtimepath = join(runtimepath, ',')
+endfunction
+
+function! s:replace_prefix_in_string_list(list, prefix, replace) abort
+  let length = len(a:prefix)
+  for index in range(0, len(a:list)-1)
+    if stridx(a:list[index], a:prefix) == 0
+      let item = a:replace . (a:list[index][length:-1])
+      let a:list[index] = item
+    endif
+  endfor
 endfunction
 
 " Detect possible filetypes for the current buffer by looking at the pstree or
