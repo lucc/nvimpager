@@ -3,6 +3,7 @@
 name=nvimpager
 version=0.1
 mode=auto
+rc=${XDG_CONFIG_HOME:-~/.config}/nvim/pagerrc.vim
 
 usage () {
   echo "Usage: ${0##*/} [-cp] [--] [nvim options and files]"
@@ -10,14 +11,17 @@ usage () {
   echo "       ${0##*/} -v"
 }
 description () {
+  local shortrc
+  shortrc=${rc/${HOME//\//\\/}/\~}
   cat <<-EOF
 
 	$name provides a simple pager based on neovim.
 	Options:
-	  -h	this help
-	  -v	version output
-	  -c	enforce cat mode
-	  -p	enforce pager mode
+	  -h		this help
+	  -v		version output
+	  -c		enforce cat mode
+	  -p		enforce pager mode
+	  -u FILE	use "FILE" as init file (defaul: $shortrc)
 
 	All further arguments are passed to neovim.  But one has to add "--"
 	if the first argument is an option in order to stop this script from
@@ -32,11 +36,12 @@ description () {
 	EOF
 }
 
-while getopts chpv flag; do
+while getopts chpu:v flag; do
   case $flag in
     c) mode=cat;;
     h) usage; description; exit;;
     p) mode=pager;;
+    u) rc=$OPTARG;;
     v) echo "$name $version"; exit;;
     *) usage >&2; exit 2;;
   esac
@@ -51,7 +56,6 @@ fi
 RUNTIME=${0%/*}
 export RUNTIME
 
-rc=~/.config/nvim/pagerrc.vim
 if [[ ! -r "$rc" ]]; then
   rc=NORC
 fi
