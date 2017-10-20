@@ -76,7 +76,7 @@ done
 
 if [[ ( "$mode" != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
   files=("$(mktemp)")
-  trap 'rm -f "${files[0]}"' TERM QUIT HUP INT EXIT
+  trap 'rm -f "${files[0]}"' HUP INT QUIT TERM ABRT PIPE ALRM EXIT
   cat > "${files[0]}"
 fi
 
