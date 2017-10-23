@@ -12,23 +12,26 @@ let s:ansicache = {}
 let s:type = 'cterm'
 
 function! cat#prepare() abort
+  call pager#detect_file_type()
   autocmd NvimPager VimEnter * call cat#run()
 endfunction
 
 function! cat#run() abort
-  " Write output directly to stdout of the parent process (the shell script).
-  let outfile = '/proc/'.$PID.'/fd/1'
   while bufnr('%') < bufnr('$')
-    call s:highlight(outfile)
+    call s:highlight()
     bdelete
   endwhile
-  call s:highlight(outfile)
+  call s:highlight()
   quitall!
 endfunction
 
-function! s:highlight(outfile) abort
+function! s:highlight() abort
   " Detect an empty buffer, see :help line2byte().
   if line2byte(line('$')+1) == -1
+    return
+  elseif pager#check_escape_sequences()
+    "return writefile(readfile(bufname('%')), '/dev/stdout')
+    silent %write >> /dev/stdout
     return
   endif
 
@@ -38,27 +41,26 @@ function! s:highlight(outfile) abort
     let last = hlID('Normal')
     let output = s:group_to_ansi(last) . "\<Esc>[K" " Clear to right
 
-        " Hopefully fix highlighting sync issues
-    exe "norm! " . lnum . "G$"
+    " Hopefully fix highlighting sync issues
+    execute 'normal! ' . lnum . 'G$'
 
     let line = getline(lnum)
 
     for cnum in range(1, col('.'))
-      if synIDtrans(synID(lnum, cnum, 1)) != last
-        let last = synIDtrans(synID(lnum, cnum, 1))
+      let curid = synIDtrans(synID(lnum, cnum, 1))
+      if curid != last
+        let last = curid
         let output .= s:group_to_ansi(last)
       endif
 
-      let output .= matchstr(line, '\%(\zs.\)\{'.cnum.'}')
-      "let line = substitute(line, '.', '', '')
-            "let line = matchstr(line, '^\@<!.*')
+      let output .= line[cnum-1]
     endfor
     let retv += [output]
   endfor
   " Reset the colors to default after displaying the file
   let retv[-1] .= "\<Esc>[0m"
 
-  return writefile(retv, a:outfile)
+  return writefile(retv, '/dev/stdout')
 endfunction
 
 function! s:group_to_ansi(groupnum) abort

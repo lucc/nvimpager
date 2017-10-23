@@ -1,0 +1,97 @@
+#!/bin/bash
+
+name=nvimpager
+version=0.2
+mode=auto
+rc=${XDG_CONFIG_HOME:-~/.config}/nvim/pagerrc.vim
+
+usage () {
+  echo "Usage: ${0##*/} [-cp] [--] [nvim options and files]"
+  echo "       ${0##*/} -h"
+  echo "       ${0##*/} -v"
+}
+description () {
+  local shortrc
+  shortrc=${rc/${HOME//\//\\/}/\~}
+  cat <<-EOF
+
+	$name provides a simple pager based on neovim.
+	Options:
+	  -h		this help
+	  -v		version output
+	  -c		enforce cat mode
+	  -p		enforce pager mode
+	  -u FILE	use "FILE" as init file (defaul: $shortrc)
+
+	All further arguments are passed to neovim.  But one has to add "--"
+	if the first argument is an option in order to stop this script from
+	interpeting it.
+
+	If "-" or no files are given stdin is read.
+
+	If neither -c nor -p are given and the cumulative length of all file
+	arguments is smaller than the terminal size, cat mode is used,
+	otherwise pager mode is used.  If any none file argument (neovim
+	option) is given pager mode is implied.
+
+	If the init file does not exist it is silently replaced with "NORC" to
+	prevent nvim from loading the users init.vim.
+	EOF
+}
+
+while getopts chpu:v flag; do
+  case $flag in
+    c) mode=cat;;
+    h) usage; description; exit;;
+    p) mode=pager;;
+    u) rc=$OPTARG;;
+    v) echo "$name $version"; exit;;
+    *) usage >&2; exit 2;;
+  esac
+done
+shift $((OPTIND - 1))
+
+# If we are not on a tty just "be" cat.
+if [[ ! -t 1 && "$mode" = auto ]]; then
+  exec cat "$@"
+fi
+
+RUNTIME=${0%/*}
+export RUNTIME
+
+if [[ ! -r "$rc" ]]; then
+  rc=NORC
+fi
+
+files=()
+while [[ $# -gt 0 ]]; do
+  if [[ -f "$1" ]]; then
+    files+=("$1")
+    shift
+  else
+    mode=pager
+    break
+  fi
+done
+
+if [[ ( "$mode" != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
+  files=("$(mktemp)")
+  trap 'rm -f "${files[0]}"' HUP INT QUIT TERM ABRT PIPE ALRM EXIT
+  cat > "${files[0]}"
+fi
+
+default_args=(
+  -R
+  --noplugin
+  -u "$rc"
+  --cmd 'set rtp^=$RUNTIME'
+  --cmd 'call pager#start()'
+)
+if [[ "$mode" = cat || \
+      "$mode" = auto && "$(cat "${files[@]}" | wc -l)" -le "$(tput lines)" ]]
+then
+  default_args+=(--headless -c 'call cat#prepare()')
+else
+  default_args+=(-c 'call pager#start2()')
+fi
+nvim "${default_args[@]}" "${files[@]}" "$@"

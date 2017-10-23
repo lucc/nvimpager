@@ -5,11 +5,16 @@ augroup NvimPager
 augroup END
 
 function! pager#start() abort
+  " Some options have to be set early
+  " Don't remember file names and positions
+  set shada=
+  " prevent messages when opening files (especially for the cat version)
+  set shortmess+=F
   autocmd NvimPager VimEnter * call pager#start3()
 endfunction
 
 function! pager#start2() abort
-  call s:Detect_file_type()
+  call pager#detect_file_type()
   call s:Set_options()
   call s:Set_maps()
   redraw!
@@ -23,7 +28,7 @@ function! pager#start3() abort
   set nomodified
 endfunction
 
-function! s:Detect_file_type() abort
+function! pager#detect_file_type() abort
   let l:doc = s:detect_doc_viewer_from_pstree()
   if l:doc ==# 'none'
     if s:detect_man_page_in_current_buffer()
@@ -45,18 +50,16 @@ function! s:Detect_file_type() abort
 endfunction
 
 function! s:Set_options() abort
-  syntax on
   set mouse=a
   set scrolloff=0
   set hlsearch
   set incsearch
   nohlsearch
-  " Don't remember file names and positions
-  set shada=
   set nowrapscan
   " Inhibit screen updates while searching
   set lazyredraw
   set laststatus=0
+  syntax on
 endfunction
 
 function! s:Set_maps() abort
@@ -141,9 +144,15 @@ function! s:strip_overstike_from_current_buffer() abort
   let &modifiable = l:mod
 endfunction
 
-function! s:try_ansi_esc() abort
+function! pager#check_escape_sequences() abort
   let l:ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
-  if search(l:ansi_regex, 'cnW', 100) != 0
+  return search(l:ansi_regex, 'cnW', 100) != 0
+endfunction
+
+function! s:try_ansi_esc() abort
+  if pager#check_escape_sequences()
+    runtime plugin/AnsiEscPlugin.vim
+    runtime plugin/cecutil.vim
     AnsiEsc
   endif
 endfunction
