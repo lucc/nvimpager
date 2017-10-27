@@ -6,6 +6,7 @@ augroup END
 " Setup function to ba called from --cmd.  Some early options for both pager
 " and cat mode are set here.
 function! pager#start() abort
+  call s:fix_runtimepath()
   " Don't remember file names and positions
   set shada=
   " prevent messages when opening files (especially for the cat version)
@@ -28,6 +29,34 @@ function! pager#start3() abort
   endif
   set nomodifiable
   set nomodified
+endfunction
+
+" Fix the runtimepath.  All user nvim folders are replaced by corresponding
+" nvimpager folders.
+function! s:fix_runtimepath() abort
+  let runtimepath = nvim_list_runtime_paths()
+  " Don't modify our custom entry!
+  let runtimepath = filter(runtimepath, { item -> item != $RUNTIME })
+  let original = (empty($XDG_CONFIG_HOME) ? $HOME.'/.config' : $XDG_CONFIG_HOME).'/nvim'
+  let new = original.'pager'
+  call s:replace_prefix_in_string_list(runtimepath, original, new)
+  let original = (empty($XDG_DATA_HOME) ? $HOME.'/.local/share' : $XDG_DATA_HOME).'/nvim'
+  let new = original.'pager'
+  call s:replace_prefix_in_string_list(runtimepath, original, new)
+  call insert(runtimepath, $RUNTIME)
+  let &runtimepath = join(runtimepath, ',')
+  let $NVIM_RPLUGIN_MANIFEST = new . '/rplugin.vim'
+endfunction
+
+" Replace a string prefix in all items in a list
+function! s:replace_prefix_in_string_list(list, prefix, replace) abort
+  let length = len(a:prefix)
+  for index in range(0, len(a:list)-1)
+    if stridx(a:list[index], a:prefix) == 0
+      let item = a:replace . (a:list[index][length:-1])
+      let a:list[index] = item
+    endif
+  endfor
 endfunction
 
 " Detect possible filetypes for the current buffer by looking at the pstree or
@@ -168,8 +197,6 @@ endfunction
 " Try to highlight ansi escape sequences with the AnsiEsc plugin.
 function! s:try_ansi_esc() abort
   if pager#check_escape_sequences()
-    runtime plugin/AnsiEscPlugin.vim
-    runtime plugin/cecutil.vim
     AnsiEsc
   endif
 endfunction

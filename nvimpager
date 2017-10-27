@@ -3,7 +3,7 @@
 name=nvimpager
 version=0.2
 mode=auto
-rc=${XDG_CONFIG_HOME:-~/.config}/nvim/pagerrc.vim
+rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 
 usage () {
   echo "Usage: ${0##*/} [-cp] [--] [nvim options and files]"
@@ -87,7 +87,6 @@ fi
 
 default_args=(
   -R
-  --noplugin
   -u "$rc"
   --cmd 'set rtp^=$RUNTIME'
   --cmd 'call pager#start()'
