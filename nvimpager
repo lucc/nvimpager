@@ -12,6 +12,7 @@ usage () {
 }
 description () {
   local shortrc
+  # Display the path of $HOME as a literal "~".
   shortrc=${rc/${HOME//\//\\/}/\~}
   cat <<-EOF
 
@@ -63,6 +64,8 @@ if [[ ! -r "$rc" ]]; then
   rc=NORC
 fi
 
+# Collect all file arguments until the first non file into $files.  If one non
+# file is found pager mode is enforced.
 files=()
 while [[ $# -gt 0 ]]; do
   if [[ -f "$1" ]]; then
@@ -74,6 +77,8 @@ while [[ $# -gt 0 ]]; do
   fi
 done
 
+# Either if stdin is not a tty or if we are not in pager mode but did not get
+# any file arguments, read stdin into a temp file.
 if [[ ( "$mode" != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
   files=("$(mktemp)")
   trap 'rm -f "${files[0]}"' HUP INT QUIT TERM ABRT PIPE ALRM EXIT
@@ -87,6 +92,8 @@ default_args=(
   --cmd 'set rtp^=$RUNTIME'
   --cmd 'call pager#start()'
 )
+# Switch to pager mode if all files combined are shorter than the terminal
+# height.
 if [[ "$mode" = cat || \
       "$mode" = auto && "$(cat "${files[@]}" | wc -l)" -le "$(tput lines)" ]]
 then
