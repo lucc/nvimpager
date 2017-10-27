@@ -31,6 +31,8 @@ function! pager#start3() abort
   set nomodified
 endfunction
 
+" Fix the runtimepath.  All user nvim folders are replaced by corresponding
+" nvimpager folders.
 function! s:fix_runtimepath() abort
   let runtimepath = nvim_list_runtime_paths()
   " Don't modify our custom entry!
@@ -46,6 +48,7 @@ function! s:fix_runtimepath() abort
   let $NVIM_RPLUGIN_MANIFEST = new . '/rplugin.vim'
 endfunction
 
+" Replace a string prefix in all items in a list
 function! s:replace_prefix_in_string_list(list, prefix, replace) abort
   let length = len(a:prefix)
   for index in range(0, len(a:list)-1)
