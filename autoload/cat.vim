@@ -6,16 +6,15 @@
 " https://gist.github.com/echristopherson/4090959
 " http://github.com/rkitover/vimpager
 
-let s:ansicache = {}
-
-" I suspect that we will never see anything other than this.
-let s:type = 'cterm'
-
+" Set up an VimEnter autocmd to print the files to stdout with highlighting.
+" Should be called from -c.
 function! cat#prepare() abort
   call pager#detect_file_type()
   autocmd NvimPager VimEnter * call cat#run()
 endfunction
 
+" Call the s:highlight function to write the highlighted version of all
+" buffers to stdout and quit nvim.
 function! cat#run() abort
   while bufnr('%') < bufnr('$')
     call s:highlight()
@@ -25,6 +24,8 @@ function! cat#run() abort
   quitall!
 endfunction
 
+" Iterate through the current buffer and print it to stdout with terminal
+" color codes for highlighting.
 function! s:highlight() abort
   " Detect an empty buffer, see :help line2byte().
   if line2byte(line('$')+1) == -1
@@ -63,6 +64,12 @@ function! s:highlight() abort
   return writefile(retv, '/dev/stdout')
 endfunction
 
+let s:ansicache = {}
+
+" I suspect that we will never see anything other than this.
+let s:type = 'cterm'
+
+" Find the terminal color code for a nvim highlight group id.
 function! s:group_to_ansi(groupnum) abort
   let groupnum = a:groupnum
 

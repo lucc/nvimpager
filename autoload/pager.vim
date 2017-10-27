@@ -1,11 +1,11 @@
-" vim: ft=vim
 
 augroup NvimPager
   autocmd!
 augroup END
 
+" Setup function to ba called from --cmd.  Some early options for both pager
+" and cat mode are set here.
 function! pager#start() abort
-  " Some options have to be set early
   " Don't remember file names and positions
   set shada=
   " prevent messages when opening files (especially for the cat version)
@@ -13,6 +13,7 @@ function! pager#start() abort
   autocmd NvimPager VimEnter * call pager#start3()
 endfunction
 
+" Setup function for pager mode.  Called from -c.
 function! pager#start2() abort
   call pager#detect_file_type()
   call s:Set_options()
@@ -20,6 +21,7 @@ function! pager#start2() abort
   redraw!
 endfunction
 
+" Setup function for the VimEnter autocmd.
 function! pager#start3() abort
   if &filetype ==# ''
     call s:try_ansi_esc()
@@ -28,6 +30,8 @@ function! pager#start3() abort
   set nomodified
 endfunction
 
+" Detect possible filetypes for the current buffer by looking at the pstree or
+" ansi escape sequences or manpage sequences in the current buffer.
 function! pager#detect_file_type() abort
   let l:doc = s:detect_doc_viewer_from_pstree()
   if l:doc ==# 'none'
@@ -49,6 +53,7 @@ function! pager#detect_file_type() abort
   endif
 endfunction
 
+" Set options for interactive paging of a files.
 function! s:Set_options() abort
   set mouse=a
   set scrolloff=0
@@ -62,6 +67,7 @@ function! s:Set_options() abort
   syntax on
 endfunction
 
+" Set up mappings to make nvim behave a little more like a pager.
 function! s:Set_maps() abort
   nnoremap <buffer> q :quitall!<CR>
   nnoremap <buffer> <Space> <PageDown>
@@ -71,6 +77,7 @@ function! s:Set_maps() abort
   nnoremap <buffer> <Down> <C-E>
 endfunction
 
+" Unset all mappings set in s:Set_maps().
 function! s:Unset_maps() abort
   nunmap q
   nunmap <Space>
@@ -80,9 +87,13 @@ function! s:Unset_maps() abort
   nunmap <Down>
 endfunction
 
+" Display some help text about mappings.
 function! s:Help() abort
+  " TODO
 endfunction
 
+" Search the begining of the current buffer to detect if it contains a man
+" page.
 function! s:detect_man_page_in_current_buffer() abort
   let l:pattern = '\v\C^N(\b.)?A(\b.)?M(\b.)?E(\b.)?[ \t]*$'
   let l:pos = getpos('.')
@@ -92,6 +103,8 @@ function! s:detect_man_page_in_current_buffer() abort
   return l:match != 0
 endfunction
 
+" Parse the command of the calling process to detect some common documentation
+" programs (man, pydoc, perldoc, git, ...).
 function! s:detect_doc_viewer_from_pstree() abort
   let l:pslist = systemlist('ps aw -o pid= -o ppid= -o command=')
   if type(l:pslist) ==# type('') && l:pslist ==# ''
@@ -126,6 +139,7 @@ function! s:detect_doc_viewer_from_pstree() abort
   return 'none'
 endfunction
 
+" Remove ansi escape sequences from the current buffer.
 function! s:strip_ansi_escape_sequences_from_current_buffer() abort
   let l:mod = &modifiable
   let l:position = getpos('.')
@@ -135,6 +149,7 @@ function! s:strip_ansi_escape_sequences_from_current_buffer() abort
   let &modifiable = l:mod
 endfunction
 
+" Remove "overstrike" (like used in man pages) from current buffer.
 function! s:strip_overstike_from_current_buffer() abort
   let l:mod = &modifiable
   let l:position = getpos('.')
@@ -144,11 +159,13 @@ function! s:strip_overstike_from_current_buffer() abort
   let &modifiable = l:mod
 endfunction
 
+" Check if the begining of the current buffer contains ansi escape sequences.
 function! pager#check_escape_sequences() abort
   let l:ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
   return search(l:ansi_regex, 'cnW', 100) != 0
 endfunction
 
+" Try to highlight ansi escape sequences with the AnsiEsc plugin.
 function! s:try_ansi_esc() abort
   if pager#check_escape_sequences()
     runtime plugin/AnsiEscPlugin.vim
