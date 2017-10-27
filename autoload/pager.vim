@@ -17,8 +17,8 @@ endfunction
 " Setup function for pager mode.  Called from -c.
 function! pager#start2() abort
   call pager#detect_file_type()
-  call s:Set_options()
-  call s:Set_maps()
+  call s:set_options()
+  call s:set_maps()
   redraw!
 endfunction
 
@@ -83,7 +83,7 @@ function! pager#detect_file_type() abort
 endfunction
 
 " Set options for interactive paging of a files.
-function! s:Set_options() abort
+function! s:set_options() abort
   set mouse=a
   set scrolloff=0
   set hlsearch
@@ -97,7 +97,7 @@ function! s:Set_options() abort
 endfunction
 
 " Set up mappings to make nvim behave a little more like a pager.
-function! s:Set_maps() abort
+function! s:set_maps() abort
   nnoremap <buffer> q :quitall!<CR>
   nnoremap <buffer> <Space> <PageDown>
   nnoremap <buffer> <S-Space> <PageUp>
@@ -106,8 +106,8 @@ function! s:Set_maps() abort
   nnoremap <buffer> <Down> <C-E>
 endfunction
 
-" Unset all mappings set in s:Set_maps().
-function! s:Unset_maps() abort
+" Unset all mappings set in s:set_maps().
+function! s:unset_maps() abort
   nunmap q
   nunmap <Space>
   nunmap <S-Space>
@@ -117,7 +117,7 @@ function! s:Unset_maps() abort
 endfunction
 
 " Display some help text about mappings.
-function! s:Help() abort
+function! s:help() abort
   " TODO
 endfunction
 
