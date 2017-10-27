@@ -197,8 +197,6 @@ endfunction
 " Try to highlight ansi escape sequences with the AnsiEsc plugin.
 function! s:try_ansi_esc() abort
   if pager#check_escape_sequences()
-    runtime plugin/AnsiEscPlugin.vim
-    runtime plugin/cecutil.vim
     AnsiEsc
   endif
 endfunction
