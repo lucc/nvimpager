@@ -19,7 +19,6 @@ function! pager#start2() abort
   call pager#detect_file_type()
   call s:set_options()
   call s:set_maps()
-  redraw!
 endfunction
 
 " Setup function for the VimEnter autocmd.
