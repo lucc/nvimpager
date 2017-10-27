@@ -24,7 +24,7 @@ endfunction
 
 " Setup function for the VimEnter autocmd.
 function! pager#start3() abort
-  if &filetype ==# ''
+  if &filetype ==# '' || &filetype ==# 'text'
     call s:try_ansi_esc()
   endif
   set nomodifiable
