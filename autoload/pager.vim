@@ -43,6 +43,7 @@ function! s:fix_runtimepath() abort
   call s:replace_prefix_in_string_list(runtimepath, original, new)
   call insert(runtimepath, $RUNTIME)
   let &runtimepath = join(runtimepath, ',')
+  let $NVIM_RPLUGIN_MANIFEST = new . '/rplugin.vim'
 endfunction
 
 function! s:replace_prefix_in_string_list(list, prefix, replace) abort
