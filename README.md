@@ -43,7 +43,8 @@ user config file is `~/.config/nvimpager/init.vim`.
 
 * [neovim][neovim]
 * [bash][bash]
-* ([curl][curl] for installation)
+* a [POSIX compatible][ps] ps implementation
+* ([curl][curl] during installation)
 
 ### Installation instructions:
 
@@ -81,3 +82,4 @@ requests!
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
 [curl]: https://curl.haxx.se
+[ps]: http://pubs.opengroup.org/onlinepubs/009695399/utilities/ps.html

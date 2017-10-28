@@ -154,7 +154,7 @@ endfunction
 " Parse the command of the calling process to detect some common documentation
 " programs (man, pydoc, perldoc, git, ...).
 function! s:detect_doc_viewer_from_pstree() abort
-  let l:pslist = systemlist('ps aw -o pid= -o ppid= -o command=')
+  let l:pslist = systemlist('ps -a -o pid= -o ppid= -o comm=')
   if type(l:pslist) ==# type('') && l:pslist ==# ''
     return 0
   endif
