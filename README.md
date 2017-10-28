@@ -47,8 +47,9 @@ user config file is `~/.config/nvimpager/init.vim`.
 
 ### Installation instructions:
 
-Use the makefile to install the script and its dependencies (the default
-`PREFIX` is `/usr/local`):
+Use the makefile to install the script and its dependencies.  It supports the
+usual `PREFIX` (defaults to `/usr/local`) and `DESTDIR` (defaults to empty)
+variables:
 
 ```sh
 make PREFIX=$HOME/.local install
