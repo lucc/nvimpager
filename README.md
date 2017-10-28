@@ -10,16 +10,6 @@ like a pager.  The idea is not new, this is actually rewrite of
 [vimpager][vimpager] but with less (but stricter) dependencies and specifically
 for neovim.
 
-The script also has a "cat mode" which will not start up the neovim interface
-but instead print a highlighted version of the file to the terminal.  Like cat
-with neovim syntax highlighting!  If the input has less lines than the terminal
-cat mode is activated automatically so nvimpager behaves similar to `less -F`.
-Pager mode and cat mode can be enforced with the options `-p` and `-c`
-respectively.
-
-Nvimpager comes with a small set of command line options but you can also use
-all of neovim's command line options.  Use `nvimpager -h` to see the help text.
-
 Some typical use cases:
 
 ```sh
@@ -32,6 +22,20 @@ export PAGER=nvimpager
 man bash
 git diff
 ```
+
+The script also has a "cat mode" which will not start up the neovim interface
+but instead print a highlighted version of the file to the terminal.  Like cat
+with neovim syntax highlighting!  If the input has less lines than the terminal
+cat mode is activated automatically so nvimpager behaves similar to `less -F`.
+Pager mode and cat mode can be enforced with the options `-p` and `-c`
+respectively.
+
+Nvimpager comes with a small set of command line options but you can also use
+all of neovim's command line options.  Use `nvimpager -h` to see the help text.
+Config files are searched as for plain neovim with the only difference that
+`~/.config/nvimpager` is searched instead of `~/.config/nvim` (same for
+`~/.local/share/nvimpager` and the `$XDG_..._HOME` variants).  In short: the
+user config file is `~/.config/nvimpager/init.vim`.
 
 ## Technical stuff
 
