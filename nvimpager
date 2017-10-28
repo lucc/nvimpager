@@ -72,7 +72,9 @@ while [[ $# -gt 0 ]]; do
     files+=("$1")
     shift
   else
-    mode=pager
+    if [[ "$mode" = auto ]]; then
+      mode=pager
+    fi
     break
   fi
 done
