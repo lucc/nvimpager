@@ -74,6 +74,15 @@ to [post][issues] bug reports, feature or pull requests!
 * see how https://github.com/neovim/neovim/issues/7438 is resolved and maybe
   move more code (logic) from bash to vimscript
 * check license options for bundling the AnsiEsc plugin
+* implement some more keybindings that make it behave more like less
+* wait for nvim 0.2.1 and try to implement stuff in lua
+* proper lazy pipe reading while paging (like less) to improve startup time and
+  also memory usage for large input on pipes
+
+## License
+
+The project is licensed under a BSD-2-clause license.  See the
+[LICENSE](./LICENSE) file.
 
 [nvimpager]: https://github.com/lucc/nvimpager
 [issues]: https://github.com/lucc/nvimpager/issues
