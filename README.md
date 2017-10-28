@@ -1,14 +1,13 @@
 # Nvimpager
 
-Using [neovim][neovim] as a pager to view man pages, git diffs, whatnot with
-neovim's syntax highlighting and mouse support.
+Using [neovim] as a pager to view man pages, git diffs, whatnot with neovim's
+syntax highlighting and mouse support.
 
 ## About
 
 The `nvimpager` script calls neovim in a fashion that turns it into something
-like a pager.  The idea is not new, this is actually rewrite of
-[vimpager][vimpager] but with less (but stricter) dependencies and specifically
-for neovim.
+like a pager.  The idea is not new, this is actually rewrite of [vimpager] but
+with less (but stricter) dependencies and specifically for neovim.
 
 Some typical use cases:
 
@@ -41,10 +40,10 @@ user config file is `~/.config/nvimpager/init.vim`.
 
 ### Dependencies:
 
-* [neovim][neovim]
-* [bash][bash]
+* [neovim]
+* [bash]
 * a [POSIX compatible][ps] ps implementation
-* ([curl][curl] during installation)
+* ([curl] during installation)
 
 ### Installation instructions:
 
@@ -63,9 +62,8 @@ make PREFIX=$HOME/.local install
 
 ### Development
 
-Nvimpager was written by @lucc.  It is developed on [Github][nvimpager] where
-you are very much invited to [post][issues] bug reports, feature or pull
-requests!
+Nvimpager is developed on [Github][nvimpager] where you are very much invited
+to [post][issues] bug reports, feature or pull requests!
 
 #### TODO List
 
