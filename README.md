@@ -60,6 +60,23 @@ make PREFIX=$HOME/.local install
 * large files are slowing down neovim on startup (less does a better, i.e.
   faster and more memory efficient job at paging large files)
 
+### Development
+
+Nvimpager was written by @lucc.  It is developed on [Github][nvimpager] where
+you are very much invited to [post][issues] bug reports, feature or pull
+requests!
+
+#### TODO List
+
+* write a man page or vim help file
+* show a short message in the cmdline like less and vimpager do (file and help
+  information)
+* see how https://github.com/neovim/neovim/issues/7438 is resolved and maybe
+  move more code (logic) from bash to vimscript
+* check license options for bundling the AnsiEsc plugin
+
+[nvimpager]: https://github.com/lucc/nvimpager
+[issues]: https://github.com/lucc/nvimpager/issues
 [neovim]: https://github.com/neovim/neovim
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
