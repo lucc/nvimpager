@@ -1,36 +1,20 @@
-" This is a rewrite of the functionality of the vimcat script.  The script can
-" be found in different places on the internet and ultimatly goes back to
-" Matthew J. Wozniski <mjw@drexel.edu> (as far as I can tell).
+" Copyright (c) 2015 Matthew J. Wozniski, Rafael Kitover, 2017 Lucas Hoffmann
+" Licenced under a BSD-2-clause licence.  See the LICENSE file.
+"
+" This is a modified version of the vimcat script.  The script can be found in
+" different places on the internet and ultimatly goes back to Matthew J.
+" Wozniski <mjw@drexel.edu>.
 " https://github.com/godlygeek/vim-files/blob/master/macros/vimcat.sh
-" https://github.com/trapd00r/utils/blob/master/_v
-" https://gist.github.com/echristopherson/4090959
-" http://github.com/rkitover/vimpager
+" Many newer features where also taken from
+" https://github.com/rkitover/vimpager
 
-let s:ansicache = {}
-
-" I suspect that we will never see anything other than this.
-let s:type = 'cterm'
-
-function! cat#prepare() abort
-  call pager#detect_file_type()
-  autocmd NvimPager VimEnter * call cat#run()
-endfunction
-
-function! cat#run() abort
-  while bufnr('%') < bufnr('$')
-    call s:highlight()
-    bdelete
-  endwhile
-  call s:highlight()
-  quitall!
-endfunction
-
-function! s:highlight() abort
+" Iterate through the current buffer and print it to stdout with terminal
+" color codes for highlighting.
+function! cat#highlight() abort
   " Detect an empty buffer, see :help line2byte().
   if line2byte(line('$')+1) == -1
     return
   elseif pager#check_escape_sequences()
-    "return writefile(readfile(bufname('%')), '/dev/stdout')
     silent %write >> /dev/stdout
     return
   endif
@@ -41,12 +25,9 @@ function! s:highlight() abort
     let last = hlID('Normal')
     let output = s:group_to_ansi(last) . "\<Esc>[K" " Clear to right
 
-    " Hopefully fix highlighting sync issues
-    execute 'normal! ' . lnum . 'G$'
-
     let line = getline(lnum)
 
-    for cnum in range(1, col('.'))
+    for cnum in range(1, len(line))
       let curid = synIDtrans(synID(lnum, cnum, 1))
       if curid != last
         let last = curid
@@ -63,6 +44,12 @@ function! s:highlight() abort
   return writefile(retv, '/dev/stdout')
 endfunction
 
+let s:ansicache = {}
+
+" I suspect that we will never see anything other than this.
+let s:type = 'cterm'
+
+" Find the terminal color code for a nvim highlight group id.
 function! s:group_to_ansi(groupnum) abort
   let groupnum = a:groupnum
 
