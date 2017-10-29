@@ -17,23 +17,25 @@ function! pager#start() abort
 endfunction
 
 " Setup function for pager mode.  Called from -c.
-function! pager#start2pager() abort
-  call pager#detect_file_type()
+function! pager#prepare_pager() abort
+  call s:detect_file_type()
   call s:set_options()
   call s:set_maps()
 endfunction
 
 " Set up an VimEnter autocmd to print the files to stdout with highlighting.
 " Should be called from -c.
-function! pager#start2cat() abort
-  call pager#detect_file_type()
+function! pager#prepare_cat() abort
+  call s:detect_file_type()
   autocmd NvimPager VimEnter * call s:cat()
 endfunction
 
 " Setup function for the VimEnter autocmd.
 function! s:pager() abort
-  if &filetype ==# '' || &filetype ==# 'text'
-    call s:try_ansi_esc()
+  if (&filetype ==# '' || &filetype ==# 'text')
+	\ && pager#check_escape_sequences()
+    " Try to highlight ansi escape sequences with the AnsiEsc plugin.
+    AnsiEsc
   endif
   set nomodifiable
   set nomodified
@@ -80,7 +82,7 @@ endfunction
 
 " Detect possible filetypes for the current buffer by looking at the pstree or
 " ansi escape sequences or manpage sequences in the current buffer.
-function! pager#detect_file_type() abort
+function! s:detect_file_type() abort
   let l:doc = s:detect_doc_viewer_from_pstree()
   if l:doc ==# 'none'
     if s:detect_man_page_in_current_buffer()
@@ -211,11 +213,4 @@ endfunction
 function! pager#check_escape_sequences() abort
   let l:ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
   return search(l:ansi_regex, 'cnW', 100) != 0
-endfunction
-
-" Try to highlight ansi escape sequences with the AnsiEsc plugin.
-function! s:try_ansi_esc() abort
-  if pager#check_escape_sequences()
-    AnsiEsc
-  endif
 endfunction

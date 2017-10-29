@@ -101,8 +101,8 @@ default_args=(
 if [[ "$mode" = cat || \
       "$mode" = auto && "$(cat "${files[@]}" | wc -l)" -le "$(tput lines)" ]]
 then
-  default_args+=(--headless -c 'call pager#start2cat()')
+  default_args+=(--headless -c 'call pager#prepare_cat()')
 else
-  default_args+=(-c 'call pager#start2pager()')
+  default_args+=(-c 'call pager#prepare_pager()')
 fi
 nvim "${default_args[@]}" "${files[@]}" "$@"
