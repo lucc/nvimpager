@@ -25,12 +25,9 @@ function! cat#highlight() abort
     let last = hlID('Normal')
     let output = s:group_to_ansi(last) . "\<Esc>[K" " Clear to right
 
-    " Hopefully fix highlighting sync issues
-    execute 'normal! ' . lnum . 'G$'
-
     let line = getline(lnum)
 
-    for cnum in range(1, col('.'))
+    for cnum in range(1, len(line))
       let curid = synIDtrans(synID(lnum, cnum, 1))
       if curid != last
         let last = curid
