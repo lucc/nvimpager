@@ -13,7 +13,6 @@ function! pager#start() abort
   set shada=
   " prevent messages when opening files (especially for the cat version)
   set shortmess+=F
-  autocmd NvimPager VimEnter * call s:pager()
 endfunction
 
 " Setup function for pager mode.  Called from -c.
@@ -21,6 +20,7 @@ function! pager#prepare_pager() abort
   call s:detect_file_type()
   call s:set_options()
   call s:set_maps()
+  autocmd NvimPager VimEnter * call s:pager()
 endfunction
 
 " Set up an VimEnter autocmd to print the files to stdout with highlighting.
@@ -113,7 +113,6 @@ function! s:set_options() abort
   " Inhibit screen updates while searching
   set lazyredraw
   set laststatus=0
-  syntax on
 endfunction
 
 " Set up mappings to make nvim behave a little more like a pager.
