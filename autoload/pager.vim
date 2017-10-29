@@ -32,8 +32,7 @@ endfunction
 
 " Setup function for the VimEnter autocmd.
 function! s:pager() abort
-  if (&filetype ==# '' || &filetype ==# 'text')
-	\ && pager#check_escape_sequences()
+  if pager#check_escape_sequences()
     " Try to highlight ansi escape sequences with the AnsiEsc plugin.
     AnsiEsc
   endif
@@ -212,5 +211,6 @@ endfunction
 " Check if the begining of the current buffer contains ansi escape sequences.
 function! pager#check_escape_sequences() abort
   let l:ansi_regex = '\e\[[;?]*[0-9.;]*[A-Za-z]'
-  return search(l:ansi_regex, 'cnW', 100) != 0
+  return (&filetype ==# '' || &filetype ==# 'text')
+	\ && search(l:ansi_regex, 'cnW', 100) != 0
 endfunction
