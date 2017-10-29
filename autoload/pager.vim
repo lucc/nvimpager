@@ -11,23 +11,41 @@ function! pager#start() abort
   set shada=
   " prevent messages when opening files (especially for the cat version)
   set shortmess+=F
-  autocmd NvimPager VimEnter * call pager#start3()
+  autocmd NvimPager VimEnter * call s:pager()
 endfunction
 
 " Setup function for pager mode.  Called from -c.
-function! pager#start2() abort
+function! pager#start2pager() abort
   call pager#detect_file_type()
   call s:set_options()
   call s:set_maps()
 endfunction
 
+" Set up an VimEnter autocmd to print the files to stdout with highlighting.
+" Should be called from -c.
+function! pager#start2cat() abort
+  call pager#detect_file_type()
+  autocmd NvimPager VimEnter * call s:cat()
+endfunction
+
 " Setup function for the VimEnter autocmd.
-function! pager#start3() abort
+function! s:pager() abort
   if &filetype ==# '' || &filetype ==# 'text'
     call s:try_ansi_esc()
   endif
   set nomodifiable
   set nomodified
+endfunction
+
+" Call the highlight function to write the highlighted version of all buffers
+" to stdout and quit nvim.
+function! s:cat() abort
+  while bufnr('%') < bufnr('$')
+    call cat#highlight()
+    bdelete
+  endwhile
+  call cat#highlight()
+  quitall!
 endfunction
 
 " Fix the runtimepath.  All user nvim folders are replaced by corresponding
