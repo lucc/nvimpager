@@ -23,18 +23,28 @@ function! cat#highlight() abort
 
   for lnum in range(1, line('$'))
     let last = hlID('Normal')
+    let concealid = -1
     let output = s:group_to_ansi(last) . "\<Esc>[K" " Clear to right
 
     let line = getline(lnum)
 
     for cnum in range(1, len(line))
+      let last_conceal_id = concealid
+      let [conceal, replace, concealid] = synconcealed(lnum, cnum)
+      if conceal
+	if last_conceal_id == concealid || replace ==# ''
+	  continue
+	endif
+	let append_text = replace
+      else
+	let append_text = line[cnum-1]
+      endif
       let curid = synIDtrans(synID(lnum, cnum, 1))
       if curid != last
         let last = curid
         let output .= s:group_to_ansi(last)
       endif
-
-      let output .= line[cnum-1]
+      let output .= append_text
     endfor
     let retv += [output]
   endfor
