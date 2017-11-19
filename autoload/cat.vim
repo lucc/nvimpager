@@ -27,10 +27,11 @@ function! cat#highlight() abort
     let output = s:group_to_ansi(last) . "\<Esc>[K" " Clear to right
 
     let line = getline(lnum)
+    let conceals = map(range(1, len(line)), {index, cnum->synconcealed(lnum, cnum)})
 
     for cnum in range(1, len(line))
       let last_conceal_id = concealid
-      let [conceal, replace, concealid] = synconcealed(lnum, cnum)
+      let [conceal, replace, concealid] = conceals[cnum-1]
       if conceal
 	if last_conceal_id == concealid || replace ==# ''
 	  continue
