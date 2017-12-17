@@ -28,7 +28,7 @@ AnsiEsc.vba:
 $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 	nvim -u NONE --headless \
 	  --cmd 'set rtp^=.' \
-	  --cmd 'set rtp+=/usr/share/nvim/runtime/pack/dist/opt/vimball' \
+	  --cmd 'packadd vimball' \
 	  --cmd 'runtime plugin/vimballPlugin.vim' \
 	  -S AnsiEsc.vba \
 	  -c quitall!
