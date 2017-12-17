@@ -42,9 +42,9 @@ function! cat#highlight() abort
 	  if last_conceal_id == concealid
 	    continue
 	  endif
-	  " FIXME When &conceallevel == 1 and this position doesn't have a
-	  " custom conceal character and there is no "concel" part defined in
-	  " &listchars this should be a space but is the emty string innstead.
+	  if &conceallevel == 1 && replace == ''
+	    let replace = ' '
+	  endif
 	  let append_text = replace
 	endif
       else " no conceal for this position or conceallevel == 0
