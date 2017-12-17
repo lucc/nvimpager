@@ -34,17 +34,13 @@ function! cat#highlight() abort
       let [conceal, replace, concealid] = conceals[cnum-1]
       if conceal && &conceallevel != 0
 	" FIXME These items should be highlighted with the "Conceal" group.
-	if &conceallevel == 3
-	  " concealed text is completely hidden
+	if &conceallevel == 3 || last_conceal_id == concealid
+	  " Concealed text is completely hidden or was already replaced for an
+	  " earlier character position.
 	  continue
-	elseif &conceallevel == 2 || &conceallevel == 1
-	  " concealed text is replaced by the replacement text
-	  if last_conceal_id == concealid
-	    continue
-	  endif
-	  if &conceallevel == 1 && replace == ''
-	    let replace = ' '
-	  endif
+	elseif &conceallevel == 1 && replace == ''
+	    let append_text = ' '
+	else " conceallevel == 2 or (conceallevel == 1 and replace != '')
 	  let append_text = replace
 	endif
       else " no conceal for this position or conceallevel == 0
