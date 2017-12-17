@@ -32,12 +32,22 @@ function! cat#highlight() abort
     for cnum in range(1, len(line))
       let last_conceal_id = concealid
       let [conceal, replace, concealid] = conceals[cnum-1]
-      if conceal
-	if last_conceal_id == concealid || replace ==# ''
+      if conceal && &conceallevel != 0
+	" FIXME These items should be highlighted with the "Conceal" group.
+	if &conceallevel == 3
+	  " concealed text is completely hidden
 	  continue
+	elseif &conceallevel == 2 || &conceallevel == 1
+	  " concealed text is replaced by the replacement text
+	  if last_conceal_id == concealid
+	    continue
+	  endif
+	  " FIXME When &conceallevel == 1 and this position doesn't have a
+	  " custom conceal character and there is no "concel" part defined in
+	  " &listchars this should be a space but is the emty string innstead.
+	  let append_text = replace
 	endif
-	let append_text = replace
-      else
+      else " no conceal for this position or conceallevel == 0
 	let append_text = line[cnum-1]
       endif
       let curid = synIDtrans(synID(lnum, cnum, 1))
