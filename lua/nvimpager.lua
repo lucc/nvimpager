@@ -8,10 +8,11 @@ local nvim = vim.api -- luacheck: ignore
 local cache = {}
 
 local function split_rgb_number(color_number)
-  local hex = string.format('%06x', color_number)
-  local r = tonumber('0x' .. hex:sub(1, 2))
-  local g = tonumber('0x' .. hex:sub(3, 4))
-  local b = tonumber('0x' .. hex:sub(5, 6))
+  -- The lua implementation of these bit shift operations is taken from
+  -- http://nova-fusion.com/2011/03/21/simulate-bitwise-shift-operators-in-lua/
+  local r = math.floor(color_number / 2 ^ 16)
+  local g = math.floor(math.floor(color_number / 2 ^ 8) % 2 ^ 8)
+  local b = math.floor(color_number % 2 ^ 8)
   return r, g, b
 end
 
