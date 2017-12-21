@@ -98,12 +98,12 @@ end
 
 local function highlight()
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
+    local outline = ''
     for cnum = 1, line:len() do
       local syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
-      io.write(group2ansi(syntax_id))
-      io.write(line:sub(cnum, cnum))
+      outline = outline .. group2ansi(syntax_id) .. line:sub(cnum, cnum)
     end
-    io.write('\n')
+    io.write(outline, '\n')
   end
 end
 
