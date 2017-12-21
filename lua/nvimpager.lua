@@ -8,7 +8,7 @@ local nvim = vim.api -- luacheck: ignore
 local cache = {}
 
 local function split_rgb_number(color_number)
-  local hex = string.format('%x', color_number)
+  local hex = string.format('%06x', color_number)
   local r = tonumber('0x' .. hex:sub(1, 2))
   local g = tonumber('0x' .. hex:sub(3, 4))
   local b = tonumber('0x' .. hex:sub(5, 6))

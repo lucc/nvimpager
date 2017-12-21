@@ -193,7 +193,7 @@ end)
 
 describe("lua functions", function()
   describe("split_rgb_number", function()
-    pending("handles numbers from 0 to 16777215", function()
+    it("handles numbers from 0 to 16777215", function()
       -- prepare the global vim name
       _G.vim = { api = {} }
       local nvimpager = require("lua/nvimpager")
