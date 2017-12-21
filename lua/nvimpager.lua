@@ -130,7 +130,7 @@ local function highlight()
     end
     -- Write the whole line and a newline char.  If this was the last line
     -- also reset the terminal attributes.
-    io.write(outline, lnum == linecount and '\x1b[0m' or '', '\n')
+    io.write(outline, lnum == linecount and cache[0] or '', '\n')
   end
 end
 
