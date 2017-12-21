@@ -98,15 +98,32 @@ end
 
 local function highlight()
   local last_syntax_id = -1
+  local last_conceal_id = -1
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
     for cnum = 1, line:len() do
-      local syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
-      if syntax_id ~= last_syntax_id then
-	outline = outline .. group2ansi(syntax_id)
-	last_syntax_id = syntax_id
+      local conceal_info = nvim.nvim_call_function('synconcealed', {lnum, cnum})
+      local conceal = conceal_info[1] == 1
+      local replace = conceal_info[2]
+      local conceal_id = conceal_info[3]
+      if conceal and last_conceal_id == conceal_id then
+	-- skip this char
+      else
+	local syntax_id, append
+	if conceal then
+	  syntax_id = nvim.nvim_call_function('hlID', {'Conceal'})
+	  append = replace
+	  last_conceal_id = conceal_id
+	else
+	  syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
+	  append = line:sub(cnum, cnum)
+	end
+	if syntax_id ~= last_syntax_id then
+	  outline = outline .. group2ansi(syntax_id)
+	  last_syntax_id = syntax_id
+	end
+	outline = outline .. append
       end
-      outline = outline .. line:sub(cnum, cnum)
     end
     io.write(outline, '\n')
     -- TODO reset terminal attributes just before the last newline.
