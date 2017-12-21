@@ -197,7 +197,8 @@ describe("lua functions", function()
   -- Create a local mock of the vim module that is provided by neovim.
   local vim = {
     api = {
-      nvim_get_hl_by_id = function() return {} end
+      nvim_get_hl_by_id = function() return {} end,
+      nvim_get_option = function() return true end,
     }
   }
   _G.vim = vim

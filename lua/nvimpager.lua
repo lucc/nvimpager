@@ -16,11 +16,56 @@ local function split_rgb_number(color_number)
   return r, g, b
 end
 
+local colors_24_bit = nvim.nvim_get_option('termguicolors')
+
+local function color2escape_24bit(color_number, foreground)
+  local red, green, blue = split_rgb_number(color_number)
+  local escape
+  if foreground then
+    escape = '38;2;'
+  else
+    escape = '48;2;'
+  end
+  return escape .. red .. ';' .. green .. ';' .. blue
+end
+
+local function color2escape_8bit(color_number, foreground)
+  local prefix
+  if color_number < 8 then
+    if foreground then
+      prefix = '3'
+    else
+      prefix = '4'
+    end
+  elseif color_number < 16 then
+    color_number = color_number - 8
+    if foreground then
+      prefix = '9'
+    else
+      prefix = '10'
+    end
+  else
+    if foreground then
+      prefix = '38;5;'
+    else
+      prefix = '48;5;'
+    end
+  end
+  return prefix .. color_number
+end
+
+local color2escape
+if colors_24_bit then
+  color2escape = color2escape_24bit
+else
+  color2escape = color2escape_8bit
+end
+
 local function group2ansi(groupid)
   if cache[groupid] then
     return cache[groupid]
   end
-  local info = nvim.nvim_get_hl_by_id(groupid, true)
+  local info = nvim.nvim_get_hl_by_id(groupid, colors_24_bit)
   if info.reverse then
     info.foreground, info.background = info.background, info.foreground
   end
@@ -31,12 +76,10 @@ local function group2ansi(groupid)
   if info.underline then escape = escape .. ';4' end
 
   if info.foreground then
-    local red, green, blue = split_rgb_number(info.foreground)
-    escape = escape .. ';38;2;' .. red .. ';' .. green .. ';' .. blue
+    escape = escape .. ';' .. color2escape(info.foreground, true)
   end
   if info.background then
-    local red, green, blue = split_rgb_number(info.background)
-    escape = escape .. ';48;2;' .. red .. ';' .. green .. ';' .. blue
+    escape = escape .. ';' .. color2escape(info.background, false)
   end
 
   escape = escape .. 'm'
