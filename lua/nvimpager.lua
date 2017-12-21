@@ -97,11 +97,16 @@ local function init_cat_mode()
 end
 
 local function highlight()
+  local last_syntax_id = -1
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
     for cnum = 1, line:len() do
       local syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
-      outline = outline .. group2ansi(syntax_id) .. line:sub(cnum, cnum)
+      if syntax_id ~= last_syntax_id then
+	outline = outline .. group2ansi(syntax_id)
+	last_syntax_id = syntax_id
+      end
+      outline = outline .. line:sub(cnum, cnum)
     end
     io.write(outline, '\n')
   end
