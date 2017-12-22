@@ -97,6 +97,7 @@ local function init_cat_mode()
 end
 
 local function highlight()
+  local conceallevel = nvim.nvim_win_get_option(0, 'conceallevel')
   local last_syntax_id = -1
   local last_conceal_id = -1
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
@@ -112,6 +113,7 @@ local function highlight()
 	local syntax_id, append
 	if conceal then
 	  syntax_id = nvim.nvim_call_function('hlID', {'Conceal'})
+	  if replace == '' and conceallevel == 1 then replace = ' ' end
 	  append = replace
 	  last_conceal_id = conceal_id
 	else
