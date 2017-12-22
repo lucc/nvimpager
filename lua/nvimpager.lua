@@ -162,7 +162,23 @@ local function highlight()
   end
 end
 
+-- Call the highlight function to write the highlighted version of all buffers
+-- to stdout and quit nvim.
+local function cat_mode()
+  init_cat_mode()
+  highlight()
+  -- We can not use nvim_list_bufs() as a file might appear on the command
+  -- line twice.  In this case we want to behave like cat(1) and display the
+  -- file twice.
+  for _ = 2, nvim.nvim_call_function('argc', {}) do
+    nvim.nvim_command('next')
+    highlight()
+  end
+  nvim.nvim_command('quitall!')
+end
+
 return {
+  cat_mode = cat_mode,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
   group2ansi = group2ansi,
