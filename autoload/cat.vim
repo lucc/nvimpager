@@ -13,14 +13,5 @@ lua require('nvimpager').init_cat_mode()
 " Iterate through the current buffer and print it to stdout with terminal
 " color codes for highlighting.
 function! cat#highlight() abort
-  " Detect an empty buffer, see :help line2byte().
-  if line2byte(line('$')+1) == -1
-    return
-  elseif pager#check_escape_sequences()
-    silent %write >> /dev/stdout
-    return
-  endif
-
   lua require("nvimpager").highlight()
-  return
 endfunction

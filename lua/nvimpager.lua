@@ -97,6 +97,18 @@ local function init_cat_mode()
 end
 
 local function highlight()
+  -- Detect an empty buffer, see :help line2byte().  We can not use
+  -- nvim_buf_get_lines as the table will contain one empty string for both an
+  -- empty file and a file with just one emptay line.
+  if nvim.nvim_buf_line_count(0) == 1 and
+    nvim.nvim_call_function("line2byte", {2}) == -1 then
+    return
+  elseif nvim.nvim_call_function('pager#check_escape_sequences', {}) == 1 then
+    for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
+      io.write(line, '\n')
+    end
+    return
+  end
   local conceallevel = nvim.nvim_win_get_option(0, 'conceallevel')
   local last_syntax_id = -1
   local last_conceal_id = -1
