@@ -25,7 +25,7 @@ description () {
 	  -v		version output
 	  -c		enforce cat mode
 	  -p		enforce pager mode
-	  -u FILE	use "FILE" as init file (defaul: $shortrc)
+	  -u FILE	use "FILE" as init file (default: $shortrc)
 
 	All further arguments are passed to neovim.  But one has to add "--"
 	if the first argument is an option in order to stop this script from
