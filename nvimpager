@@ -23,6 +23,7 @@ description () {
 	Options:
 	  -h		this help
 	  -v		version output
+	  -a		enforce auto mode (default)
 	  -c		enforce cat mode
 	  -p		enforce pager mode
 	  -u FILE	use "FILE" as init file (default: $shortrc)
@@ -33,18 +34,19 @@ description () {
 
 	If "-" or no files are given stdin is read.
 
-	If neither -c nor -p are given and the cumulative length of all file
-	arguments is smaller than the terminal size, cat mode is used,
-	otherwise pager mode is used.  If any none file argument (neovim
-	option) is given pager mode is implied.
+	In auto mode the cumulative length of all file arguments is smaller
+	than the terminal size, cat mode is used, otherwise pager mode is
+	used.  If any none file argument (neovim option) is given pager mode
+	is implied.
 
 	If the init file does not exist it is silently replaced with "NORC" to
 	prevent nvim from loading the users init.vim.
 	EOF
 }
 
-while getopts chpu:v flag; do
+while getopts achpu:v flag; do
   case $flag in
+    a) mode=auto;;
     c) mode=cat;;
     h) usage; description; exit;;
     p) mode=pager;;
