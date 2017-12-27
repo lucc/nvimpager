@@ -177,10 +177,24 @@ local function cat_mode()
   nvim.nvim_command('quitall!')
 end
 
+-- Join a table with a string
+local function join(table, seperator)
+  if #table == 0 then return '' end
+  local index = 1
+  local ret = table[index]
+  index = index + 1
+  while index <= #table do
+    ret = ret .. seperator .. table[index]
+    index = index + 1
+  end
+  return ret
+end
+
 return {
   cat_mode = cat_mode,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
+  join = join,
   group2ansi = group2ansi,
   highlight = highlight,
   init_cat_mode = init_cat_mode,
