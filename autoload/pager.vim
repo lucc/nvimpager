@@ -5,7 +5,7 @@ augroup NvimPager
   autocmd!
 augroup END
 
-" Setup function to ba called from --cmd.  Some early options for both pager
+" Setup function to be called from --cmd.  Some early options for both pager
 " and cat mode are set here.
 function! pager#start() abort
   call s:fix_runtimepath()
@@ -102,7 +102,7 @@ function! s:detect_file_type() abort
   endif
 endfunction
 
-" Set options for interactive paging of a files.
+" Set some global options for interactive paging of files.
 function! s:set_options() abort
   set mouse=a
   set scrolloff=0
@@ -117,12 +117,12 @@ endfunction
 
 " Set up mappings to make nvim behave a little more like a pager.
 function! s:set_maps() abort
-  nnoremap <buffer> q :quitall!<CR>
-  nnoremap <buffer> <Space> <PageDown>
-  nnoremap <buffer> <S-Space> <PageUp>
-  nnoremap <buffer> g gg
-  nnoremap <buffer> <Up> <C-Y>
-  nnoremap <buffer> <Down> <C-E>
+  nnoremap q :quitall!<CR>
+  nnoremap <Space> <PageDown>
+  nnoremap <S-Space> <PageUp>
+  nnoremap g gg
+  nnoremap <Up> <C-Y>
+  nnoremap <Down> <C-E>
 endfunction
 
 " Unset all mappings set in s:set_maps().
