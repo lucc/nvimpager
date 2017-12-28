@@ -218,10 +218,33 @@ local function fix_runtime_path()
   nvim.nvim_command("let $NVIM_RPLUGIN_MANIFEST = '" .. new .. "'")
 end
 
+-- Parse the command of the calling process to detect some common
+-- documentation programs (man, pydoc, perldoc, git, ...).  $PPID was exported
+-- by the calling bash script and points to the calling program.
+local function detect_doc_viewer_from_ppid()
+  local ppid = os.getenv('PPID')
+  local proc = nvim.nvim_get_proc(tonumber(ppid))
+  if proc == nil then return 'none' end
+  local command = proc.name
+  if command:find('^man') ~= nil then
+    return 'man'
+  elseif command:find('^[Pp]y(thon|doc)?[0-9.]*') ~= nil then
+    return 'pydoc'
+  elseif command:find('^[Rr](uby|i)[0-9.]*') ~= nil then
+    return 'ri'
+  elseif command:find('^perl(doc)?') ~= nil then
+    return 'perldoc'
+  elseif command:find('^git') ~= nil then
+    return 'git'
+  end
+  return 'none'
+end
+
 return {
   cat_mode = cat_mode,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
+  detect_doc_viewer_from_ppid = detect_doc_viewer_from_ppid,
   fix_runtime_path = fix_runtime_path,
   group2ansi = group2ansi,
   highlight = highlight,

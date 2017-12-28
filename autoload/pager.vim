@@ -45,7 +45,7 @@ endfunction
 " Detect possible filetypes for the current buffer by looking at the parent
 " process or ansi escape sequences or manpage sequences in the current buffer.
 function! s:detect_file_type() abort
-  let l:doc = s:detect_doc_viewer_from_ppid()
+  let l:doc = luaeval('nvimpager.detect_doc_viewer_from_ppid()')
   if l:doc ==# 'none'
     if s:detect_man_page_in_current_buffer()
       setfiletype man
@@ -103,29 +103,6 @@ function! s:detect_man_page_in_current_buffer() abort
   let l:match = search(l:pattern, 'cnW', 12, 100)
   keepjumps call cursor(l:pos)
   return l:match != 0
-endfunction
-
-" Parse the command of the calling process to detect some common documentation
-" programs (man, pydoc, perldoc, git, ...).  $PPID was exported by the calling
-" bash script and points to the calling program.
-function! s:detect_doc_viewer_from_ppid() abort
-  let l:cmd = nvim_get_proc(0+$PPID)
-  if type(l:cmd) == type(v:null)
-    return 0
-  endif
-  let l:cmd = l:cmd.name
-  if l:cmd =~# '^man'
-    return 'man'
-  elseif l:cmd =~# '\v\C^[Pp]y(thon|doc)?[0-9.]*'
-    return 'pydoc'
-  elseif l:cmd =~# '\v\C^[Rr](uby|i)[0-9.]*'
-    return 'ri'
-  elseif l:cmd =~# '\v\C^perl(doc)?'
-    return 'perldoc'
-  elseif l:cmd =~# '\C^git'
-    return 'git'
-  endif
-  return 'none'
 endfunction
 
 " Remove ansi escape sequences from the current buffer.
