@@ -64,6 +64,7 @@ fi
 
 RUNTIME=${0%/*}
 export RUNTIME
+export PPID
 
 if [[ ! -r "$rc" ]]; then
   rc=NORC
