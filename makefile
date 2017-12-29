@@ -16,11 +16,14 @@ PLUGIN_FILES = \
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#^version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
 
-install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES)
+install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 	install -D nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
 	install -D --target-directory=$(DESTDIR)$(RUNTIME)/autoload $(AUTOLOAD_FILES)
 	install -D --target-directory=$(DESTDIR)$(RUNTIME)/plugin $(PLUGIN_FILES)
+	install -D --target-directory=$(DESTDIR)$(PREFIX)/share/man/man1 nvimpager.1
 
+nvimpager.1: nvimpager.md
+	pandoc --to man < $< > $@
 AnsiEsc.vba:
 	curl http://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \
 	  gunzip > $@
@@ -40,7 +43,7 @@ test:
 
 cleanall: clean clean-ansiesc
 clean:
-	$(RM) nvimpager.configured
+	$(RM) nvimpager.configured nvimpager.1
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
 .PHONY: cleanall clean clean-ansiesc test
