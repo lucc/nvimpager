@@ -705,6 +705,9 @@ function nvimpager.stage1()
   -- Define autocmd group for nvimpager.
   nvim.nvim_command('augroup NvimPager')
   nvim.nvim_command('  autocmd!')
+  if os.getenv('TMPFILE') then
+    nvim.nvim_command('autocmd VimLeave * call delete($TMPFILE)')
+  end
   nvim.nvim_command('augroup END')
   doc = detect_parent_process()
   if doc == 'git' then

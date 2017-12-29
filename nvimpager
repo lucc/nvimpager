@@ -5,8 +5,10 @@
 
 RUNTIME=${BASH_SOURCE%/*}
 PARENT=$PPID
+TMPFILE=
 export RUNTIME
 export PARENT
+export TMPFILE
 
 name=nvimpager
 mode=auto
@@ -83,8 +85,7 @@ while [[ $# -gt 0 ]]; do
     files+=("$1")
     shift
   elif [[ $1 = - ]]; then
-    stdin=$(mktemp)
-    files+=("$stdin")
+    TMPFILE=$(mktemp)
     shift
   else
     if [[ $mode = auto ]]; then
@@ -96,14 +97,14 @@ done
 
 # If we did not get any file arguments and stdin is not a terminal, read stdin
 # into a temp file.
-if [[ $stdin = false && ${#files[@]} -eq 0 && ! -t 0 ]]; then
-  stdin=$(mktemp)
-  files+=("$stdin")
+if [[ -z $TMPFILE && ${#files[@]} -eq 0 && ! -t 0 ]]; then
+  TMPFILE=$(mktemp)
 fi
-if [[ $stdin != false ]]; then
+if [[ $TMPFILE ]]; then
   # Bash runs the EXIT trap also when exiting due to signals.
-  trap 'rm -f "$stdin"' EXIT
-  cat > "$stdin"
+  trap 'rm -f "$TMPFILE"' EXIT
+  cat > "$TMPFILE"
+  files=("$TMPFILE")
 fi
 
 # these come before all user supplied -c and --cmd arguments
@@ -124,4 +125,4 @@ if [[ $mode = cat || \
 then
   args1+=(--headless)
 fi
-$nvim "${args1[@]}" "${files[@]}" "$@" "${args2[@]}"
+exec $nvim "${args1[@]}" "${files[@]}" "$@" "${args2[@]}"
