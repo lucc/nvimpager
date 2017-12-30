@@ -89,13 +89,10 @@ function! s:detect_file_type() abort
     endif
   else
     if l:doc ==# 'git'
+      " Use nvim's syntax highlighting for git buffers instead of git's
+      " internal highlighting.
       call s:strip_ansi_escape_sequences_from_current_buffer()
-    elseif l:doc ==# 'pydoc'
-      call s:strip_overstike_from_current_buffer()
-      let l:doc = 'man'
-    elseif l:doc ==# 'perldoc'
-      call s:strip_ansi_escape_sequences_from_current_buffer()
-      call s:strip_overstike_from_current_buffer()
+    elseif l:doc ==# 'pydoc' || l:doc ==# 'perldoc'
       let l:doc = 'man'
     endif
     execute 'setfiletype ' l:doc
@@ -180,16 +177,6 @@ function! s:strip_ansi_escape_sequences_from_current_buffer() abort
   let l:position = getpos('.')
   set modifiable
   keepjumps silent %substitute/\v\e\[[;?]*[0-9.;]*[a-z]//egi
-  call setpos('.', l:position)
-  let &modifiable = l:mod
-endfunction
-
-" Remove "overstrike" (like used in man pages) from current buffer.
-function! s:strip_overstike_from_current_buffer() abort
-  let l:mod = &modifiable
-  let l:position = getpos('.')
-  set modifiable
-  keepjumps silent %substitute/\v.\b//eg
   call setpos('.', l:position)
   let &modifiable = l:mod
 endfunction
