@@ -54,7 +54,7 @@ function! s:detect_file_type() abort
     if l:doc ==# 'git'
       " Use nvim's syntax highlighting for git buffers instead of git's
       " internal highlighting.
-      call s:strip_ansi_escape_sequences_from_current_buffer()
+      lua nvimpager.strip_ansi_escape_sequences_from_current_buffer()
     elseif l:doc ==# 'pydoc' || l:doc ==# 'perldoc'
       let l:doc = 'man'
     endif
@@ -92,16 +92,6 @@ endfunction
 " Display some help text about mappings.
 function! s:help() abort
   " TODO
-endfunction
-
-" Remove ansi escape sequences from the current buffer.
-function! s:strip_ansi_escape_sequences_from_current_buffer() abort
-  let l:mod = &modifiable
-  let l:position = getpos('.')
-  set modifiable
-  keepjumps silent %substitute/\v\e\[[;?]*[0-9.;]*[a-z]//egi
-  call setpos('.', l:position)
-  let &modifiable = l:mod
 endfunction
 
 " Check if the begining of the current buffer contains ansi escape sequences.
