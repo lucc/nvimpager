@@ -241,11 +241,32 @@ local function detect_doc_viewer_from_ppid()
   return 'none'
 end
 
+-- Search the begining of the current buffer to detect if it contains a man
+-- page.
+local function detect_man_page_in_current_buffer()
+  -- Only check the first twelve lines (for speed).
+  for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 12, false)) do
+    -- Check if the line contains the string "NAME" or "NAME" with every
+    -- character overwritten by itself.
+    -- An earlier version of this code did also check if there are whitespace
+    -- characters at the end of the line.  I could not find a man pager where
+    -- this was the case.
+    -- FIXME This only works for man pages in languages where "NAME" is used
+    -- as the headline.  Some (not all!) German man pages use "BBEZEICHNUNG"
+    -- instead.
+    if line == 'NAME' or line == 'N\bNA\bAM\bME\bE' then
+      return true
+    end
+  end
+  return false
+end
+
 return {
   cat_mode = cat_mode,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
   detect_doc_viewer_from_ppid = detect_doc_viewer_from_ppid,
+  detect_man_page_in_current_buffer = detect_man_page_in_current_buffer,
   fix_runtime_path = fix_runtime_path,
   group2ansi = group2ansi,
   highlight = highlight,

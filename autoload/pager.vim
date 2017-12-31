@@ -47,7 +47,7 @@ endfunction
 function! s:detect_file_type() abort
   let l:doc = luaeval('nvimpager.detect_doc_viewer_from_ppid()')
   if l:doc ==# 'none'
-    if s:detect_man_page_in_current_buffer()
+    if luaeval('nvimpager.detect_man_page_in_current_buffer()')
       setfiletype man
     endif
   else
@@ -92,17 +92,6 @@ endfunction
 " Display some help text about mappings.
 function! s:help() abort
   " TODO
-endfunction
-
-" Search the begining of the current buffer to detect if it contains a man
-" page.
-function! s:detect_man_page_in_current_buffer() abort
-  let l:pattern = '\v\C^N(\b.)?A(\b.)?M(\b.)?E(\b.)?[ \t]*$'
-  let l:pos = getpos('.')
-  keepjumps call cursor(1, 1)
-  let l:match = search(l:pattern, 'cnW', 12, 100)
-  keepjumps call cursor(l:pos)
-  return l:match != 0
 endfunction
 
 " Remove ansi escape sequences from the current buffer.
