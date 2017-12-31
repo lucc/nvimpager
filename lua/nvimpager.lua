@@ -228,7 +228,8 @@ local function detect_doc_viewer_from_ppid()
   local command = proc.name
   if command:find('^man') ~= nil then
     return 'man'
-  elseif command:find('^[Pp]y(thon|doc)?[0-9.]*') ~= nil then
+  elseif command:find('^[Pp]ython[0-9.]*') ~= nil or
+	 command:find('^[Pp]ydoc[0-9.]*') ~= nil then
     return 'pydoc'
   elseif command:find('^[Rr](uby|i)[0-9.]*') ~= nil then
     return 'ri'
