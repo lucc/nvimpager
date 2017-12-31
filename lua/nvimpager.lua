@@ -226,16 +226,16 @@ local function detect_doc_viewer_from_ppid()
   local proc = nvim.nvim_get_proc(tonumber(ppid))
   if proc == nil then return 'none' end
   local command = proc.name
-  if command:find('^man') ~= nil then
+  if command == 'man' then
     return 'man'
   elseif command:find('^[Pp]ython[0-9.]*') ~= nil or
 	 command:find('^[Pp]ydoc[0-9.]*') ~= nil then
     return 'pydoc'
-  elseif command:find('^[Rr](uby|i)[0-9.]*') ~= nil then
+  elseif command == 'ruby' or command == 'ri' then
     return 'ri'
-  elseif command:find('^perl(doc)?') ~= nil then
+  elseif command == 'perl' or command == 'perldoc' then
     return 'perldoc'
-  elseif command:find('^git') ~= nil then
+  elseif command == 'git' then
     return 'git'
   end
   return 'none'
