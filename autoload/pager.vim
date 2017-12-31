@@ -20,7 +20,7 @@ function! pager#prepare_pager() abort
   call s:detect_file_type()
   call s:set_options()
   call s:set_maps()
-  autocmd NvimPager BufWinEnter * call s:pager()
+  autocmd NvimPager BufWinEnter,VimEnter * call s:pager()
 endfunction
 
 " Set up an VimEnter autocmd to print the files to stdout with highlighting.
