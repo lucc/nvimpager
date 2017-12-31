@@ -110,6 +110,17 @@ local function init_cat_mode()
   end
 end
 
+-- Check if the begining of the current buffer contains ansi escape sequences.
+local function check_escape_sequences()
+  local filetype = nvim.nvim_buf_get_option(0, 'filetype')
+  if filetype == '' or filetype == 'text' then
+    for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 100, false)) do
+      if line:find('\x1b%[[;?]*[0-9.;]*[A-Za-z]') ~= nil then return true end
+    end
+  end
+  return false
+end
+
 -- Iterate through the current buffer and print it to stdout with terminal
 -- color codes for highlighting.
 local function highlight()
@@ -119,7 +130,7 @@ local function highlight()
   if nvim.nvim_buf_line_count(0) == 1 and
     nvim.nvim_call_function("line2byte", {2}) == -1 then
     return
-  elseif nvim.nvim_call_function('pager#check_escape_sequences', {}) == 1 then
+  elseif check_escape_sequences() then
     for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
       io.write(line, '\n')
     end
@@ -273,6 +284,7 @@ end
 
 return {
   cat_mode = cat_mode,
+  check_escape_sequences = check_escape_sequences,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
   detect_doc_viewer_from_ppid = detect_doc_viewer_from_ppid,
