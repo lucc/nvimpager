@@ -282,12 +282,37 @@ local function strip_ansi_escape_sequences_from_current_buffer()
   nvim.nvim_buf_set_option(0, "modifiable", modifiable)
 end
 
+-- Detect possible filetypes for the current buffer by looking at the pstree or
+-- ansi escape sequences or manpage sequences in the current buffer.
+local function detect_filetype()
+  local doc = detect_doc_viewer_from_ppid()
+  if doc == 'none' then
+    if detect_man_page_in_current_buffer() then
+      -- FIXME: Why does this need to be the command?  Why doesn't this work:
+      --nvim.nvim_buf_set_option(0, 'filetype', 'man')
+      nvim.nvim_command('setfiletype man')
+    end
+  else
+    if doc == 'git' then
+      -- Use nvim's syntax highlighting for git buffers instead of git's
+      -- internal highlighting.
+      strip_ansi_escape_sequences_from_current_buffer()
+    elseif doc == 'pydoc' or doc == 'perldoc' then
+      doc = 'man'
+    end
+    -- FIXME: Why does this need to be the command?  Why doesn't this work:
+    --nvim.nvim_buf_set_option(0, 'filetype', doc)
+    nvim.nvim_command('setfiletype '..doc)
+  end
+end
+
 return {
   cat_mode = cat_mode,
   check_escape_sequences = check_escape_sequences,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
   detect_doc_viewer_from_ppid = detect_doc_viewer_from_ppid,
+  detect_filetype = detect_filetype,
   detect_man_page_in_current_buffer = detect_man_page_in_current_buffer,
   fix_runtime_path = fix_runtime_path,
   group2ansi = group2ansi,

@@ -19,7 +19,7 @@ endfunction
 
 " Setup function for pager mode.  Called from -c.
 function! pager#prepare_pager() abort
-  call s:detect_file_type()
+  lua nvimpager.detect_filetype()
   call s:set_options()
   call s:set_maps()
   autocmd NvimPager BufWinEnter,VimEnter * call s:pager()
@@ -28,7 +28,7 @@ endfunction
 " Set up an VimEnter autocmd to print the files to stdout with highlighting.
 " Should be called from -c.
 function! pager#prepare_cat() abort
-  call s:detect_file_type()
+  lua nvimpager.detect_filetype()
   autocmd NvimPager VimEnter * lua require('nvimpager').cat_mode()
 endfunction
 
@@ -40,26 +40,6 @@ function! s:pager() abort
   endif
   set nomodifiable
   set nomodified
-endfunction
-
-" Detect possible filetypes for the current buffer by looking at the parent
-" process or ansi escape sequences or manpage sequences in the current buffer.
-function! s:detect_file_type() abort
-  let l:doc = luaeval('nvimpager.detect_doc_viewer_from_ppid()')
-  if l:doc ==# 'none'
-    if luaeval('nvimpager.detect_man_page_in_current_buffer()')
-      setfiletype man
-    endif
-  else
-    if l:doc ==# 'git'
-      " Use nvim's syntax highlighting for git buffers instead of git's
-      " internal highlighting.
-      lua nvimpager.strip_ansi_escape_sequences_from_current_buffer()
-    elseif l:doc ==# 'pydoc' || l:doc ==# 'perldoc'
-      let l:doc = 'man'
-    endif
-    execute 'setfiletype ' l:doc
-  endif
 endfunction
 
 " Set some global options for interactive paging of files.
