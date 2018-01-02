@@ -359,6 +359,20 @@ local function prepare_pager()
   nvim.nvim_command('autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()')
 end
 
+-- Setup function to be called from --cmd.  Some early options for both pager
+-- and cat mode are set here.
+local function start()
+  fix_runtime_path()
+  -- Don't remember file names and positions
+  nvim.nvim_set_option('shada', '')
+  -- prevent messages when opening files (especially for the cat version)
+  nvim.nvim_set_option('shortmess', nvim.nvim_get_option('shortmess')..'F')
+  -- Define autocmd group for nvimpager.
+  nvim.nvim_command('augroup NvimPager')
+  nvim.nvim_command('  autocmd!')
+  nvim.nvim_command('augroup END')
+end
+
 return {
   cat_mode = cat_mode,
   check_escape_sequences = check_escape_sequences,
@@ -378,5 +392,6 @@ return {
   set_maps = set_maps,
   set_options = set_options,
   split_rgb_number = split_rgb_number,
+  start = start,
   strip_ansi_escape_sequences_from_current_buffer = strip_ansi_escape_sequences_from_current_buffer,
 }

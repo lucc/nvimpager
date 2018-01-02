@@ -211,9 +211,13 @@ end)
 
 describe("backend:", function()
   it("runtimepath doesn't include nvim's user dirs", function()
-    local cmd = [[RUNTIME=special-test-value nvim --headless --cmd '
+    local cmd = [[RUNTIME=special-test-value nvim --headless ]]..
+    -- We have to end the --cmd after the lua command as it will eat the next
+    -- lines otherwise.
+    [[--cmd '
       set runtimepath+=.
-      call pager#start()
+      lua require("nvimpager").start()' ]]..
+    [[--cmd '
       let rtp = nvim_list_runtime_paths()
       echo index(rtp, $RUNTIME) == -1
       echo index(rtp, stdpath("config")) != -1
