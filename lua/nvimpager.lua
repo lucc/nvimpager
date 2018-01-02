@@ -340,6 +340,14 @@ local function pager()
   nvim.nvim_buf_set_option(0, 'modified', false)
 end
 
+-- Setup function for pager mode.  Called from -c.
+local function prepare_pager()
+  detect_filetype()
+  set_options()
+  set_maps()
+  nvim.nvim_command('autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()')
+end
+
 return {
   cat_mode = cat_mode,
   check_escape_sequences = check_escape_sequences,
@@ -354,6 +362,7 @@ return {
   init_cat_mode = init_cat_mode,
   join = join,
   pager = pager,
+  prepare_pager = prepare_pager,
   replace_prefix = replace_prefix,
   set_maps = set_maps,
   set_options = set_options,

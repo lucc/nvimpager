@@ -101,6 +101,6 @@ if [[ $mode = cat || \
 then
   default_args+=(--headless -c 'call pager#prepare_cat()')
 else
-  default_args+=(-c 'call pager#prepare_pager()')
+  default_args+=(-c 'lua nvimpager.prepare_pager()')
 fi
 nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty

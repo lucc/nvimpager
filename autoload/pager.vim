@@ -17,14 +17,6 @@ function! pager#start() abort
   set shortmess+=F
 endfunction
 
-" Setup function for pager mode.  Called from -c.
-function! pager#prepare_pager() abort
-  lua nvimpager.detect_filetype()
-  lua nvimpager.set_options()
-  lua nvimpager.set_maps()
-  autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()
-endfunction
-
 " Set up an VimEnter autocmd to print the files to stdout with highlighting.
 " Should be called from -c.
 function! pager#prepare_cat() abort
