@@ -320,6 +320,16 @@ local function set_options()
   nvim.nvim_set_option('laststatus', 0)
 end
 
+-- Set up mappings to make nvim behave a little more like a pager.
+local function set_maps()
+  nvim.nvim_command('nnoremap q :quitall!<CR>')
+  nvim.nvim_command('nnoremap <Space> <PageDown>')
+  nvim.nvim_command('nnoremap <S-Space> <PageUp>')
+  nvim.nvim_command('nnoremap g gg')
+  nvim.nvim_command('nnoremap <Up> <C-Y>')
+  nvim.nvim_command('nnoremap <Down> <C-E>')
+end
+
 return {
   cat_mode = cat_mode,
   check_escape_sequences = check_escape_sequences,
@@ -334,6 +344,7 @@ return {
   init_cat_mode = init_cat_mode,
   join = join,
   replace_prefix = replace_prefix,
+  set_maps = set_maps,
   set_options = set_options,
   split_rgb_number = split_rgb_number,
   strip_ansi_escape_sequences_from_current_buffer = strip_ansi_escape_sequences_from_current_buffer,

@@ -21,7 +21,7 @@ endfunction
 function! pager#prepare_pager() abort
   lua nvimpager.detect_filetype()
   lua nvimpager.set_options()
-  call s:set_maps()
+  lua nvimpager.set_maps()
   autocmd NvimPager BufWinEnter,VimEnter * call s:pager()
 endfunction
 
@@ -40,16 +40,6 @@ function! s:pager() abort
   endif
   set nomodifiable
   set nomodified
-endfunction
-
-" Set up mappings to make nvim behave a little more like a pager.
-function! s:set_maps() abort
-  nnoremap q :quitall!<CR>
-  nnoremap <Space> <PageDown>
-  nnoremap <S-Space> <PageUp>
-  nnoremap g gg
-  nnoremap <Up> <C-Y>
-  nnoremap <Down> <C-E>
 endfunction
 
 " Unset all mappings set in s:set_maps().
