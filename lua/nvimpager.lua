@@ -330,6 +330,16 @@ local function set_maps()
   nvim.nvim_command('nnoremap <Down> <C-E>')
 end
 
+-- Setup function for the VimEnter autocmd.
+local function pager()
+  if check_escape_sequences() then
+    -- Try to highlight ansi escape sequences with the AnsiEsc plugin.
+    nvim.nvim_command('AnsiEsc')
+  end
+  nvim.nvim_buf_set_option(0, 'modifiable', false)
+  nvim.nvim_buf_set_option(0, 'modified', false)
+end
+
 return {
   cat_mode = cat_mode,
   check_escape_sequences = check_escape_sequences,
@@ -343,6 +353,7 @@ return {
   highlight = highlight,
   init_cat_mode = init_cat_mode,
   join = join,
+  pager = pager,
   replace_prefix = replace_prefix,
   set_maps = set_maps,
   set_options = set_options,

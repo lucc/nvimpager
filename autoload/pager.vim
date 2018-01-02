@@ -22,7 +22,7 @@ function! pager#prepare_pager() abort
   lua nvimpager.detect_filetype()
   lua nvimpager.set_options()
   lua nvimpager.set_maps()
-  autocmd NvimPager BufWinEnter,VimEnter * call s:pager()
+  autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()
 endfunction
 
 " Set up an VimEnter autocmd to print the files to stdout with highlighting.
@@ -30,16 +30,6 @@ endfunction
 function! pager#prepare_cat() abort
   lua nvimpager.detect_filetype()
   autocmd NvimPager VimEnter * lua require('nvimpager').cat_mode()
-endfunction
-
-" Setup function for the VimEnter autocmd.
-function! s:pager() abort
-  if luaeval('nvimpager.check_escape_sequences()')
-    " Try to highlight ansi escape sequences with the AnsiEsc plugin.
-    AnsiEsc
-  endif
-  set nomodifiable
-  set nomodified
 endfunction
 
 " Unset all mappings set in s:set_maps().
