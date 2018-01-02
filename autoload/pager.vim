@@ -20,7 +20,7 @@ endfunction
 " Setup function for pager mode.  Called from -c.
 function! pager#prepare_pager() abort
   lua nvimpager.detect_filetype()
-  call s:set_options()
+  lua nvimpager.set_options()
   call s:set_maps()
   autocmd NvimPager BufWinEnter,VimEnter * call s:pager()
 endfunction
@@ -40,13 +40,6 @@ function! s:pager() abort
   endif
   set nomodifiable
   set nomodified
-endfunction
-
-" Set some global options for interactive paging of files.
-function! s:set_options() abort
-  set mouse=a
-  " Inhibit screen updates while searching
-  set laststatus=0
 endfunction
 
 " Set up mappings to make nvim behave a little more like a pager.
