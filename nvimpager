@@ -108,4 +108,4 @@ then
 else
   default_args+=(-c 'call pager#prepare_pager()')
 fi
-nvim "${default_args[@]}" "${files[@]}" "$@"
+nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty
