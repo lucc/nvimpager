@@ -8,13 +8,13 @@ setup () {
 
 @test "display a small file with syntax highlighting to stdout" {
   run ./nvimpager -c test/fixtures/makefile
-  run diff <(echo "$output") test/fixtures/makefile.ansi
+  diff <(echo "$output") test/fixtures/makefile.ansi
   status_ok
 }
 
 @test "ansi escape sequences are returned unchanged" {
   run ./nvimpager -c < test/fixtures/makefile.ansi
-  run diff <(echo "$output") test/fixtures/makefile.ansi
+  diff <(echo "$output") test/fixtures/makefile.ansi
   status_ok
 }
 
@@ -46,4 +46,16 @@ setup () {
   shopt -u expand_aliases
   # $mode might still be auto so we check the generated command line.
   ! in_array --headless "${default_args[@]}"
+}
+
+@test "hidden concoeal characters" {
+  run ./nvimpager -c test/fixtures/help.txt
+  diff <(echo "$output") test/fixtures/help.txt.ansi
+  status_ok
+}
+
+@test "conceal replacements" {
+  run ./nvimpager -c test/fixtures/conceal.tex --cmd "let g:tex_flavor='latex'"
+  diff <(echo "$output") test/fixtures/conceal.tex.ansi
+  status_ok
 }
