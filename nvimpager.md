@@ -26,11 +26,12 @@ neovim available in the pager, possibly including plugins!
 
 # OPTIONS
 
-Neovim itself interprets only very few options but all neovim options can also
-be specified.  If options to neovim are specified before the first file name
-they must be preceded by "--" to prevent neovim from trying to interpret them.
+Nvimpager itself interprets only very few options but all neovim options can
+also be specified.  If options to neovim are specified before the first file
+name they must be preceded by "--" to prevent nvimpager from trying to
+interpret them.
 
-The following options are interpreted by neovim itself:
+The following options are interpreted by nvimpager itself:
 
 *-a* run in "auto mode" (default)
 
@@ -49,7 +50,7 @@ Like neovim itself nvimpager will honour `$XDG_CONFIG_HOME` and
 The main config directory is `$XDG_CONFIG_HOME/nvimpager` and the main user
 config file is `$XDG_CONFIG_HOME/nvimpager/init.vim`.
 
-The `&runtimepath` is configured like for neovim
+The rest of the `&runtimepath` is configured like for neovim.
 
 # EXAMPLES
 
