@@ -11,11 +11,9 @@ nvimpager - using neovim as a pager
 
 # SYNOPSIS
 
-```sh
-nvimpager [-acp] [-u file] [--] [nvim options and files]
-nvimpager -h
-nvimpager -v
-```
+**nvimpager** [*-acp*] [*-u file*] [\--] [nvim options and files] \
+**nvimpager** *-h* \
+**nvimpager** *-v*
 
 # DESCRIPTION
 
@@ -28,7 +26,7 @@ neovim available in the pager, possibly including plugins!
 
 Nvimpager itself interprets only very few options but all neovim options can
 also be specified.  If options to neovim are specified before the first file
-name they must be preceded by "--" to prevent nvimpager from trying to
+name they must be preceded by "\--" to prevent nvimpager from trying to
 interpret them.
 
 The following options are interpreted by nvimpager itself:
