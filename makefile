@@ -22,8 +22,13 @@ install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 	install -D --target-directory=$(DESTDIR)$(RUNTIME)/plugin $(PLUGIN_FILES)
 	install -D --target-directory=$(DESTDIR)$(PREFIX)/share/man/man1 nvimpager.1
 
-nvimpager.1: nvimpager.md
-	pandoc --standalone --to man $< --output $@
+metadata.yaml:
+	echo "---" > $@
+	echo "footer: Version $(VERSION)" >> $@
+	echo "date: $$(date --date @$$(git log -1 --format=format:%at) +%F)" >> $@
+	echo "..." >> $@
+nvimpager.1: nvimpager.md metadata.yaml
+	pandoc --standalone --to man --output $@ $^
 AnsiEsc.vba:
 	curl http://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \
 	  gunzip > $@
@@ -43,7 +48,7 @@ test:
 
 cleanall: clean clean-ansiesc
 clean:
-	$(RM) nvimpager.configured nvimpager.1
+	$(RM) nvimpager.configured nvimpager.1 metadata.yaml
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
 .PHONY: cleanall clean clean-ansiesc test

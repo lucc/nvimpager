@@ -2,8 +2,6 @@
 title: NVIMPAGER
 section: 1
 author: Lucas Hoffmann
-date: 2018-06-12
-footer: Version 0.3
 header: General Commands Manual
 ...
 
