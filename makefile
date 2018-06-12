@@ -23,7 +23,7 @@ install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 	install -D --target-directory=$(DESTDIR)$(PREFIX)/share/man/man1 nvimpager.1
 
 nvimpager.1: nvimpager.md
-	pandoc --to man < $< > $@
+	pandoc --standalone --to man < $< > $@
 AnsiEsc.vba:
 	curl http://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \
 	  gunzip > $@
