@@ -71,7 +71,6 @@ with `make test`.
 
 #### TODO List
 
-* write a man page (or vim help file)
 * show a short message in the cmdline like less and vimpager do (file and help
   information)
 * see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) is
