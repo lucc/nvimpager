@@ -45,6 +45,7 @@ user config file is `~/.config/nvimpager/init.vim`.
 * a [POSIX compatible][ps] ps implementation
 * ([curl] during installation)
 * ([bats] for running the tests)
+* ([pandoc] to build the man page)
 
 ### Installation instructions
 
@@ -96,3 +97,4 @@ The project is licensed under a BSD-2-clause license.  See the
 [curl]: https://curl.haxx.se
 [ps]: http://pubs.opengroup.org/onlinepubs/009695399/utilities/ps.html
 [bats]: https://github.com/sstephenson/bats
+[pandoc]: http://pandoc.org/
