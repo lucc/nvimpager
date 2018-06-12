@@ -11,7 +11,7 @@ nvimpager - using neovim as a pager
 
 # SYNOPSIS
 
-    nvimpager [-acp] [--] [nvim options and files]
+    nvimpager [-acp] [-u file] [--] [nvim options and files]
     nvimpager -h
     nvimpager -v
 
