@@ -12,6 +12,12 @@ setup () {
   status_ok
 }
 
+@test "ansi escape sequences are returned unchanged" {
+  run ./nvimpager -c < test/fixtures/makefile.ansi
+  run diff <(echo "$output") test/fixtures/makefile.ansi
+  status_ok
+}
+
 @test "auto mode selects cat mode for small files" {
   # Use aliases to mock nvim in the sourced nvimpager script.
   shopt -s expand_aliases
