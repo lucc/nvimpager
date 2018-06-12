@@ -31,25 +31,31 @@ interpret them.
 
 The following options are interpreted by nvimpager itself:
 
-*-a* run in "auto mode" (default).  Auto mode will detect the terminal size and
+-a
+: run in "auto mode" (default).  Auto mode will detect the terminal size and
 switch to pager mode if the content to display would not fit on one screen.  If
-the content will fit on one screen it will switch to cat mode.
-This overrides any previous *-c* and *-p* options.
+the content will fit on one screen it will switch to cat mode. This overrides
+any previous *-c* and *-p* options.
 
-*-c* run in "cat mode".  Do not start the neovim TUI, only use neovim for
-syntax highlighting and print the result to stdout.
-This overrides any previous *-a* and *-p* options.
+-c
+: run in "cat mode".  Do not start the neovim TUI, only use neovim for syntax
+highlighting and print the result to stdout. This overrides any previous *-a*
+and *-p* options.
 
-*-h* show the help screen and exit
+-h
+: show the help screen and exit
 
-*-p* run in "pager mode".  Start the neovim TUI to display the given content.
-This overrides any previous *-a* and *-c* options.
+-p
+: run in "pager mode".  Start the neovim TUI to display the given content. This
+overrides any previous *-a* and *-c* options.
 
-*-u file* use the given file as the init.vim file.  Like for *nvim*(1) itself the
+-u file
+: use the given file as the init.vim file.  Like for *nvim*(1) itself the
 strings "NONE" and "NORC" can be used (the value will be passed to *nvim*(1)
 with the *-u* option in turn).
 
-*-v* show version information and exit
+-v
+: show version information and exit
 
 # CONFIGURATION
 
