@@ -44,6 +44,7 @@ user config file is `~/.config/nvimpager/init.vim`.
 * [bash]
 * a [POSIX compatible][ps] ps implementation
 * ([curl] during installation)
+* ([bats] for running the tests)
 
 ### Installation instructions
 
@@ -58,7 +59,8 @@ make PREFIX=$HOME/.local install
 ### Development
 
 Nvimpager is developed on [Github][nvimpager] where you are very much invited
-to [post][issues] bug reports, feature or pull requests!
+to [post][issues] bug reports, feature or pull requests!  The test can be run
+with `make test`.
 
 ### Known Bugs (and non features)
 
@@ -93,3 +95,4 @@ The project is licensed under a BSD-2-clause license.  See the
 [bash]: http://www.gnu.org/software/bash/bash.html
 [curl]: https://curl.haxx.se
 [ps]: http://pubs.opengroup.org/onlinepubs/009695399/utilities/ps.html
+[bats]: https://github.com/sstephenson/bats
