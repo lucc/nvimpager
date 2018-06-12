@@ -1,3 +1,12 @@
+---
+title: NVIMPAGER
+section: 1
+author: Lucas Hoffmann
+date: 2018-06-12
+footer: Version 0.3
+header: General Commands Manual
+...
+
 # NAME
 
 nvimpager - using neovim as a pager
@@ -43,8 +52,6 @@ config file is `$XDG_CONFIG_HOME/nvimpager/init.vim`.
 The `&runtimepath` is configured like for neovim
 
 # EXAMPLES
-
-# AUTHORS
 
 # SEE ALSO
 
