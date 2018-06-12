@@ -11,9 +11,11 @@ nvimpager - using neovim as a pager
 
 # SYNOPSIS
 
-    nvimpager [-acp] [-u file] [--] [nvim options and files]
-    nvimpager -h
-    nvimpager -v
+```sh
+nvimpager [-acp] [-u file] [--] [nvim options and files]
+nvimpager -h
+nvimpager -v
+```
 
 # DESCRIPTION
 
@@ -65,17 +67,23 @@ The rest of the `&runtimepath` is configured like for neovim.
 To use nvimpager to view a file (with neovim's syntax highlighting if the
 filetype is detected):
 
-    nvimpager file
+```sh
+nvimpager file
+```
 
 Pipe text into nvimpager to view it:
 
-    echo text | nvimpager
+```sh
+echo text | nvimpager
+```
 
 Use nvimpager as your default \$PAGER to view man pages or git diffs:
 
-    export PAGER=nvimpager
-    man nvimpager
-    git diff
+```sh
+export PAGER=nvimpager
+man nvimpager
+git diff
+```
 
 # SEE ALSO
 
