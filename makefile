@@ -35,9 +35,12 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 	# Remove setting of 'hl', not supported in NeoVim.
 	sed -i '/hl=/d' autoload/AnsiEsc.vim
 
+test:
+	@bats test
+
 cleanall: clean clean-ansiesc
 clean:
 	$(RM) nvimpager.configured
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
-.PHONY: cleanall clean clean-ansiesc
+.PHONY: cleanall clean clean-ansiesc test
