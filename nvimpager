@@ -4,7 +4,7 @@
 # Licenced under a BSD-2-clause licence.  See the LICENSE file.
 
 name=nvimpager
-version=0.3
+version=0.4
 mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 
