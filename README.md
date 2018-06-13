@@ -40,7 +40,7 @@ user config file is `~/.config/nvimpager/init.vim`.
 
 ### Dependencies
 
-* [neovim]
+* [neovim] ≥ v0.3.0
 * [bash]
 * a [POSIX compatible][ps] ps implementation
 * ([curl] during installation)

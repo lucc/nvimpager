@@ -57,12 +57,10 @@ function! s:fix_runtimepath() abort
   let runtimepath = nvim_list_runtime_paths()
   " Don't modify our custom entry!
   let runtimepath = filter(runtimepath, { item -> item != $RUNTIME })
-  let original = (empty($XDG_CONFIG_HOME) ? $HOME.'/.config' : $XDG_CONFIG_HOME).'/nvim'
-  let new = original.'pager'
-  call s:replace_prefix_in_string_list(runtimepath, original, new)
-  let original = (empty($XDG_DATA_HOME) ? $HOME.'/.local/share' : $XDG_DATA_HOME).'/nvim'
-  let new = original.'pager'
-  call s:replace_prefix_in_string_list(runtimepath, original, new)
+  for original in [stdpath('config'), stdpath('data')]
+    let new = original.'pager'
+    call s:replace_prefix_in_string_list(runtimepath, original, new)
+  endfor
   call insert(runtimepath, $RUNTIME)
   let &runtimepath = join(runtimepath, ',')
   let $NVIM_RPLUGIN_MANIFEST = new . '/rplugin.vim'
