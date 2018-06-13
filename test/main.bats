@@ -3,7 +3,8 @@
 load helpers
 
 setup () {
-  export XDG_CONFIG_HOME=$BATS_TMPDIR
+  export XDG_CONFIG_HOME=$BATS_TMPDIR/config
+  export XDG_DATA_HOME=$BATS_TMPDIR/data
 }
 
 @test "display a small file with syntax highlighting to stdout" {
@@ -48,4 +49,24 @@ setup () {
   run ./nvimpager -c test/fixtures/conceal.tex --cmd "let g:tex_flavor='latex'"
   diff <(echo "$output") test/fixtures/conceal.tex.ansi
   status_ok
+}
+
+@test "runtimepath doesn't include nvim's user dirs" {
+  run ./nvimpager -c -- README.md \
+    -c 'for item in nvim_list_runtime_paths() | echo item | endfor' -c quit
+  #status_ok
+  diff <(echo "$output" | tr -d '\r') - <<-EOF
+	.
+	$XDG_CONFIG_HOME/nvimpager
+	/etc/xdg/nvim
+	$XDG_DATA_HOME/nvimpager/site
+	/usr/local/share/nvim/site
+	/usr/share/nvim/site
+	/usr/share/nvim/runtime
+	/usr/share/nvim/site/after
+	/usr/local/share/nvim/site/after
+	$XDG_DATA_HOME/nvimpager/site/after
+	/etc/xdg/nvim/after
+	$XDG_CONFIG_HOME/nvimpager/after
+	EOF
 }
