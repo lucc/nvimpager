@@ -16,11 +16,19 @@ PLUGIN_FILES = \
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#^version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
 
-install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES)
+install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 	install -D nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
 	install -D --target-directory=$(DESTDIR)$(RUNTIME)/autoload $(AUTOLOAD_FILES)
 	install -D --target-directory=$(DESTDIR)$(RUNTIME)/plugin $(PLUGIN_FILES)
+	install -D --target-directory=$(DESTDIR)$(PREFIX)/share/man/man1 nvimpager.1
 
+metadata.yaml:
+	echo "---" > $@
+	echo "footer: Version $(VERSION)" >> $@
+	echo "date: $$(date --date @$$(git log -1 --format=format:%at) +%F)" >> $@
+	echo "..." >> $@
+nvimpager.1: nvimpager.md metadata.yaml
+	pandoc --standalone --to man --output $@ $^
 AnsiEsc.vba:
 	curl http://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \
 	  gunzip > $@
@@ -28,14 +36,19 @@ AnsiEsc.vba:
 $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 	nvim -u NONE --headless \
 	  --cmd 'set rtp^=.' \
-	  --cmd 'set rtp+=/usr/share/nvim/runtime/pack/dist/opt/vimball' \
+	  --cmd 'packadd vimball' \
 	  --cmd 'runtime plugin/vimballPlugin.vim' \
 	  -S AnsiEsc.vba \
 	  -c quitall!
+	# Remove setting of 'hl', not supported in NeoVim.
+	sed -i '/hl=/d' autoload/AnsiEsc.vim
+
+test:
+	@bats test
 
 cleanall: clean clean-ansiesc
 clean:
-	$(RM) nvimpager.configured
+	$(RM) nvimpager.configured nvimpager.1 metadata.yaml
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
-.PHONY: cleanall clean clean-ansiesc
+.PHONY: cleanall clean clean-ansiesc test

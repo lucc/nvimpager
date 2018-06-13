@@ -5,7 +5,7 @@ augroup NvimPager
   autocmd!
 augroup END
 
-" Setup function to ba called from --cmd.  Some early options for both pager
+" Setup function to be called from --cmd.  Some early options for both pager
 " and cat mode are set here.
 function! pager#start() abort
   call s:fix_runtimepath()
@@ -20,7 +20,7 @@ function! pager#prepare_pager() abort
   call s:detect_file_type()
   call s:set_options()
   call s:set_maps()
-  autocmd NvimPager VimEnter * call s:pager()
+  autocmd NvimPager BufWinEnter,VimEnter * call s:pager()
 endfunction
 
 " Set up an VimEnter autocmd to print the files to stdout with highlighting.
@@ -89,20 +89,17 @@ function! s:detect_file_type() abort
     endif
   else
     if l:doc ==# 'git'
+      " Use nvim's syntax highlighting for git buffers instead of git's
+      " internal highlighting.
       call s:strip_ansi_escape_sequences_from_current_buffer()
-    elseif l:doc ==# 'pydoc'
-      call s:strip_overstike_from_current_buffer()
-      let l:doc = 'man'
-    elseif l:doc ==# 'perldoc'
-      call s:strip_ansi_escape_sequences_from_current_buffer()
-      call s:strip_overstike_from_current_buffer()
+    elseif l:doc ==# 'pydoc' || l:doc ==# 'perldoc'
       let l:doc = 'man'
     endif
     execute 'setfiletype ' l:doc
   endif
 endfunction
 
-" Set options for interactive paging of a files.
+" Set some global options for interactive paging of files.
 function! s:set_options() abort
   set mouse=a
   set scrolloff=0
@@ -117,12 +114,12 @@ endfunction
 
 " Set up mappings to make nvim behave a little more like a pager.
 function! s:set_maps() abort
-  nnoremap <buffer> q :quitall!<CR>
-  nnoremap <buffer> <Space> <PageDown>
-  nnoremap <buffer> <S-Space> <PageUp>
-  nnoremap <buffer> g gg
-  nnoremap <buffer> <Up> <C-Y>
-  nnoremap <buffer> <Down> <C-E>
+  nnoremap q :quitall!<CR>
+  nnoremap <Space> <PageDown>
+  nnoremap <S-Space> <PageUp>
+  nnoremap g gg
+  nnoremap <Up> <C-Y>
+  nnoremap <Down> <C-E>
 endfunction
 
 " Unset all mappings set in s:set_maps().
@@ -152,38 +149,25 @@ function! s:detect_man_page_in_current_buffer() abort
 endfunction
 
 " Parse the command of the calling process to detect some common documentation
-" programs (man, pydoc, perldoc, git, ...).
+" programs (man, pydoc, perldoc, git, ...).  $PPID was exported by the calling
+" bash script and points to the calling program.
 function! s:detect_doc_viewer_from_pstree() abort
-  let l:pslist = systemlist('ps -a -o pid= -o ppid= -o comm=')
+  let l:pslist = systemlist('ps -o comm= '.$PPID)
   if type(l:pslist) ==# type('') && l:pslist ==# ''
     return 0
   endif
-  let l:pstree = {}
-  for l:line in l:pslist
-    let [l:pid, l:ppid, l:cmd; l:_] = split(l:line)
-    let l:cmd = substitute(l:cmd, '^.*/', '', '')
-    let l:pstree[l:pid] = {'ppid': l:ppid, 'cmd': l:cmd}
-  endfor
-  let l:cur = l:pstree[getpid()]
-  while l:cur.ppid != 1
-    if l:cur.cmd =~# '^man'
-      return 'man'
-    elseif l:cur.cmd =~# '\v\C^[Pp]y(thon|doc)?[0-9.]*'
-      return 'pydoc'
-    elseif l:cur.cmd =~# '\v\C^[Rr](uby|i)[0-9.]*'
-      return 'ri'
-    elseif l:cur.cmd =~# '\v\C^perl(doc)?'
-      return 'perldoc'
-    elseif l:cur.cmd =~# '\C^git'
-      return 'git'
-    else
-      try
-        let l:cur = l:pstree[l:cur.ppid]
-      catch 'E716'
-        return 'none'
-      endtry
-    endif
-  endwhile
+  let l:cmd = substitute(l:pslist[0], '^.*/', '', '')
+  if l:cmd =~# '^man'
+    return 'man'
+  elseif l:cmd =~# '\v\C^[Pp]y(thon|doc)?[0-9.]*'
+    return 'pydoc'
+  elseif l:cmd =~# '\v\C^[Rr](uby|i)[0-9.]*'
+    return 'ri'
+  elseif l:cmd =~# '\v\C^perl(doc)?'
+    return 'perldoc'
+  elseif l:cmd =~# '\C^git'
+    return 'git'
+  endif
   return 'none'
 endfunction
 
@@ -193,16 +177,6 @@ function! s:strip_ansi_escape_sequences_from_current_buffer() abort
   let l:position = getpos('.')
   set modifiable
   keepjumps silent %substitute/\v\e\[[;?]*[0-9.;]*[a-z]//egi
-  call setpos('.', l:position)
-  let &modifiable = l:mod
-endfunction
-
-" Remove "overstrike" (like used in man pages) from current buffer.
-function! s:strip_overstike_from_current_buffer() abort
-  let l:mod = &modifiable
-  let l:position = getpos('.')
-  set modifiable
-  keepjumps silent %substitute/\v.\b//eg
   call setpos('.', l:position)
   let &modifiable = l:mod
 endfunction

@@ -38,14 +38,16 @@ user config file is `~/.config/nvimpager/init.vim`.
 
 ## Technical stuff
 
-### Dependencies:
+### Dependencies
 
 * [neovim]
 * [bash]
 * a [POSIX compatible][ps] ps implementation
 * ([curl] during installation)
+* ([bats] for running the tests)
+* ([pandoc] to build the man page)
 
-### Installation instructions:
+### Installation instructions
 
 Use the makefile to install the script and its dependencies.  It supports the
 usual `PREFIX` (defaults to `/usr/local`) and `DESTDIR` (defaults to empty)
@@ -55,27 +57,29 @@ variables:
 make PREFIX=$HOME/.local install
 ```
 
-### Known Bugs (and non features):
+### Development
+
+Nvimpager is developed on [Github][nvimpager] where you are very much invited
+to [post][issues] bug reports, feature or pull requests!  The test can be run
+with `make test`.
+
+### Known Bugs (and non features)
 
 * if reading from stdin, nvimpager (like nvim) waits for EOF until it starts up
 * large files are slowing down neovim on startup (less does a better, i.e.
   faster and more memory efficient job at paging large files)
 
-### Development
-
-Nvimpager is developed on [Github][nvimpager] where you are very much invited
-to [post][issues] bug reports, feature or pull requests!
-
 #### TODO List
 
-* write a man page or vim help file
 * show a short message in the cmdline like less and vimpager do (file and help
   information)
-* see how https://github.com/neovim/neovim/issues/7438 is resolved and maybe
-  move more code (logic) from bash to vimscript
+* see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) is
+  resolved and maybe move more code (logic) from bash to vimscript
+* check if terminal buffers can be used to render ansi escape codes,
+  alternatively ...
 * check license options for bundling the AnsiEsc plugin
 * implement some more keybindings that make it behave more like less
-* wait for nvim 0.2.1 and try to implement stuff in lua
+* see what parts can reasonably be implemented in lua (speed improvement?)
 * proper lazy pipe reading while paging (like less) to improve startup time and
   also memory usage for large input on pipes
 
@@ -91,3 +95,5 @@ The project is licensed under a BSD-2-clause license.  See the
 [bash]: http://www.gnu.org/software/bash/bash.html
 [curl]: https://curl.haxx.se
 [ps]: http://pubs.opengroup.org/onlinepubs/009695399/utilities/ps.html
+[bats]: https://github.com/sstephenson/bats
+[pandoc]: http://pandoc.org/

@@ -23,18 +23,35 @@ function! cat#highlight() abort
 
   for lnum in range(1, line('$'))
     let last = hlID('Normal')
+    let concealid = -1
     let output = s:group_to_ansi(last) . "\<Esc>[K" " Clear to right
 
     let line = getline(lnum)
+    let conceals = map(range(1, len(line)), {index, cnum->synconcealed(lnum, cnum)})
 
     for cnum in range(1, len(line))
+      let last_conceal_id = concealid
+      let [conceal, replace, concealid] = conceals[cnum-1]
+      if conceal && &conceallevel != 0
+	" FIXME These items should be highlighted with the "Conceal" group.
+	if &conceallevel == 3 || last_conceal_id == concealid
+	  " Concealed text is completely hidden or was already replaced for an
+	  " earlier character position.
+	  continue
+	elseif &conceallevel == 1 && replace == ''
+	    let append_text = ' '
+	else " conceallevel == 2 or (conceallevel == 1 and replace != '')
+	  let append_text = replace
+	endif
+      else " no conceal for this position or conceallevel == 0
+	let append_text = line[cnum-1]
+      endif
       let curid = synIDtrans(synID(lnum, cnum, 1))
       if curid != last
         let last = curid
         let output .= s:group_to_ansi(last)
       endif
-
-      let output .= line[cnum-1]
+      let output .= append_text
     endfor
     let retv += [output]
   endfor
