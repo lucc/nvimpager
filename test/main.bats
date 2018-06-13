@@ -19,31 +19,21 @@ setup () {
 }
 
 @test "auto mode selects cat mode for small files" {
-  # Use aliases to mock nvim in the sourced nvimpager script.
-  shopt -s expand_aliases
-  # Make nvim an alias with a semicolon so potential redirection in the
-  # original nvim execution don't take effect.
-  alias nvim='return; '
-  # Also mock exec and trap when source the nvimpager script.
-  alias exec=: trap=:
+  # Make nvim an alias with a semicolon so potential redirections in the
+  # original nvim execution don't take effect.  Also mock exec and trap.
+  mock nvim='return; ' exec=: trap=:
   source ./nvimpager test/fixtures/makefile
-  # Disable aliases again (release mocks).
-  shopt -u expand_aliases
+  release_mocks
   # $mode might still be auto so we check the generated command line.
   in_array --headless "${default_args[@]}"
 }
 
 @test "auto mode selects pager mode for big inputs" {
-  # Use aliases to mock nvim in the sourced nvimpager script.
-  shopt -s expand_aliases
-  # Make nvim an alias with a semicolon so potential redirection in the
-  # original nvim execution don't take effect.
-  alias nvim='return; '
-  # Also mock exec and trap when source the nvimpager script.
-  alias exec=: trap=:
+  # Make nvim an alias with a semicolon so potential redirections in the
+  # original nvim execution don't take effect.  Also mock exec and trap.
+  mock nvim='return; ' exec=: trap=:
   source ./nvimpager ./README.md ./nvimpager
-  # Disable aliases again (release mocks).
-  shopt -u expand_aliases
+  release_mocks
   # $mode might still be auto so we check the generated command line.
   ! in_array --headless "${default_args[@]}"
 }
