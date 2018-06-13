@@ -45,6 +45,7 @@ user config file is `~/.config/nvimpager/init.vim`.
 * a [POSIX compatible][ps] ps implementation
 * ([curl] during installation)
 * ([bats] for running the tests)
+* ([pandoc] to build the man page)
 
 ### Installation instructions
 
@@ -70,7 +71,6 @@ with `make test`.
 
 #### TODO List
 
-* write a man page (or vim help file)
 * show a short message in the cmdline like less and vimpager do (file and help
   information)
 * see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) is
@@ -96,3 +96,4 @@ The project is licensed under a BSD-2-clause license.  See the
 [curl]: https://curl.haxx.se
 [ps]: http://pubs.opengroup.org/onlinepubs/009695399/utilities/ps.html
 [bats]: https://github.com/sstephenson/bats
+[pandoc]: http://pandoc.org/

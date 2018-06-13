@@ -9,7 +9,7 @@ mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 
 usage () {
-  echo "Usage: ${0##*/} [-cp] [--] [nvim options and files]"
+  echo "Usage: ${0##*/} [-acp] [-u file] [--] [nvim options and files]"
   echo "       ${0##*/} -h"
   echo "       ${0##*/} -v"
 }
