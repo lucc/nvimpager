@@ -77,10 +77,10 @@ function! s:replace_prefix_in_string_list(list, prefix, replace) abort
   endfor
 endfunction
 
-" Detect possible filetypes for the current buffer by looking at the pstree or
-" ansi escape sequences or manpage sequences in the current buffer.
+" Detect possible filetypes for the current buffer by looking at the parent
+" process or ansi escape sequences or manpage sequences in the current buffer.
 function! s:detect_file_type() abort
-  let l:doc = s:detect_doc_viewer_from_pstree()
+  let l:doc = s:detect_doc_viewer_from_ppid()
   if l:doc ==# 'none'
     if s:detect_man_page_in_current_buffer()
       setfiletype man
@@ -149,12 +149,12 @@ endfunction
 " Parse the command of the calling process to detect some common documentation
 " programs (man, pydoc, perldoc, git, ...).  $PPID was exported by the calling
 " bash script and points to the calling program.
-function! s:detect_doc_viewer_from_pstree() abort
-  let l:pslist = systemlist('ps -o comm= '.$PPID)
-  if type(l:pslist) ==# type('') && l:pslist ==# ''
+function! s:detect_doc_viewer_from_ppid() abort
+  let l:cmd = nvim_get_proc(0+$PPID)
+  if type(l:cmd) == type(v:null)
     return 0
   endif
-  let l:cmd = substitute(l:pslist[0], '^.*/', '', '')
+  let l:cmd = l:cmd.name
   if l:cmd =~# '^man'
     return 'man'
   elseif l:cmd =~# '\v\C^[Pp]y(thon|doc)?[0-9.]*'
