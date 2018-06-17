@@ -70,3 +70,8 @@ setup () {
 	$XDG_CONFIG_HOME/nvimpager/after
 	EOF
 }
+
+@test "plugin manifest doesn't contain nvim's value" {
+  run ./nvimpager -c -- README.md  -c 'echo $NVIM_RPLUGIN_MANIFEST' -c quit
+  [[ "$output" = $XDG_DATA_HOME/nvimpager/rplugin.vim ]]
+}
