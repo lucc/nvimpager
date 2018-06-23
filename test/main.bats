@@ -81,3 +81,19 @@ setup () {
   diff <(echo "$output") \
        <(cat test/fixtures/makefile.ansi test/fixtures/help.txt.ansi)
 }
+
+@test "in cat mode syntax highlighting works also after modeline files" {
+  skip "known broken"
+  run ./nvimpager -c test/fixtures/conceal.tex test/fixtures/makefile \
+    --cmd "let g:tex_flavor='latex'"
+  diff <(echo "$output") \
+       <(cat test/fixtures/conceal.tex.ansi test/fixtures/makefile.ansi)
+}
+
+@test "in cat mode modelines also work in later files" {
+  skip "known broken"
+  run ./nvimpager -c test/fixtures/makefile test/fixtures/conceal.tex \
+    --cmd "let g:tex_flavor='latex'"
+  diff <(echo "$output") \
+       <(cat test/fixtures/makefile.ansi test/fixtures/conceal.tex.ansi)
+}
