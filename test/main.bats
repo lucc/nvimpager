@@ -75,3 +75,9 @@ setup () {
   run ./nvimpager -c -- README.md  -c 'echo $NVIM_RPLUGIN_MANIFEST' -c quit
   [[ "$output" = $XDG_DATA_HOME/nvimpager/rplugin.vim ]]
 }
+
+@test "in cat mode all files are highlighted" {
+  run ./nvimpager -c test/fixtures/makefile test/fixtures/help.txt
+  diff <(echo "$output") \
+       <(cat test/fixtures/makefile.ansi test/fixtures/help.txt.ansi)
+}
