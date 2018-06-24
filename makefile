@@ -27,7 +27,7 @@ install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 metadata.yaml:
 	echo "---" > $@
 	echo "footer: Version $(VERSION)" >> $@
-	echo "date: $$(date --date @$$(git log -1 --format=format:%at) +%F)" >> $@
+	echo "date: $$(git log -1 --format=format:%aI | cut -f 1 -d T)" >> $@
 	echo "..." >> $@
 nvimpager.1: nvimpager.md metadata.yaml
 	pandoc --standalone --to man --output $@ $^
