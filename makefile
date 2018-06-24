@@ -19,10 +19,10 @@ PLUGIN_FILES = \
 install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/autoload \
 	  $(DESTDIR)$(RUNTIME)/plugin $(DESTDIR)$(PREFIX)/share/man/man1
-	install -D nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
-	install -D --target-directory=$(DESTDIR)$(RUNTIME)/autoload $(AUTOLOAD_FILES)
-	install -D --target-directory=$(DESTDIR)$(RUNTIME)/plugin $(PLUGIN_FILES)
-	install -D --target-directory=$(DESTDIR)$(PREFIX)/share/man/man1 nvimpager.1
+	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
+	install $(AUTOLOAD_FILES) $(DESTDIR)$(RUNTIME)/autoload
+	install $(PLUGIN_FILES) $(DESTDIR)$(RUNTIME)/plugin
+	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 
 metadata.yaml:
 	echo "---" > $@
