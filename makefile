@@ -43,7 +43,7 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 	  -S AnsiEsc.vba \
 	  -c quitall!
 	# Remove setting of 'hl', not supported in NeoVim.
-	sed -i '/hl=/d' autoload/AnsiEsc.vim
+	sed -i -e '/hl=/d' autoload/AnsiEsc.vim
 
 test:
 	@bats test
