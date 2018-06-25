@@ -60,7 +60,7 @@ make PREFIX=$HOME/.local install
 
 Nvimpager is developed on [Github][nvimpager] where you are very much invited
 to [post][issues] bug reports, feature or pull requests!  The test can be run
-with `make test`.
+with `make test`.  They are also run on travis: [![Build Status]][travis]
 
 #### Known Bugs (and non features)
 
@@ -98,3 +98,5 @@ The project is licensed under a BSD-2-clause license.  See the
 [curl]: https://curl.haxx.se
 [bats]: https://github.com/sstephenson/bats
 [pandoc]: http://pandoc.org/
+[Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
+[travis]: https://travis-ci.org/lucc/nvimpager
