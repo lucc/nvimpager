@@ -1,0 +1,14 @@
+language: shell
+os: linux
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:neovim-ppa/unstable'
+    packages:
+      - pandoc
+      - neovim
+before_install:
+  # Install bats, there is no package for it in old ubuntu versions.
+  - (git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh ~/.local)
+install: make install PREFIX=$HOME/.local
+script: make test
