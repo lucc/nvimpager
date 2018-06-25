@@ -1,5 +1,7 @@
 language: shell
-os: linux
+os:
+  - linux
+  - osx
 addons:
   apt:
     sources:
@@ -7,8 +9,14 @@ addons:
     packages:
       - pandoc
       - neovim
-before_install:
-  # Install bats, there is no package for it in old ubuntu versions.
-  - (git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh ~/.local)
+before_install: |
+  set -e
+  if [[ "$TRAVIS_OS_NAME" = linux ]]; then
+    # Install bats, there is no package for it in old ubuntu versions.
+    git clone https://github.com/sstephenson/bats.git
+    (cd bats && ./install.sh ~/.local)
+  else
+    brew install neovim pandoc bats
+  fi
 install: make install PREFIX=$HOME/.local
 script: make test
