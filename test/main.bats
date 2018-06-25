@@ -55,14 +55,13 @@ setup () {
   run ./nvimpager -c -- README.md \
     -c 'for item in nvim_list_runtime_paths() | echo item | endfor' -c quit
   #status_ok
-  diff <(echo "$output" | tr -d '\r') - <<-EOF
+  diff <(echo "$output" | tr -d '\r' | grep -v 'runtime$') - <<-EOF
 	.
 	$XDG_CONFIG_HOME/nvimpager
 	/etc/xdg/nvim
 	$XDG_DATA_HOME/nvimpager/site
 	/usr/local/share/nvim/site
 	/usr/share/nvim/site
-	/usr/share/nvim/runtime
 	/usr/share/nvim/site/after
 	/usr/local/share/nvim/site/after
 	$XDG_DATA_HOME/nvimpager/site/after
