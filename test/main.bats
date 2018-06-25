@@ -13,6 +13,12 @@ setup () {
   status_ok
 }
 
+@test "read stdin with syntax highlighting" {
+  run ./nvimpager -c -- -c 'set filetype=make' < test/fixtures/makefile
+  diff <(echo "$output") test/fixtures/makefile.ansi
+  status_ok
+}
+
 @test "ansi escape sequences are returned unchanged" {
   run ./nvimpager -c < test/fixtures/makefile.ansi
   diff <(echo "$output") test/fixtures/makefile.ansi
