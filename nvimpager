@@ -58,7 +58,7 @@ done
 shift $((OPTIND - 1))
 
 # If we are not on a tty just "be" cat.
-if [[ ! -t 1 && "$mode" = auto ]]; then
+if [[ ! -t 1 && $mode = auto ]]; then
   exec cat "$@"
 fi
 
@@ -66,7 +66,7 @@ RUNTIME=${0%/*}
 export RUNTIME
 export PPID
 
-if [[ ! -r "$rc" ]]; then
+if [[ ! -r $rc ]]; then
   rc=NORC
 fi
 
@@ -74,11 +74,11 @@ fi
 # file is found pager mode is enforced.
 files=()
 while [[ $# -gt 0 ]]; do
-  if [[ -f "$1" ]]; then
+  if [[ -f $1 ]]; then
     files+=("$1")
     shift
   else
-    if [[ "$mode" = auto ]]; then
+    if [[ $mode = auto ]]; then
       mode=pager
     fi
     break
@@ -87,7 +87,7 @@ done
 
 # Either if stdin is not a tty or if we are not in pager mode but did not get
 # any file arguments, read stdin into a temp file.
-if [[ ( "$mode" != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
+if [[ ( $mode != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
   files=("$(mktemp)")
   trap 'rm -f "${files[0]}"' HUP INT QUIT TERM ABRT PIPE ALRM EXIT
   cat > "${files[0]}"
@@ -101,8 +101,8 @@ default_args=(
 )
 # Switch to pager mode if all files combined are shorter than the terminal
 # height.
-if [[ "$mode" = cat || \
-      "$mode" = auto && "$(cat "${files[@]}" | wc -l)" -le "$(tput lines)" ]]
+if [[ $mode = cat || \
+      $mode = auto && $(cat "${files[@]}" | wc -l) -le $(tput lines) ]]
 then
   default_args+=(--headless -c 'call pager#prepare_cat()')
 else
