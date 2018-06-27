@@ -62,7 +62,9 @@ with the *-u* option in turn).
 Like neovim itself nvimpager will honour `$XDG_CONFIG_HOME` and
 `$XDG_DATA_HOME`, which default to `~/.config` and `~/.local` respectively.
 The main config directory is `$XDG_CONFIG_HOME/nvimpager` and the main user
-config file is `$XDG_CONFIG_HOME/nvimpager/init.vim`.
+config file is `$XDG_CONFIG_HOME/nvimpager/init.vim`.  The site directory is
+`$XDG_DATA_HOME/.local/share/nvimpager/site`.  The manifest for remote plugins
+is read from (and written to) `$XDG_DATA_HOME/nvimpager/rplugin.vim`.
 
 The rest of the `&runtimepath` is configured like for neovim.
 
