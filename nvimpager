@@ -9,14 +9,11 @@ mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 
 usage () {
-  echo "Usage: ${0##*/} [-acp] [-u file] [--] [nvim options and files]"
+  echo "Usage: ${0##*/} [-acp] [--] [nvim options and files]"
   echo "       ${0##*/} -h"
   echo "       ${0##*/} -v"
 }
 description () {
-  local shortrc
-  # Display the path of $HOME as a literal "~".
-  shortrc=${rc/${HOME//\//\\/}/\~}
   cat <<-EOF
 
 	$name provides a simple pager based on neovim.
@@ -26,7 +23,6 @@ description () {
 	  -a		enforce auto mode (default)
 	  -c		enforce cat mode
 	  -p		enforce pager mode
-	  -u FILE	use "FILE" as init file (default: $shortrc)
 
 	All further arguments are passed to neovim.  But one has to add "--"
 	if the first argument is an option in order to stop this script from
@@ -38,19 +34,15 @@ description () {
 	than the terminal size, cat mode is used, otherwise pager mode is
 	used.  If any none file argument (neovim option) is given pager mode
 	is implied.
-
-	If the init file does not exist it is silently replaced with "NORC" to
-	prevent nvim from loading the users init.vim.
 	EOF
 }
 
-while getopts achpu:v flag; do
+while getopts achpv flag; do
   case $flag in
     a) mode=auto;;
     c) mode=cat;;
     h) usage; description; exit;;
     p) mode=pager;;
-    u) rc=$OPTARG;;
     v) echo "$name $version"; exit;;
     *) usage >&2; exit 2;;
   esac
@@ -67,7 +59,7 @@ export RUNTIME
 export PPID
 
 if [[ ! -r $rc ]]; then
-  rc=NORC
+  rc=
 fi
 
 # Collect all file arguments until the first non file into $files.  If one non
@@ -95,7 +87,7 @@ fi
 
 default_args=(
   -R
-  -u "$rc"
+  ${rc:+-u "$rc"}
   --cmd 'set rtp^=$RUNTIME'
   --cmd 'call pager#start()'
 )
