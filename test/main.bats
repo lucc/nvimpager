@@ -58,22 +58,15 @@ setup () {
 }
 
 @test "runtimepath doesn't include nvim's user dirs" {
-  run ./nvimpager -c -- README.md \
-    -c 'for item in nvim_list_runtime_paths() | echo item | endfor' -c quit
-  #status_ok
-  diff <(echo "$output" | tr -d '\r' | grep -v 'runtime$') - <<-EOF
-	.
-	$XDG_CONFIG_HOME/nvimpager
-	/etc/xdg/nvim
-	$XDG_DATA_HOME/nvimpager/site
-	/usr/local/share/nvim/site
-	/usr/share/nvim/site
-	/usr/share/nvim/site/after
-	/usr/local/share/nvim/site/after
-	$XDG_DATA_HOME/nvimpager/site/after
-	/etc/xdg/nvim/after
-	$XDG_CONFIG_HOME/nvimpager/after
-	EOF
+  env RUNTIME=speical-test-value                                   \
+    nvim --headless                                                \
+    --cmd 'set runtimepath+=.'                                     \
+    --cmd 'call pager#start()'                                     \
+    --cmd 'rtp = nvim_list_untime_paths()'                         \
+    --cmd 'if index(rtp, $RUNTIME) == -1 | cquit | endif'          \
+    --cmd 'if index(rtp, stdpath("config")) != -1 | cquit | endif' \
+    --cmd 'if index(rtp, stdpath("data")) != -1 | cquit | endif'   \
+    --cmd quit
 }
 
 @test "plugin manifest doesn't contain nvim's value" {
