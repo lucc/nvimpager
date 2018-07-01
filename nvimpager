@@ -96,7 +96,7 @@ fi
 default_args=(
   -R
   -u "$rc"
-  --cmd 'set rtp^=$RUNTIME'
+  --cmd 'set rtp+=$RUNTIME'
   --cmd 'call pager#start()'
 )
 # Switch to pager mode if all files combined are shorter than the terminal
