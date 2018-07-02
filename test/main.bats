@@ -56,7 +56,6 @@ setup () {
     -c 'for item in nvim_list_runtime_paths() | echo item | endfor' -c quit
   #status_ok
   diff <(echo "$output" | tr -d '\r') - <<-EOF
-	.
 	$XDG_CONFIG_HOME/nvimpager
 	/etc/xdg/nvim
 	$XDG_DATA_HOME/nvimpager/site
@@ -68,5 +67,6 @@ setup () {
 	$XDG_DATA_HOME/nvimpager/site/after
 	/etc/xdg/nvim/after
 	$XDG_CONFIG_HOME/nvimpager/after
+	.
 	EOF
 }
