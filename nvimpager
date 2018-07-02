@@ -8,7 +8,6 @@ export RUNTIME
 export PPID
 
 name=nvimpager
-version=$(git -C "$RUNTIME" describe)
 mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 
@@ -47,7 +46,11 @@ while getopts achpv flag; do
     c) mode=cat;;
     h) usage; description; exit;;
     p) mode=pager;;
-    v) echo "$name $version"; exit;;
+    v)
+      version=$(git -C "$RUNTIME" describe)
+      echo "$name $version"
+      exit
+      ;;
     *) usage >&2; exit 2;;
   esac
 done
