@@ -54,15 +54,14 @@ endfunction
 " Fix the runtimepath.  All user nvim folders are replaced by corresponding
 " nvimpager folders.
 function! s:fix_runtimepath() abort
-  let runtimepath = nvim_list_runtime_paths()
   " Don't modify our custom entry!
-  let runtimepath = filter(runtimepath, { item -> item != $RUNTIME })
+  let runtimepath = nvim_list_runtime_paths()[:-2]
   for original in [stdpath('config'), stdpath('data')]
     let new = original.'pager'
     call s:replace_prefix_in_string_list(runtimepath, original, new)
   endfor
-  call insert(runtimepath, $RUNTIME)
   let &runtimepath = join(runtimepath, ',')
+  set runtimepath+=$RUNTIME
   let $NVIM_RPLUGIN_MANIFEST = new . '/rplugin.vim'
 endfunction
 
