@@ -3,8 +3,12 @@
 # Copyright (c) 2017 Lucas Hoffmann
 # Licenced under a BSD-2-clause licence.  See the LICENSE file.
 
+RUNTIME=${BASH_SOURCE%/*}
+export RUNTIME
+export PPID
+
 name=nvimpager
-version=0.4
+version=$(git -C "$RUNTIME" describe)
 mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 
@@ -53,10 +57,6 @@ shift $((OPTIND - 1))
 if [[ ! -t 1 && $mode = auto ]]; then
   exec cat "$@"
 fi
-
-RUNTIME=${0%/*}
-export RUNTIME
-export PPID
 
 if [[ ! -r $rc ]]; then
   rc=
