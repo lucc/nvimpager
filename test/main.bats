@@ -95,3 +95,9 @@ setup () {
   diff <(echo "$output") \
        <(cat test/fixtures/makefile.ansi test/fixtures/conceal.tex.ansi)
 }
+
+@test "cat mode can concatenate the same file twice" {
+  run ./nvimpager -c test/fixtures/makefile test/fixtures/makefile
+  diff <(echo "$output") \
+       <(cat test/fixtures/makefile.ansi test/fixtures/makefile.ansi)
+}
