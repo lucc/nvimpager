@@ -83,7 +83,7 @@ with `make test`.  They are also run on travis: [![Build Status]][travis]
 * implement some more keybindings that make it behave more like less
 * see what parts can reasonably be implemented in lua (speed improvement?)
 * proper lazy pipe reading while paging (like less) to improve startup time and
-  also memory usage for large input on pipes
+  also memory usage for large input on pipes (maybe `stdioopen()` can be used?)
 
 ## License
 
