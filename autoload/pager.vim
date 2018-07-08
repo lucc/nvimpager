@@ -101,13 +101,7 @@ endfunction
 " Set some global options for interactive paging of files.
 function! s:set_options() abort
   set mouse=a
-  set scrolloff=0
-  set hlsearch
-  set incsearch
-  nohlsearch
-  set nowrapscan
   " Inhibit screen updates while searching
-  set lazyredraw
   set laststatus=0
 endfunction
 
