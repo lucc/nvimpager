@@ -40,9 +40,8 @@ user config file is `~/.config/nvimpager/init.vim`.
 
 ### Dependencies
 
-* [neovim]
+* [neovim] ≥ v0.3.0
 * [bash]
-* a [POSIX compatible][ps] ps implementation
 * ([curl] during installation)
 * ([bats] for running the tests)
 * ([pandoc] to build the man page)
@@ -61,27 +60,30 @@ make PREFIX=$HOME/.local install
 
 Nvimpager is developed on [Github][nvimpager] where you are very much invited
 to [post][issues] bug reports, feature or pull requests!  The test can be run
-with `make test`.
+with `make test`.  They are also run on travis: [![Build Status]][travis]
 
-### Known Bugs (and non features)
+#### Known Bugs (and non features)
 
 * if reading from stdin, nvimpager (like nvim) waits for EOF until it starts up
 * large files are slowing down neovim on startup (less does a better, i.e.
   faster and more memory efficient job at paging large files)
 
-#### TODO List
+#### TODO and ideas list
 
 * show a short message in the cmdline like less and vimpager do (file and help
   information)
-* see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) is
-  resolved and maybe move more code (logic) from bash to vimscript
+* see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) and
+  [neovim#8246](https://github.com/neovim/neovim/issues/8246) are resolved and
+  maybe move more code (logic) from bash to vimscript
 * check if terminal buffers can be used to render ansi escape codes,
   alternatively ...
-* check license options for bundling the AnsiEsc plugin
+* check license options for bundling the AnsiEsc plugin, alternatively ...
+* see if nvim_buf_add_highlight() can be used to do basically the same stuff
+  that AnsiEsc does
 * implement some more keybindings that make it behave more like less
 * see what parts can reasonably be implemented in lua (speed improvement?)
 * proper lazy pipe reading while paging (like less) to improve startup time and
-  also memory usage for large input on pipes
+  also memory usage for large input on pipes (maybe `stdioopen()` can be used?)
 
 ## License
 
@@ -94,6 +96,7 @@ The project is licensed under a BSD-2-clause license.  See the
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
 [curl]: https://curl.haxx.se
-[ps]: http://pubs.opengroup.org/onlinepubs/009695399/utilities/ps.html
 [bats]: https://github.com/sstephenson/bats
 [pandoc]: http://pandoc.org/
+[Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
+[travis]: https://travis-ci.org/lucc/nvimpager

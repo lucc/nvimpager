@@ -11,7 +11,7 @@ nvimpager - using neovim as a pager
 
 # SYNOPSIS
 
-**nvimpager** [*-acp*] [*-u file*] [\--] [nvim options and files] \
+**nvimpager** [*-acp*] [\--] [nvim options and files] \
 **nvimpager** *-h* \
 **nvimpager** *-v*
 
@@ -49,11 +49,6 @@ and *-p* options.
 : run in "pager mode".  Start the neovim TUI to display the given content. This
 overrides any previous *-a* and *-c* options.
 
--u file
-: use the given file as the init.vim file.  Like for *nvim*(1) itself the
-strings "NONE" and "NORC" can be used (the value will be passed to *nvim*(1)
-with the *-u* option in turn).
-
 -v
 : show version information and exit
 
@@ -62,9 +57,13 @@ with the *-u* option in turn).
 Like neovim itself nvimpager will honour `$XDG_CONFIG_HOME` and
 `$XDG_DATA_HOME`, which default to `~/.config` and `~/.local` respectively.
 The main config directory is `$XDG_CONFIG_HOME/nvimpager` and the main user
-config file is `$XDG_CONFIG_HOME/nvimpager/init.vim`.
+config file is `$XDG_CONFIG_HOME/nvimpager/init.vim`.  The site directory is
+`$XDG_DATA_HOME/.local/share/nvimpager/site`.  The manifest for remote plugins
+is read from (and written to) `$XDG_DATA_HOME/nvimpager/rplugin.vim`.
 
-The rest of the `&runtimepath` is configured like for neovim.
+The rest of the `&runtimepath` is configured like for neovim.  The `-u` option
+of *nvim*(1) itself can be used to change the main config file from the command
+line.
 
 # EXAMPLES
 
