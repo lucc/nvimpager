@@ -1,7 +1,7 @@
 DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
-VERSION = $(patsubst v%,%,$(shell git describe))
+VERSION = $(patsubst v%,%,$(lastword $(shell ./nvimpager -v)))
 
 AUTOLOAD_FILES = \
 		 autoload/AnsiEsc.vim \
@@ -13,7 +13,7 @@ PLUGIN_FILES = \
 	       plugin/cecutil.vim       \
 
 %.configured: %
-	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#^ *version=.*$$#version=$(VERSION)#' < $< > $@
+	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
 
 install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
