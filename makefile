@@ -1,7 +1,7 @@
 DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
-VERSION = $(patsubst v%,%,$(lastword $(shell ./nvimpager -v)))
+VERSION = $(lastword $(shell ./nvimpager -v))
 
 AUTOLOAD_FILES = \
 		 autoload/AnsiEsc.vim \
