@@ -36,7 +36,7 @@ AnsiEsc.vba:
 	  gunzip > $@
 
 $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
-	nvim -u NONE --headless \
+	nvim -u NONE -i NONE -n --headless \
 	  --cmd 'set rtp^=.' \
 	  --cmd 'packadd vimball' \
 	  --cmd 'runtime plugin/vimballPlugin.vim' \
