@@ -47,10 +47,17 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 
 test:
 	@bats test
+benchmark:
+	@echo Starting benchmark for $$(./nvimpager -v)
+	@hyperfine --warmup 2 --min-runs 100 \
+	  './nvimpager -c makefile' \
+	  './nvimpager -c <makefile' \
+	  './nvimpager -c test/fixtures/makefile' \
+	  './nvimpager -c <test/fixtures/makefile'
 
 cleanall: clean clean-ansiesc
 clean:
 	$(RM) nvimpager.configured nvimpager.1 metadata.yaml
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
-.PHONY: cleanall clean clean-ansiesc install test
+.PHONY: benchmark cleanall clean clean-ansiesc install test
