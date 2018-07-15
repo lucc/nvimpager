@@ -101,3 +101,15 @@ setup () {
   diff <(echo "$output") \
        <(cat test/fixtures/makefile.ansi test/fixtures/makefile.ansi)
 }
+
+@test "empty files produce no lines of output" {
+  touch "$BATS_TMPDIR/empty"
+  run ./nvimpager -c "$BATS_TMPDIR/empty"
+  rm "$BATS_TMPDIR/empty"
+  [[ -z $output ]]
+}
+
+@test "empty stdin produces no lines of output" {
+  run ./nvimpager -c </dev/null
+  [[ -z $output ]]
+}
