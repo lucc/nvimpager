@@ -12,6 +12,8 @@ PLUGIN_FILES = \
 	       plugin/AnsiEscPlugin.vim \
 	       plugin/cecutil.vim       \
 
+BENCHMARK_OPTS = --warmup 2 --min-runs 100
+
 %.configured: %
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
@@ -49,7 +51,7 @@ test:
 	@bats test
 benchmark:
 	@echo Starting benchmark for $$(./nvimpager -v)
-	@hyperfine --warmup 2 --min-runs 100 \
+	@hyperfine $(BENCHMARK_OPTS) \
 	  './nvimpager -c makefile' \
 	  './nvimpager -c <makefile' \
 	  './nvimpager -c test/fixtures/makefile' \
