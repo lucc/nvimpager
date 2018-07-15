@@ -54,6 +54,8 @@ benchmark:
 	  './nvimpager -c <makefile' \
 	  './nvimpager -c test/fixtures/makefile' \
 	  './nvimpager -c <test/fixtures/makefile' \
+	  './nvimpager -c test/fixtures/conceal.tex' \
+	  './nvimpager -c test/fixtures/conceal.tex.ansi' \
 	  './nvimpager -p -- -c quit' \
 	  './nvimpager -p -- makefile -c quit' \
 	  './nvimpager -p test/fixtures/makefile -c quit'
