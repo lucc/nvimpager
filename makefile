@@ -53,4 +53,4 @@ clean:
 	$(RM) nvimpager.configured nvimpager.1 metadata.yaml
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
-.PHONY: cleanall clean clean-ansiesc test
+.PHONY: cleanall clean clean-ansiesc install test
