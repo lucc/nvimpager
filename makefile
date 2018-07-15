@@ -53,7 +53,10 @@ benchmark:
 	  './nvimpager -c makefile' \
 	  './nvimpager -c <makefile' \
 	  './nvimpager -c test/fixtures/makefile' \
-	  './nvimpager -c <test/fixtures/makefile'
+	  './nvimpager -c <test/fixtures/makefile' \
+	  './nvimpager -p -- -c quit' \
+	  './nvimpager -p -- makefile -c quit' \
+	  './nvimpager -p test/fixtures/makefile -c quit'
 
 cleanall: clean clean-ansiesc
 clean:
