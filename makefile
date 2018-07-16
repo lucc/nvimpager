@@ -50,7 +50,7 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 test:
 	@bats test
 benchmark:
-	@echo Starting benchmark for $$(./nvimpager -v)
+	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
 	@hyperfine $(BENCHMARK_OPTS) \
 	  './nvimpager -c makefile' \
 	  './nvimpager -c <makefile' \
