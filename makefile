@@ -12,6 +12,8 @@ PLUGIN_FILES = \
 	       plugin/AnsiEscPlugin.vim \
 	       plugin/cecutil.vim       \
 
+BENCHMARK_OPTS = --warmup 2 --min-runs 100
+
 %.configured: %
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
@@ -47,10 +49,22 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 
 test:
 	@bats test
+benchmark:
+	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
+	@hyperfine $(BENCHMARK_OPTS) \
+	  './nvimpager -c makefile' \
+	  './nvimpager -c <makefile' \
+	  './nvimpager -c test/fixtures/makefile' \
+	  './nvimpager -c <test/fixtures/makefile' \
+	  './nvimpager -c test/fixtures/conceal.tex' \
+	  './nvimpager -c test/fixtures/conceal.tex.ansi' \
+	  './nvimpager -p -- -c quit' \
+	  './nvimpager -p -- makefile -c quit' \
+	  './nvimpager -p test/fixtures/makefile -c quit'
 
 cleanall: clean clean-ansiesc
 clean:
 	$(RM) nvimpager.configured nvimpager.1 metadata.yaml
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
-.PHONY: cleanall clean clean-ansiesc install test
+.PHONY: benchmark cleanall clean clean-ansiesc install test
