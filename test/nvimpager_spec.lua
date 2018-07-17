@@ -129,4 +129,11 @@ describe("backend:", function()
       "--cmd quit"
     run(cmd)
   end)
+
+  it("plugin manifest doesn't contain nvim's value", function()
+    -- Nvim writes this message to stderr so we have to redirect this.
+    local output = run("./nvimpager -c -- README.md " ..
+                       "-c 'echo $NVIM_RPLUGIN_MANIFEST' -c quit 2>&1")
+    assert.equal(output, datadir..'/nvimpager/rplugin.vim')
+  end)
 end)
