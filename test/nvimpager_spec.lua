@@ -163,6 +163,12 @@ describe("cat mode", function()
   end)
 end)
 
+describe("pager mode", function()
+  it("starts up and quits correctly", function()
+    run("./nvimpager -p makefile -c quit")
+  end)
+end)
+
 describe("backend:", function()
   it("runtimepath doesn't include nvim's user dirs", function()
     local cmd = "RUNTIME=special-test-value " ..
