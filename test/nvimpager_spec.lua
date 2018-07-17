@@ -35,6 +35,53 @@ local function read(filename)
   return contents
 end
 
+describe("auto mode", function()
+  -- Auto mode only exists during the run of the bash script.  At the end of
+  -- the bash script it has to decide if pager or cat mode is used.  This
+  -- makes these tests a little more difficult.  We have to inspect the state
+  -- of the bash script in some way.
+
+  -- Source the given command line in a bash script with some mocks and print
+  -- all set variables at the end.
+  --
+  -- command: string -- the shell command to execute
+  -- returns: string -- the output of the sourced command and all set
+  -- variables
+  local function bash(command)
+    -- Make nvim an alias with a semicolon so potential redirections in the
+    -- original nvim execution don't take effect.  Also mock exec and trap.
+    local script = [[
+      set -e
+      set -u
+      shopt -s expand_aliases
+      alias nvim='return; '
+      alias exec=:
+      alias trap=:
+      source ]] .. command .. "\nset"
+    local filename = os.tmpname()
+    local file = io.open(filename, "w")
+    file:write(script)
+    file:close()
+    local output = run("bash " .. filename)
+    --os.remove(filename)
+    return output
+  end
+
+  it("selects cat mode for small files", function()
+    local output = bash('./nvimpager test/fixtures/makefile')
+    -- $mode might still be auto so we check the generated command line.
+    local default_args = output:match("\ndefault_args[^\n]*\n")
+    assert.truthy(default_args:match('--headless'))
+  end)
+
+  it("auto mode selects pager mode for big inputs", function()
+    local output = bash('./nvimpager ./README.md ./nvimpager')
+    -- $mode might still be auto so we check the generated command line.
+    local default_args = output:match("\ndefault_args[^\n]*\n")
+    assert.is_nil(default_args:match('--headless'))
+  end)
+end)
+
 describe("cat mode", function()
   it("displays a small file with syntax highlighting to stdout", function()
     local output = run("./nvimpager -c test/fixtures/makefile")
