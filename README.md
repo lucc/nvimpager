@@ -43,7 +43,7 @@ user config file is `~/.config/nvimpager/init.vim`.
 * [neovim] ≥ v0.3.0
 * [bash]
 * ([curl] during installation)
-* ([bats] for running the tests)
+* ([busted] for running the tests)
 * ([pandoc] to build the man page)
 
 ### Installation instructions
@@ -96,7 +96,7 @@ The project is licensed under a BSD-2-clause license.  See the
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
 [curl]: https://curl.haxx.se
-[bats]: https://github.com/sstephenson/bats
+[busted]: http://olivinelabs.com/busted/
 [pandoc]: http://pandoc.org/
 [Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
 [travis]: https://travis-ci.org/lucc/nvimpager

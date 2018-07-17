@@ -2,6 +2,7 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
+BUSTED = busted
 
 AUTOLOAD_FILES = \
 		 autoload/AnsiEsc.vim \
@@ -48,7 +49,7 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 	sed -i -e '/hl=/d' autoload/AnsiEsc.vim
 
 test:
-	@bats test
+	@$(BUSTED) test
 benchmark:
 	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
 	@hyperfine $(BENCHMARK_OPTS) \
