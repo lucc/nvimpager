@@ -62,7 +62,7 @@ setup () {
     nvim --headless                                                \
     --cmd 'set runtimepath+=.'                                     \
     --cmd 'call pager#start()'                                     \
-    --cmd 'rtp = nvim_list_untime_paths()'                         \
+    --cmd 'let rtp = nvim_list_runtime_paths()'                    \
     --cmd 'if index(rtp, $RUNTIME) == -1 | cquit | endif'          \
     --cmd 'if index(rtp, stdpath("config")) != -1 | cquit | endif' \
     --cmd 'if index(rtp, stdpath("data")) != -1 | cquit | endif'   \
