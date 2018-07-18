@@ -42,3 +42,7 @@ local function group2ansi(groupid)
   cache[groupid] = escape
   return escape
 end
+
+return {
+  split_rgb_number = split_rgb_number,
+}
