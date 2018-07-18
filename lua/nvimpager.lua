@@ -24,7 +24,7 @@ local function group2ansi(groupid)
   if info.reverse then
     info.foreground, info.background = info.background, info.foreground
   end
-  local escape = '\xb1[0'
+  local escape = '\x1b[0'
 
   if info.bold then escape = escape .. ';1' end
   if info.italic then escape = escape .. ';3' end

@@ -193,11 +193,18 @@ describe("backend:", function()
 end)
 
 describe("lua functions", function()
+
+  -- Create a local mock of the vim module that is provided by neovim.
+  local vim = {
+    api = {
+      nvim_get_hl_by_id = function() return {} end
+    }
+  }
+  _G.vim = vim
+  local nvimpager = require("lua/nvimpager")
+
   describe("split_rgb_number", function()
     it("handles numbers from 0 to 16777215", function()
-      -- prepare the global vim name
-      _G.vim = { api = {} }
-      local nvimpager = require("lua/nvimpager")
       local r, g, b = nvimpager.split_rgb_number(0x000000)
       assert.equal(r, 0)
       assert.equal(g, 0)
@@ -209,9 +216,6 @@ describe("lua functions", function()
     end)
 
     it("correctly splits rgb values", function()
-      -- prepare the global vim name
-      _G.vim = { api = {} }
-      local nvimpager = require("lua/nvimpager")
       local r, g, b = nvimpager.split_rgb_number(0x55AACC)
       assert.equal(r, 0x55)
       assert.equal(g, 0xAA)
@@ -220,14 +224,8 @@ describe("lua functions", function()
   end)
 
   describe("group2ansi", function()
-    pending("calls nvim_get_hl_by_id", function()
-      _G.vim = {
-	api = {
-	  nvim_get_hl_by_id = function() return {} end
-	}
-      }
-      local m = mock(_G.vim)
-      local nvimpager = require("lua/nvimpager")
+    it("calls nvim_get_hl_by_id", function()
+      local m = mock(vim)
       local escape = nvimpager.group2ansi(100)
       assert.stub(m.api.nvim_get_hl_by_id).was.called_with(100, true)
       assert.equal(escape, '\x1b[0m')
