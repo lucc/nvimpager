@@ -88,6 +88,8 @@ local function group2ansi(groupid)
 end
 
 return {
+  color2escape_24bit = color2escape_24bit,
+  color2escape_8bit = color2escape_8bit,
   group2ansi = group2ansi,
   split_rgb_number = split_rgb_number,
 }
