@@ -237,16 +237,18 @@ describe("lua functions", function()
   end)
 
   describe("group2ansi", function()
-    it("calls nvim_get_hl_by_id", function()
-      local api = {
-	nvim_get_hl_by_id = function() return {} end,
-	nvim_get_option = function() return true end,
-      }
-      local m = mock(api)
-      local nvimpager = load_nvimpager(api)
-      local escape = nvimpager.group2ansi(100)
-      assert.stub(m.nvim_get_hl_by_id).was.called_with(100, true)
-      assert.equal(escape, '\x1b[0m')
+    it("calls nvim_get_hl_by_id with and without termguicolors", function()
+      for _, termguicolors in pairs({true, false}) do
+	local api = {
+	  nvim_get_hl_by_id = function() return {} end,
+	  nvim_get_option = function() return termguicolors end,
+	}
+	local m = mock(api)
+	local nvimpager = load_nvimpager(api)
+	local escape = nvimpager.group2ansi(100)
+	assert.stub(m.nvim_get_hl_by_id).was.called_with(100, termguicolors)
+	assert.equal(escape, '\x1b[0m')
+      end
     end)
   end)
 end)
