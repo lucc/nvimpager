@@ -206,5 +206,15 @@ describe("lua functions", function()
       assert.equal(g, 255)
       assert.equal(b, 255)
     end)
+
+    it("correctly splits rgb values", function()
+      -- prepare the global vim name
+      _G.vim = { api = {} }
+      local nvimpager = require("lua/nvimpager")
+      local r, g, b = nvimpager.split_rgb_number(0x55AACC)
+      assert.equal(r, 0x55)
+      assert.equal(g, 0xAA)
+      assert.equal(b, 0xCC)
+    end)
   end)
 end)
