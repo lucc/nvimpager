@@ -2,8 +2,8 @@
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
-local describe, it, assert, pending, mock =
-      describe, it, assert, pending, mock  -- luacheck: ignore
+local describe, it, assert, pending, mock, match =
+      describe, it, assert, pending, mock, match  -- luacheck: ignore
 
 -- gloabl varables to set $XDG_CONFIG_HOME and $XDG_DATA_HOME to for the
 -- tests.
@@ -194,18 +194,29 @@ end)
 
 describe("lua functions", function()
 
-  -- Create a local mock of the vim module that is provided by neovim.
-  local vim = {
-    api = {
-      nvim_get_hl_by_id = function() return {} end,
-      nvim_get_option = function() return true end,
-    }
-  }
-  _G.vim = vim
-  local nvimpager = require("lua/nvimpager")
+  -- Reload the nvimpager script.
+  --
+  -- api: table|nil -- a mock for the neovim api table
+  -- return: table -- the nvimpager module
+  local function load_nvimpager(api)
+    -- Create a local mock of the vim module that is provided by neovim.
+    if api == nil then
+      api = {
+	nvim_get_hl_by_id = function() return {} end,
+	nvim_get_option = function() end, -- this can return different types
+      }
+    end
+    local vim = { api = api }
+    -- Register the api mock in the globals.
+    _G.vim = vim
+    -- Reload the nvimpager script
+    package.loaded["lua/nvimpager"] = nil
+    return require("lua/nvimpager")
+  end
 
   describe("split_rgb_number", function()
     it("handles numbers from 0 to 16777215", function()
+      local nvimpager = load_nvimpager()
       local r, g, b = nvimpager.split_rgb_number(0x000000)
       assert.equal(r, 0)
       assert.equal(g, 0)
@@ -217,6 +228,7 @@ describe("lua functions", function()
     end)
 
     it("correctly splits rgb values", function()
+      local nvimpager = load_nvimpager()
       local r, g, b = nvimpager.split_rgb_number(0x55AACC)
       assert.equal(r, 0x55)
       assert.equal(g, 0xAA)
@@ -226,9 +238,14 @@ describe("lua functions", function()
 
   describe("group2ansi", function()
     it("calls nvim_get_hl_by_id", function()
-      local m = mock(vim)
+      local api = {
+	nvim_get_hl_by_id = function() return {} end,
+	nvim_get_option = function() return true end,
+      }
+      local m = mock(api)
+      local nvimpager = load_nvimpager(api)
       local escape = nvimpager.group2ansi(100)
-      assert.stub(m.api.nvim_get_hl_by_id).was.called_with(100, true)
+      assert.stub(m.nvim_get_hl_by_id).was.called_with(100, true)
       assert.equal(escape, '\x1b[0m')
     end)
   end)
