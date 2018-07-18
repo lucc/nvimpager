@@ -45,5 +45,6 @@ local function group2ansi(groupid)
 end
 
 return {
+  group2ansi = group2ansi,
   split_rgb_number = split_rgb_number,
 }

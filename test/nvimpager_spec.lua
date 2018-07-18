@@ -2,7 +2,8 @@
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
-local describe, it, assert, pending = describe, it, assert, pending  -- luacheck: ignore
+local describe, it, assert, pending, mock =
+      describe, it, assert, pending, mock  -- luacheck: ignore
 
 -- gloabl varables to set $XDG_CONFIG_HOME and $XDG_DATA_HOME to for the
 -- tests.
@@ -215,6 +216,21 @@ describe("lua functions", function()
       assert.equal(r, 0x55)
       assert.equal(g, 0xAA)
       assert.equal(b, 0xCC)
+    end)
+  end)
+
+  describe("group2ansi", function()
+    pending("calls nvim_get_hl_by_id", function()
+      _G.vim = {
+	api = {
+	  nvim_get_hl_by_id = function() return {} end
+	}
+      }
+      local m = mock(_G.vim)
+      local nvimpager = require("lua/nvimpager")
+      local escape = nvimpager.group2ansi(100)
+      assert.stub(m.api.nvim_get_hl_by_id).was.called_with(100, true)
+      assert.equal(escape, '\x1b[0m')
     end)
   end)
 end)
