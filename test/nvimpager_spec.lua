@@ -200,11 +200,20 @@ describe("lua functions", function()
   -- return: table -- the nvimpager module
   local function load_nvimpager(api)
     -- Create a local mock of the vim module that is provided by neovim.
+    local default_api = {
+      nvim_get_hl_by_id = function() return {} end,
+      -- These can return different types so we just default to nil.
+      nvim_call_function = function() end,
+      nvim_get_option = function() end,
+    }
     if api == nil then
-      api = {
-	nvim_get_hl_by_id = function() return {} end,
-	nvim_get_option = function() end, -- this can return different types
-      }
+      api = default_api
+    else
+      for key, value in pairs(default_api) do
+	if api[key] == nil then
+	  api[key] = value
+	end
+      end
     end
     local vim = { api = api }
     -- Register the api mock in the globals.
@@ -242,9 +251,11 @@ describe("lua functions", function()
 	local api = {
 	  nvim_get_hl_by_id = function() return {} end,
 	  nvim_get_option = function() return termguicolors end,
+	  nvim_call_function = function() return 0 end,
 	}
 	local m = mock(api)
 	local nvimpager = load_nvimpager(api)
+	nvimpager.init_cat_mode()
 	local escape = nvimpager.group2ansi(100)
 	assert.stub(m.nvim_get_hl_by_id).was.called_with(100, termguicolors)
 	assert.equal('\x1b[0m', escape)

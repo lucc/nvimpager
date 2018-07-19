@@ -8,6 +8,8 @@
 " Many newer features where also taken from
 " https://github.com/rkitover/vimpager
 
+lua require('nvimpager').init_cat_mode()
+
 " Iterate through the current buffer and print it to stdout with terminal
 " color codes for highlighting.
 function! cat#highlight() abort

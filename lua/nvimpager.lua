@@ -4,8 +4,13 @@
 -- shortcut and tell luacheck to ignore it.
 local nvim = vim.api -- luacheck: ignore
 
+-- These variables will be initialized by the first call to init_cat_mode():
 -- We cache the calculated escape sequences for the syntax groups.
 local cache = {}
+-- A local copy of the termguicolors option, used for color output in cat
+-- mode.
+local colors_24_bit
+local color2escape
 
 local function split_rgb_number(color_number)
   -- The lua implementation of these bit shift operations is taken from
@@ -15,8 +20,6 @@ local function split_rgb_number(color_number)
   local b = math.floor(color_number % 2 ^ 8)
   return r, g, b
 end
-
-local colors_24_bit = nvim.nvim_get_option('termguicolors')
 
 local function color2escape_24bit(color_number, foreground)
   local red, green, blue = split_rgb_number(color_number)
@@ -54,13 +57,6 @@ local function color2escape_8bit(color_number, foreground)
   return prefix .. color_number
 end
 
-local color2escape
-if colors_24_bit then
-  color2escape = color2escape_24bit
-else
-  color2escape = color2escape_8bit
-end
-
 local function group2ansi(groupid)
   if cache[groupid] then
     return cache[groupid]
@@ -87,9 +83,23 @@ local function group2ansi(groupid)
   return escape
 end
 
+local function init_cat_mode()
+  -- Initialize the ansi group to color cache with the "Normal" hl group.
+  cache[0] = group2ansi(nvim.nvim_call_function('hlID', {'Normal'}))
+  -- Get the value of &termguicolors from neovim.
+  colors_24_bit = nvim.nvim_get_option('termguicolors')
+  -- Select the correct coloe escaping function.
+  if colors_24_bit then
+    color2escape = color2escape_24bit
+  else
+    color2escape = color2escape_8bit
+  end
+end
+
 return {
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
   group2ansi = group2ansi,
+  init_cat_mode = init_cat_mode,
   split_rgb_number = split_rgb_number,
 }
