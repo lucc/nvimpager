@@ -43,13 +43,14 @@ endfunction
 " Call the highlight function to write the highlighted version of all buffers
 " to stdout and quit nvim.
 function! s:cat() abort
+  lua require('nvimpager').init_cat_mode()
   let i = 1
   while i < argc()
-    call cat#highlight()
+    lua require("nvimpager").highlight()
     next
     let i+= 1
   endwhile
-  call cat#highlight()
+  lua require("nvimpager").highlight()
   quitall!
 endfunction
 

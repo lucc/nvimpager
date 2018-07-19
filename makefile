@@ -6,7 +6,6 @@ BUSTED = busted
 
 AUTOLOAD_FILES = \
 		 autoload/AnsiEsc.vim \
-		 autoload/cat.vim     \
 		 autoload/pager.vim   \
 
 PLUGIN_FILES = \

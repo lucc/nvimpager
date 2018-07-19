@@ -1,5 +1,15 @@
 -- Functions to use neovim as a pager.
 
+-- This code is a rewrite of two sources: vimcat and vimpager (which also
+-- conatins a version of vimcat).
+-- Vimcat back to Matthew J. Wozniski and can be found at
+-- https://github.com/godlygeek/vim-files/blob/master/macros/vimcat.sh
+-- Vimpager was written by Rafael Kitover and can be found at
+-- https://github.com/rkitover/vimpager
+
+-- Information about terminal escape codes:
+-- https://en.wikipedia.org/wiki/ANSI_escape_code
+
 -- Neovim defines this object but luacheck doesn't know it.  So we define a
 -- shortcut and tell luacheck to ignore it.
 local nvim = vim.api -- luacheck: ignore
@@ -65,6 +75,10 @@ local function group2ansi(groupid)
   if info.reverse then
     info.foreground, info.background = info.background, info.foreground
   end
+  -- Reset all attributes before setting new ones.  The vimscript version did
+  -- use sevel explicit reset codes: 22, 24, 25, 27 and 28.  If no foreground
+  -- or background color was defined for a syntax item they were reset with
+  -- 39 or 49.
   local escape = '\x1b[0'
 
   if info.bold then escape = escape .. ';1' end
@@ -96,6 +110,8 @@ local function init_cat_mode()
   end
 end
 
+-- Iterate through the current buffer and print it to stdout with terminal
+-- color codes for highlighting.
 local function highlight()
   -- Detect an empty buffer, see :help line2byte().  We can not use
   -- nvim_buf_get_lines as the table will contain one empty string for both an
