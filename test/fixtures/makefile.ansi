@@ -1,4 +1,4 @@
-[0m[K[0;34m# a test makefile
-[0m[K[0;36mPREFIX [0m= nothing
-[0m[K[0;36mall:[0m nothing
-[0m[K[0;31m	run command --option=[0;36m$(PREFIX)[0m
+[0;34m# a test makefile
+[0;36mPREFIX [0m= nothing
+[0;36mall:[0m nothing
+[0;31m	run command --option=[0;36m$(PREFIX)

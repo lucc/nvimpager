@@ -109,6 +109,7 @@ local function highlight()
       outline = outline .. line:sub(cnum, cnum)
     end
     io.write(outline, '\n')
+    -- TODO reset terminal attributes just before the last newline.
   end
 end
 

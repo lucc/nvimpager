@@ -21,6 +21,8 @@ function! cat#highlight() abort
     return
   endif
 
+  lua require("nvimpager").highlight()
+  return
   let retv = []
 
   for lnum in range(1, line('$'))
