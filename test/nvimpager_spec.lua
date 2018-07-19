@@ -103,7 +103,7 @@ describe("cat mode", function()
     assert.equal(expected, output)
   end)
 
-  pending("highlights all files", function()
+  it("highlights all files", function()
     local output = run("./nvimpager -c test/fixtures/makefile " ..
                                       "test/fixtures/help.txt")
     local expected = read("test/fixtures/makefile.ansi") ..
@@ -157,9 +157,9 @@ describe("cat mode", function()
       local expected = read("test/fixtures/help.txt.cole"..level..".ansi")
       assert.equal(expected, output)
     end
-    pending("are removed at conceallevel=2", function() test_level(2) end)
-    pending("are hidden at conceallevel=1", function() test_level(1) end)
-    pending("are highlighted at conceallevel=0", function() test_level(0) end)
+    it("are removed at conceallevel=2", function() test_level(2) end)
+    it("are hidden at conceallevel=1", function() test_level(1) end)
+    it("are highlighted at conceallevel=0", function() test_level(0) end)
   end)
 
   describe("conceal replacements", function()
@@ -170,9 +170,9 @@ describe("cat mode", function()
       local expected = read("test/fixtures/conceal.tex.cole"..level..".ansi")
       assert.equal(expected, output)
     end
-    pending("are replaced at conceallevel=2", function() test_replace(2) end)
-    pending("are replaced at conceallevel=1", function() test_replace(1) end)
-    pending("are highlighted at conceallevel=0", function() test_replace(0) end)
+    it("are replaced at conceallevel=2", function() test_replace(2) end)
+    it("are replaced at conceallevel=1", function() test_replace(1) end)
+    it("are highlighted at conceallevel=0", function() test_replace(0) end)
   end)
 end)
 
