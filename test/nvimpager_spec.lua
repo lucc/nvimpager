@@ -103,19 +103,6 @@ describe("cat mode", function()
     assert.equal(expected, output)
   end)
 
-  it("hides concoealed characters", function()
-    local output = run("./nvimpager -c test/fixtures/help.txt")
-    local expected = read("test/fixtures/help.txt.ansi")
-    assert.equal(expected, output)
-  end)
-
-  it("replaces conceal replacements", function()
-    local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
-                       "--cmd \"let g:tex_flavor='latex'\"")
-    local expected = read("test/fixtures/conceal.tex.ansi")
-    assert.equal(expected, output)
-  end)
-
   it("highlights all files", function()
     local output = run("./nvimpager -c test/fixtures/makefile " ..
                                       "test/fixtures/help.txt")
@@ -161,6 +148,31 @@ describe("cat mode", function()
     local expected = read("test/fixtures/makefile.ansi") ..
                      read("test/fixtures/conceal.tex.ansi")
     assert.equal(expected, output)
+  end)
+
+  describe("conceals", function()
+    local function test_level(level)
+      local output = run("./nvimpager -c test/fixtures/help.txt "..
+			 "-c 'set cole="..level.."'")
+      local expected = read("test/fixtures/help.txt.cole"..level..".ansi")
+      assert.equal(expected, output)
+    end
+    it("are removed at conceallevel=2", function() test_level(2) end)
+    it("are hidden at conceallevel=1", function() test_level(1) end)
+    it("are highlighted at conceallevel=0", function() test_level(0) end)
+  end)
+
+  describe("conceal replacements", function()
+    local function test_replace(level)
+      local output = run("./nvimpager -c test/fixtures/conceal.tex "..
+			 "--cmd \"let g:tex_flavor='latex'\" "..
+			 "-c 'set cole="..level.."'")
+      local expected = read("test/fixtures/conceal.tex.cole"..level..".ansi")
+      assert.equal(expected, output)
+    end
+    it("are replaced at conceallevel=2", function() test_replace(2) end)
+    it("are replaced at conceallevel=1", function() test_replace(1) end)
+    it("are highlighted at conceallevel=0", function() test_replace(0) end)
   end)
 end)
 
