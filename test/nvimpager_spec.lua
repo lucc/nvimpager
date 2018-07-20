@@ -13,17 +13,47 @@ local datadir = "test/fixtures/no-data"
 -- Run a shell command, assert it terminates with return code 0 and return its
 -- output.
 --
+-- The assertion of the return status works even with Lua 5.1.  The last byte
+-- of output of the command *must not* be a decimal digit.
+--
 -- command: string -- the shell command to execute
 -- returns: string -- the output of the command
 local function run(command)
-  command = 'XDG_CONFIG_HOME='..confdir..' ' .. command
-  command = 'XDG_DATA_HOME='..datadir..' ' .. command
-  command = 'env ' .. command
+  -- From Lua 5.2 on we could use io.close to retrieve the return status of
+  -- the process.  It would return true, "exit", x where x is the status.
+  -- For Lua 5.1 (currently used by neovim) we have to echo the return status
+  -- in the shell command and extract it from the output.
+  -- References:
+  -- https://www.lua.org/manual/5.1/manual.html#pdf-io.close
+  -- https://www.lua.org/manual/5.1/manual.html#pdf-file:close
+  -- https://www.lua.org/manual/5.2/manual.html#pdf-io.close
+  -- https://www.lua.org/manual/5.2/manual.html#pdf-file:close
+  -- https://www.lua.org/manual/5.2/manual.html#pdf-os.execute
+  -- https://stackoverflow.com/questions/7607384
+  command = 'XDG_CONFIG_HOME='..confdir..' '
+	  ..'XDG_DATA_HOME='..datadir..' '
+	  .. 'env '..command
+	  -- The return status, needed in Lua 5.1
+	  .. ';echo $?'
   local proc = io.popen(command)
   local output = proc:read('*all')
   local status = {proc:close()}
+  -- This is *not* the return value of the command.
   assert.equal(true, status[1])
-  return output
+  -- In Lua 5.2 we could also assert this and it would be meaningful:
+  -- assert.equal("exit", status[2])
+  -- assert.equal(0, status[3])
+  -- For Lua 5.1 we have echoed the return status with the output.  First we
+  -- assert the last two bytes, which is easy:
+  assert.equal("0\n", output:sub(-2), "command failed")
+  -- When the original command did not produce any output this is it.
+  if #output ~= 2 then
+    -- Otherwise we can only hope that the command did not produce a digit as
+    -- it's last character of output.
+    assert.is_nil(tonumber(output:sub(-3, -3)), "command failed")
+  end
+  -- If the assert succeeded we can remove two bytes from the end.
+  return output:sub(1, -3)
 end
 
 -- Read contents of a file and return them.
