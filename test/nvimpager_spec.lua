@@ -214,16 +214,17 @@ end)
 
 describe("backend:", function()
   it("runtimepath doesn't include nvim's user dirs", function()
-    local cmd = "RUNTIME=special-test-value " ..
-      "nvim --headless " ..
-      "--cmd 'set runtimepath+=.' " ..
-      "--cmd 'call pager#start()' " ..
-      "--cmd 'let rtp = nvim_list_runtime_paths()' " ..
-      "--cmd 'if index(rtp, $RUNTIME) == -1 | cquit | endif' " ..
-      "--cmd 'if index(rtp, stdpath(\"config\")) != -1 | cquit | endif' " ..
-      "--cmd 'if index(rtp, stdpath(\"data\")) != -1 | cquit | endif' " ..
-      "--cmd quit"
-    run(cmd)
+    local cmd = [[RUNTIME=special-test-value nvim --headless --cmd '
+      set runtimepath+=.
+      call pager#start()
+      let rtp = nvim_list_runtime_paths()
+      echo index(rtp, $RUNTIME) == -1
+      echo index(rtp, stdpath("config")) != -1
+      echo index(rtp, stdpath("data")) != -1
+      echo ""
+      quit' 2>&1]]
+    local output = run(cmd)
+    assert.equal('0\r\n0\r\n0\r\n', output)
   end)
 
   it("plugin manifest doesn't contain nvim's value", function()
