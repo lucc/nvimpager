@@ -220,7 +220,7 @@ describe("backend:", function()
       let rtp = nvim_list_runtime_paths()
       echo index(rtp, $RUNTIME) == -1
       echo index(rtp, stdpath("config")) != -1
-      echo index(rtp, stdpath("data")) != -1
+      echo index(rtp, stdpath("data")."/site") != -1
       echo ""
       quit' 2>&1]]
     local output = run(cmd)
