@@ -384,6 +384,20 @@ describe("lua functions", function()
       local t = nvimpager.replace_prefix({"foo", "bar", "baz"}, "b", "XXX")
       assert.same({"foo", "XXXar", "XXXaz"}, t)
     end)
+
+    it("can replace strings with slashes", function()
+      local nvimpager = load_nvimpager()
+      local t = nvimpager.replace_prefix(
+	{"/a/b/c", "/a/b/d", "/g/e/f"}, "/a/b", "/x/y")
+      assert.same({"/x/y/c", "/x/y/d", "/g/e/f"}, t)
+    end)
+
+    it("only replaces at the start of the items", function()
+      local nvimpager = load_nvimpager()
+      local t = nvimpager.replace_prefix(
+	{"abc", "cab"}, "ab", "XXX")
+      assert.same({"XXXc", "cab"}, t)
+    end)
   end)
 end)
 
