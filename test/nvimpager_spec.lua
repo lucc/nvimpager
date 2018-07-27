@@ -30,11 +30,8 @@ local function run(command)
   -- https://www.lua.org/manual/5.2/manual.html#pdf-file:close
   -- https://www.lua.org/manual/5.2/manual.html#pdf-os.execute
   -- https://stackoverflow.com/questions/7607384
-  command = 'XDG_CONFIG_HOME='..confdir..' '
-	  ..'XDG_DATA_HOME='..datadir..' '
-	  .. 'env '..command
-	  -- The return status, needed in Lua 5.1
-	  .. ';echo $?'
+  command = string.format("XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s %s; echo $?",
+    confdir, datadir, command)
   local proc = io.popen(command)
   local output = proc:read('*all')
   local status = {proc:close()}
