@@ -10,7 +10,7 @@ lua nvimpager = require("nvimpager")
 " Setup function to be called from --cmd.  Some early options for both pager
 " and cat mode are set here.
 function! pager#start() abort
-  call s:fix_runtimepath()
+  lua nvimpager.fix_runtime_path()
   " Don't remember file names and positions
   set shada=
   " prevent messages when opening files (especially for the cat version)
@@ -40,21 +40,6 @@ function! s:pager() abort
   endif
   set nomodifiable
   set nomodified
-endfunction
-
-" Fix the runtimepath.  All user nvim folders are replaced by corresponding
-" nvimpager folders.
-function! s:fix_runtimepath() abort
-  " Don't modify our custom entry!
-  let runtimepath = nvim_list_runtime_paths()[:-2]
-  for original in [stdpath('config'), stdpath('data')]
-    let new = original.'pager'
-    let runtimepath = luaeval('nvimpager.replace_prefix(_A.rtp, _A.o, _A.n)',
-	  \ {'rtp':runtimepath, 'o':original, 'n':new})
-  endfor
-  let &runtimepath = join(runtimepath, ',')
-  set runtimepath+=$RUNTIME
-  let $NVIM_RPLUGIN_MANIFEST = new . '/rplugin.vim'
 endfunction
 
 " Detect possible filetypes for the current buffer by looking at the parent

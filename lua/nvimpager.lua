@@ -200,10 +200,29 @@ local function replace_prefix(table, old_prefix, new_prefix)
   return table
 end
 
+-- Fix the runtimepath.  All user nvim folders are replaced by corresponding
+-- nvimpager folders.
+local function fix_runtime_path()
+  local runtimepath = nvim.nvim_list_runtime_paths()
+  -- Remove the custom nvimpager entry that was added on the command line.
+  runtimepath[#runtimepath] = nil
+  local new
+  for _, name in ipairs({"config", "data"}) do
+    local original = nvim.nvim_call_function("stdpath", {name})
+    new = original .."pager"
+    runtimepath = replace_prefix(runtimepath, original, new)
+  end
+  runtimepath = os.getenv("RUNTIME") .. "," .. join(runtimepath, ",")
+  nvim.nvim_set_option("runtimepath", runtimepath)
+  new = new .. '/rplugin.vim'
+  nvim.nvim_command("let $NVIM_RPLUGIN_MANIFEST = '" .. new .. "'")
+end
+
 return {
   cat_mode = cat_mode,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
+  fix_runtime_path = fix_runtime_path,
   group2ansi = group2ansi,
   highlight = highlight,
   init_cat_mode = init_cat_mode,
