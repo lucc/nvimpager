@@ -190,13 +190,22 @@ local function join(table, seperator)
   return ret
 end
 
+-- Replace a string prefix in all items in a list
+local function replace_prefix(table, old_prefix, new_prefix)
+  for index, value in ipairs(table) do
+    table[index] = value:gsub('^' .. old_prefix, new_prefix, 1)
+  end
+  return table
+end
+
 return {
   cat_mode = cat_mode,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
-  join = join,
   group2ansi = group2ansi,
   highlight = highlight,
   init_cat_mode = init_cat_mode,
+  join = join,
+  replace_prefix = replace_prefix,
   split_rgb_number = split_rgb_number,
 }
