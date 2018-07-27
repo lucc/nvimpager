@@ -398,6 +398,13 @@ describe("lua functions", function()
 	{"abc", "cab"}, "ab", "XXX")
       assert.same({"XXXc", "cab"}, t)
     end)
+
+    it("can replace lua pattern chars",  function()
+      local nvimpager = load_nvimpager()
+      local actual = nvimpager.replace_prefix(
+	  {"a-b-c"}, "a-b", "XXX")
+      assert.same({"XXX-c"}, actual)
+    end)
   end)
 end)
 

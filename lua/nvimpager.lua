@@ -192,6 +192,8 @@ end
 
 -- Replace a string prefix in all items in a list
 local function replace_prefix(table, old_prefix, new_prefix)
+  -- Escape all punctuation chars to protect from lua pattern chars.
+  old_prefix = old_prefix:gsub('[^%w]', '%%%0')
   for index, value in ipairs(table) do
     table[index] = value:gsub('^' .. old_prefix, new_prefix, 1)
   end
