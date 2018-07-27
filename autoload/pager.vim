@@ -5,6 +5,8 @@ augroup NvimPager
   autocmd!
 augroup END
 
+lua nvimpager = require("nvimpager")
+
 " Setup function to be called from --cmd.  Some early options for both pager
 " and cat mode are set here.
 function! pager#start() abort
@@ -47,22 +49,12 @@ function! s:fix_runtimepath() abort
   let runtimepath = nvim_list_runtime_paths()[:-2]
   for original in [stdpath('config'), stdpath('data')]
     let new = original.'pager'
-    call s:replace_prefix_in_string_list(runtimepath, original, new)
+    let runtimepath = luaeval('nvimpager.replace_prefix(_A.rtp, _A.o, _A.n)',
+	  \ {'rtp':runtimepath, 'o':original, 'n':new})
   endfor
   let &runtimepath = join(runtimepath, ',')
   set runtimepath+=$RUNTIME
   let $NVIM_RPLUGIN_MANIFEST = new . '/rplugin.vim'
-endfunction
-
-" Replace a string prefix in all items in a list
-function! s:replace_prefix_in_string_list(list, prefix, replace) abort
-  let length = len(a:prefix)
-  for index in range(0, len(a:list)-1)
-    if stridx(a:list[index], a:prefix) == 0
-      let item = a:replace . (a:list[index][length:-1])
-      let a:list[index] = item
-    endif
-  endfor
 endfunction
 
 " Detect possible filetypes for the current buffer by looking at the parent
