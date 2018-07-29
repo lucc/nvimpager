@@ -24,16 +24,6 @@ function! pager#prepare_cat() abort
   autocmd NvimPager VimEnter * lua require('nvimpager').cat_mode()
 endfunction
 
-" Unset all mappings set in s:set_maps().
-function! s:unset_maps() abort
-  nunmap q
-  nunmap <Space>
-  nunmap <S-Space>
-  nunmap g
-  nunmap <Up>
-  nunmap <Down>
-endfunction
-
 " Display some help text about mappings.
 function! s:help() abort
   " TODO

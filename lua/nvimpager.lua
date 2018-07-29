@@ -330,6 +330,17 @@ local function set_maps()
   nvim.nvim_command('nnoremap <Down> <C-E>')
 end
 
+-- Unset all mappings set in set_maps().
+-- FIXME This is currently unused but keept for reference.
+local function unset_maps()
+  nvim.nvim_command("nunmap q")
+  nvim.nvim_command("nunmap <Space>")
+  nvim.nvim_command("nunmap <S-Space>")
+  nvim.nvim_command("nunmap g")
+  nvim.nvim_command("nunmap <Up>")
+  nvim.nvim_command("nunmap <Down>")
+end
+
 -- Setup function for the VimEnter autocmd.
 local function pager()
   if check_escape_sequences() then
