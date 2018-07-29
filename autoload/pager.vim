@@ -23,8 +23,3 @@ function! pager#prepare_cat() abort
   lua nvimpager.detect_filetype()
   autocmd NvimPager VimEnter * lua require('nvimpager').cat_mode()
 endfunction
-
-" Display some help text about mappings.
-function! s:help() abort
-  " TODO
-endfunction
