@@ -359,6 +359,13 @@ local function prepare_pager()
   nvim.nvim_command('autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()')
 end
 
+-- Set up an VimEnter autocmd to print the files to stdout with highlighting.
+-- Should be called from -c.
+local function prepare_cat()
+  detect_filetype()
+  nvim.nvim_command("autocmd NvimPager VimEnter * lua nvimpager.cat_mode()")
+end
+
 -- Setup function to be called from --cmd.  Some early options for both pager
 -- and cat mode are set here.
 local function start()
@@ -387,6 +394,7 @@ return {
   init_cat_mode = init_cat_mode,
   join = join,
   pager = pager,
+  prepare_cat = prepare_cat,
   prepare_pager = prepare_pager,
   replace_prefix = replace_prefix,
   set_maps = set_maps,
