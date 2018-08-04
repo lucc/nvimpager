@@ -6,7 +6,6 @@ BUSTED = busted
 
 AUTOLOAD_FILES = \
 		 autoload/AnsiEsc.vim \
-		 autoload/cat.vim     \
 		 autoload/pager.vim   \
 
 PLUGIN_FILES = \
@@ -21,10 +20,12 @@ BENCHMARK_OPTS = --warmup 2 --min-runs 100
 
 install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/autoload \
-	  $(DESTDIR)$(RUNTIME)/plugin $(DESTDIR)$(PREFIX)/share/man/man1
+	  $(DESTDIR)$(RUNTIME)/plugin $(DESTDIR)$(RUNTIME)/lua \
+	  $(DESTDIR)$(PREFIX)/share/man/man1
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
 	install $(AUTOLOAD_FILES) $(DESTDIR)$(RUNTIME)/autoload
 	install $(PLUGIN_FILES) $(DESTDIR)$(RUNTIME)/plugin
+	install lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 
 metadata.yaml:

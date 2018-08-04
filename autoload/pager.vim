@@ -27,7 +27,7 @@ endfunction
 " Should be called from -c.
 function! pager#prepare_cat() abort
   call s:detect_file_type()
-  autocmd NvimPager VimEnter * call s:cat()
+  autocmd NvimPager VimEnter * lua require('nvimpager').cat_mode()
 endfunction
 
 " Setup function for the VimEnter autocmd.
@@ -38,19 +38,6 @@ function! s:pager() abort
   endif
   set nomodifiable
   set nomodified
-endfunction
-
-" Call the highlight function to write the highlighted version of all buffers
-" to stdout and quit nvim.
-function! s:cat() abort
-  let i = 1
-  while i < argc()
-    call cat#highlight()
-    next
-    let i+= 1
-  endwhile
-  call cat#highlight()
-  quitall!
 endfunction
 
 " Fix the runtimepath.  All user nvim folders are replaced by corresponding
