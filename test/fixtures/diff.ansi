@@ -19,4 +19,4 @@
 +    local expected = read("test/fixtures/man.ansi")
 +    assert.equal(expected, output)
 +  end)
-+end)
++end)[0m

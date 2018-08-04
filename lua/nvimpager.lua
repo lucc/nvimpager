@@ -100,6 +100,7 @@ local function highlight()
   local conceallevel = nvim.nvim_win_get_option(0, 'conceallevel')
   local last_syntax_id = -1
   local last_conceal_id = -1
+  local linecount = nvim.nvim_buf_line_count(0)
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
     for cnum = 1, line:len() do
@@ -127,8 +128,9 @@ local function highlight()
 	outline = outline .. append
       end
     end
-    io.write(outline, '\n')
-    -- TODO reset terminal attributes just before the last newline.
+    -- Write the whole line and a newline char.  If this was the last line
+    -- also reset the terminal attributes.
+    io.write(outline, lnum == linecount and '\x1b[0m' or '', '\n')
   end
 end
 
