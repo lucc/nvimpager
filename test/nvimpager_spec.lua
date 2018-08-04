@@ -328,3 +328,17 @@ describe("lua functions", function()
   end)
 
 end)
+
+describe("parent detection", function()
+  it("handles git", function()
+    local output = run("test/fixtures/bin/git ./nvimpager -c test/fixtures/diff")
+    local expected = read("test/fixtures/diff.ansi")
+    assert.equal(expected, output)
+  end)
+
+  it("handles man", function()
+    local output = run("test/fixtures/bin/man ./nvimpager -c test/fixtures/man.cat")
+    local expected = read("test/fixtures/man.ansi")
+    assert.equal(expected, output)
+  end)
+end)
