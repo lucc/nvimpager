@@ -30,11 +30,8 @@ local function run(command)
   -- https://www.lua.org/manual/5.2/manual.html#pdf-file:close
   -- https://www.lua.org/manual/5.2/manual.html#pdf-os.execute
   -- https://stackoverflow.com/questions/7607384
-  command = 'XDG_CONFIG_HOME='..confdir..' '
-	  ..'XDG_DATA_HOME='..datadir..' '
-	  .. 'env '..command
-	  -- The return status, needed in Lua 5.1
-	  .. ';echo $?'
+  command = string.format("XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s %s; echo $?",
+    confdir, datadir, command)
   local proc = io.popen(command)
   local output = proc:read('*all')
   local status = {proc:close()}
@@ -358,6 +355,54 @@ describe("lua functions", function()
     end)
   end)
 
+  describe("join", function()
+    it("returns the empty string for empty tables", function()
+      local nvimpager = load_nvimpager()
+      local s = nvimpager.join({}, "long string")
+      assert.equal("", s)
+    end)
+
+    it("returns the single element for length one tables", function()
+      local nvimpager = load_nvimpager()
+      local s = nvimpager.join({"foo"}, "xxx")
+      assert.equal("foo", s)
+    end)
+
+    it("joins tables with several elements", function()
+      local nvimpager = load_nvimpager()
+      local s = nvimpager.join({"foo", "bar", "baz"}, ",")
+      assert.equal("foo,bar,baz", s)
+    end)
+  end)
+
+  describe("replace_prefix", function()
+    it("can replace a simple prefix in a table of strings", function()
+      local nvimpager = load_nvimpager()
+      local t = nvimpager.replace_prefix({"foo", "bar", "baz"}, "b", "XXX")
+      assert.same({"foo", "XXXar", "XXXaz"}, t)
+    end)
+
+    it("can replace strings with slashes", function()
+      local nvimpager = load_nvimpager()
+      local t = nvimpager.replace_prefix(
+	{"/a/b/c", "/a/b/d", "/g/e/f"}, "/a/b", "/x/y")
+      assert.same({"/x/y/c", "/x/y/d", "/g/e/f"}, t)
+    end)
+
+    it("only replaces at the start of the items", function()
+      local nvimpager = load_nvimpager()
+      local t = nvimpager.replace_prefix(
+	{"abc", "cab"}, "ab", "XXX")
+      assert.same({"XXXc", "cab"}, t)
+    end)
+
+    it("can replace lua pattern chars",  function()
+      local nvimpager = load_nvimpager()
+      local actual = nvimpager.replace_prefix(
+	  {"a-b-c"}, "a-b", "XXX")
+      assert.same({"XXX-c"}, actual)
+    end)
+  end)
 end)
 
 describe("parent detection", function()

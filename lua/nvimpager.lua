@@ -110,6 +110,17 @@ local function init_cat_mode()
   end
 end
 
+-- Check if the begining of the current buffer contains ansi escape sequences.
+local function check_escape_sequences()
+  local filetype = nvim.nvim_buf_get_option(0, 'filetype')
+  if filetype == '' or filetype == 'text' then
+    for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 100, false)) do
+      if line:find('\x1b%[[;?]*[0-9.;]*[A-Za-z]') ~= nil then return true end
+    end
+  end
+  return false
+end
+
 -- Iterate through the current buffer and print it to stdout with terminal
 -- color codes for highlighting.
 local function highlight()
@@ -119,7 +130,7 @@ local function highlight()
   if nvim.nvim_buf_line_count(0) == 1 and
     nvim.nvim_call_function("line2byte", {2}) == -1 then
     return
-  elseif nvim.nvim_call_function('pager#check_escape_sequences', {}) == 1 then
+  elseif check_escape_sequences() then
     for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
       io.write(line, '\n')
     end
@@ -177,12 +188,195 @@ local function cat_mode()
   nvim.nvim_command('quitall!')
 end
 
+-- Join a table with a string
+local function join(table, seperator)
+  if #table == 0 then return '' end
+  local index = 1
+  local ret = table[index]
+  index = index + 1
+  while index <= #table do
+    ret = ret .. seperator .. table[index]
+    index = index + 1
+  end
+  return ret
+end
+
+-- Replace a string prefix in all items in a list
+local function replace_prefix(table, old_prefix, new_prefix)
+  -- Escape all punctuation chars to protect from lua pattern chars.
+  old_prefix = old_prefix:gsub('[^%w]', '%%%0')
+  for index, value in ipairs(table) do
+    table[index] = value:gsub('^' .. old_prefix, new_prefix, 1)
+  end
+  return table
+end
+
+-- Fix the runtimepath.  All user nvim folders are replaced by corresponding
+-- nvimpager folders.
+local function fix_runtime_path()
+  local runtimepath = nvim.nvim_list_runtime_paths()
+  -- Remove the custom nvimpager entry that was added on the command line.
+  runtimepath[#runtimepath] = nil
+  local new
+  for _, name in ipairs({"config", "data"}) do
+    local original = nvim.nvim_call_function("stdpath", {name})
+    new = original .."pager"
+    runtimepath = replace_prefix(runtimepath, original, new)
+  end
+  runtimepath = os.getenv("RUNTIME") .. "," .. join(runtimepath, ",")
+  nvim.nvim_set_option("runtimepath", runtimepath)
+  new = new .. '/rplugin.vim'
+  nvim.nvim_command("let $NVIM_RPLUGIN_MANIFEST = '" .. new .. "'")
+end
+
+-- Parse the command of the calling process to detect some common
+-- documentation programs (man, pydoc, perldoc, git, ...).  $PPID was exported
+-- by the calling bash script and points to the calling program.
+local function detect_doc_viewer_from_ppid()
+  local ppid = os.getenv('PPID')
+  local proc = nvim.nvim_get_proc(tonumber(ppid))
+  if proc == nil then return 'none' end
+  local command = proc.name
+  if command == 'man' then
+    return 'man'
+  elseif command:find('^[Pp]ython[0-9.]*') ~= nil or
+	 command:find('^[Pp]ydoc[0-9.]*') ~= nil then
+    return 'pydoc'
+  elseif command == 'ruby' or command == 'ri' then
+    return 'ri'
+  elseif command == 'perl' or command == 'perldoc' then
+    return 'perldoc'
+  elseif command == 'git' then
+    return 'git'
+  end
+  return 'none'
+end
+
+-- Search the begining of the current buffer to detect if it contains a man
+-- page.
+local function detect_man_page_in_current_buffer()
+  -- Only check the first twelve lines (for speed).
+  for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 12, false)) do
+    -- Check if the line contains the string "NAME" or "NAME" with every
+    -- character overwritten by itself.
+    -- An earlier version of this code did also check if there are whitespace
+    -- characters at the end of the line.  I could not find a man pager where
+    -- this was the case.
+    -- FIXME This only works for man pages in languages where "NAME" is used
+    -- as the headline.  Some (not all!) German man pages use "BBEZEICHNUNG"
+    -- instead.
+    if line == 'NAME' or line == 'N\bNA\bAM\bME\bE' then
+      return true
+    end
+  end
+  return false
+end
+
+-- Remove ansi escape sequences from the current buffer.
+local function strip_ansi_escape_sequences_from_current_buffer()
+  local modifiable = nvim.nvim_buf_get_option(0, "modifiable")
+  nvim.nvim_buf_set_option(0, "modifiable", true)
+  nvim.nvim_command(
+    [[keepjumps silent %substitute/\v\e\[[;?]*[0-9.;]*[a-z]//egi]])
+  nvim.nvim_win_set_cursor(0, {1, 0})
+  nvim.nvim_buf_set_option(0, "modifiable", modifiable)
+end
+
+-- Detect possible filetypes for the current buffer by looking at the pstree or
+-- ansi escape sequences or manpage sequences in the current buffer.
+local function detect_filetype()
+  local doc = detect_doc_viewer_from_ppid()
+  if doc == 'none' then
+    if detect_man_page_in_current_buffer() then
+      -- FIXME: Why does this need to be the command?  Why doesn't this work:
+      --nvim.nvim_buf_set_option(0, 'filetype', 'man')
+      nvim.nvim_command('setfiletype man')
+    end
+  else
+    if doc == 'git' then
+      -- Use nvim's syntax highlighting for git buffers instead of git's
+      -- internal highlighting.
+      strip_ansi_escape_sequences_from_current_buffer()
+    elseif doc == 'pydoc' or doc == 'perldoc' then
+      doc = 'man'
+    end
+    -- FIXME: Why does this need to be the command?  Why doesn't this work:
+    --nvim.nvim_buf_set_option(0, 'filetype', doc)
+    nvim.nvim_command('setfiletype '..doc)
+  end
+end
+
+-- Set some global options for interactive paging of files.
+local function set_options()
+  nvim.nvim_set_option('mouse', 'a')
+  nvim.nvim_set_option('scrolloff', 0)
+  nvim.nvim_set_option('hlsearch', true)
+  nvim.nvim_set_option('incsearch', true)
+  -- FIXME Is this even necessary?  By default the search pattern is not saved
+  -- in the shada file.
+  --nvim.nvim_command('nohlsearch')
+  nvim.nvim_set_option('wrapscan', false)
+  nvim.nvim_set_option('lazyredraw', true)
+  nvim.nvim_set_option('laststatus', 0)
+end
+
+-- Set up mappings to make nvim behave a little more like a pager.
+local function set_maps()
+  nvim.nvim_command('nnoremap q :quitall!<CR>')
+  nvim.nvim_command('nnoremap <Space> <PageDown>')
+  nvim.nvim_command('nnoremap <S-Space> <PageUp>')
+  nvim.nvim_command('nnoremap g gg')
+  nvim.nvim_command('nnoremap <Up> <C-Y>')
+  nvim.nvim_command('nnoremap <Down> <C-E>')
+end
+
+-- Unset all mappings set in set_maps().
+-- FIXME This is currently unused but keept for reference.
+local function unset_maps()
+  nvim.nvim_command("nunmap q")
+  nvim.nvim_command("nunmap <Space>")
+  nvim.nvim_command("nunmap <S-Space>")
+  nvim.nvim_command("nunmap g")
+  nvim.nvim_command("nunmap <Up>")
+  nvim.nvim_command("nunmap <Down>")
+end
+
+-- Setup function for the VimEnter autocmd.
+local function pager()
+  if check_escape_sequences() then
+    -- Try to highlight ansi escape sequences with the AnsiEsc plugin.
+    nvim.nvim_command('AnsiEsc')
+  end
+  nvim.nvim_buf_set_option(0, 'modifiable', false)
+  nvim.nvim_buf_set_option(0, 'modified', false)
+end
+
+-- Setup function for pager mode.  Called from -c.
+local function prepare_pager()
+  detect_filetype()
+  set_options()
+  set_maps()
+  nvim.nvim_command('autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()')
+end
+
 return {
   cat_mode = cat_mode,
+  check_escape_sequences = check_escape_sequences,
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
+  detect_doc_viewer_from_ppid = detect_doc_viewer_from_ppid,
+  detect_filetype = detect_filetype,
+  detect_man_page_in_current_buffer = detect_man_page_in_current_buffer,
+  fix_runtime_path = fix_runtime_path,
   group2ansi = group2ansi,
   highlight = highlight,
   init_cat_mode = init_cat_mode,
+  join = join,
+  pager = pager,
+  prepare_pager = prepare_pager,
+  replace_prefix = replace_prefix,
+  set_maps = set_maps,
+  set_options = set_options,
   split_rgb_number = split_rgb_number,
+  strip_ansi_escape_sequences_from_current_buffer = strip_ansi_escape_sequences_from_current_buffer,
 }
