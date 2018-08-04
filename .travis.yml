@@ -16,6 +16,7 @@ before_install: |
     git clone https://github.com/sstephenson/bats.git
     (cd bats && ./install.sh ~/.local)
   else
+    brew update
     brew install neovim pandoc bats
   fi
 install: make install PREFIX=$HOME/.local

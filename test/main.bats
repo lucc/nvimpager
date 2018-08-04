@@ -62,7 +62,7 @@ setup () {
     nvim --headless                                                \
     --cmd 'set runtimepath+=.'                                     \
     --cmd 'call pager#start()'                                     \
-    --cmd 'rtp = nvim_list_untime_paths()'                         \
+    --cmd 'let rtp = nvim_list_runtime_paths()'                    \
     --cmd 'if index(rtp, $RUNTIME) == -1 | cquit | endif'          \
     --cmd 'if index(rtp, stdpath("config")) != -1 | cquit | endif' \
     --cmd 'if index(rtp, stdpath("data")) != -1 | cquit | endif'   \
@@ -100,4 +100,16 @@ setup () {
   run ./nvimpager -c test/fixtures/makefile test/fixtures/makefile
   diff <(echo "$output") \
        <(cat test/fixtures/makefile.ansi test/fixtures/makefile.ansi)
+}
+
+@test "empty files produce no lines of output" {
+  touch "$BATS_TMPDIR/empty"
+  run ./nvimpager -c "$BATS_TMPDIR/empty"
+  rm "$BATS_TMPDIR/empty"
+  [[ -z $output ]]
+}
+
+@test "empty stdin produces no lines of output" {
+  run ./nvimpager -c </dev/null
+  [[ -z $output ]]
 }

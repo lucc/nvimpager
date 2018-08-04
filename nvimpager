@@ -47,7 +47,7 @@ while getopts achpv flag; do
     h) usage; description; exit;;
     p) mode=pager;;
     v)
-      version=0.5
+      version=v0.5.1
       echo "$name $version"
       exit
       ;;

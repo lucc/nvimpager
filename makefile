@@ -1,7 +1,7 @@
 DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
-VERSION = $(patsubst v%,%,$(lastword $(shell ./nvimpager -v)))
+VERSION = $(lastword $(shell ./nvimpager -v))
 
 AUTOLOAD_FILES = \
 		 autoload/AnsiEsc.vim \
@@ -11,6 +11,8 @@ AUTOLOAD_FILES = \
 PLUGIN_FILES = \
 	       plugin/AnsiEscPlugin.vim \
 	       plugin/cecutil.vim       \
+
+BENCHMARK_OPTS = --warmup 2 --min-runs 100
 
 %.configured: %
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
@@ -27,7 +29,7 @@ install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
 metadata.yaml:
 	echo "---" > $@
 	echo "footer: Version $(VERSION)" >> $@
-	echo "date: $$(git log -1 --format=format:%aI | cut -f 1 -d T)" >> $@
+	git log -1 --format=format:'date: %aI' 2>/dev/null | cut -f 1 -d T >> $@
 	echo "..." >> $@
 nvimpager.1: nvimpager.md metadata.yaml
 	pandoc --standalone --to man --output $@ $^
@@ -36,7 +38,7 @@ AnsiEsc.vba:
 	  gunzip > $@
 
 $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
-	nvim -u NONE --headless \
+	nvim -u NONE -i NONE -n --headless \
 	  --cmd 'set rtp^=.' \
 	  --cmd 'packadd vimball' \
 	  --cmd 'runtime plugin/vimballPlugin.vim' \
@@ -47,10 +49,22 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 
 test:
 	@bats test
+benchmark:
+	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
+	@hyperfine $(BENCHMARK_OPTS) \
+	  './nvimpager -c makefile' \
+	  './nvimpager -c <makefile' \
+	  './nvimpager -c test/fixtures/makefile' \
+	  './nvimpager -c <test/fixtures/makefile' \
+	  './nvimpager -c test/fixtures/conceal.tex' \
+	  './nvimpager -c test/fixtures/conceal.tex.ansi' \
+	  './nvimpager -p -- -c quit' \
+	  './nvimpager -p -- makefile -c quit' \
+	  './nvimpager -p test/fixtures/makefile -c quit'
 
 cleanall: clean clean-ansiesc
 clean:
 	$(RM) nvimpager.configured nvimpager.1 metadata.yaml
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
-.PHONY: cleanall clean clean-ansiesc test
+.PHONY: benchmark cleanall clean clean-ansiesc install test
