@@ -277,7 +277,7 @@ local function strip_ansi_escape_sequences_from_current_buffer()
   local modifiable = nvim.nvim_buf_get_option(0, "modifiable")
   nvim.nvim_buf_set_option(0, "modifiable", true)
   nvim.nvim_command(
-    [[keepjumps silent %substitute/\v\e\[[;?]*[0-9.;]*[a-z]//egi]])
+    [=[keepjumps silent %substitute/\v\e\[[;?]*[0-9.;]*[a-z]//egi]=])
   nvim.nvim_win_set_cursor(0, {1, 0})
   nvim.nvim_buf_set_option(0, "modifiable", modifiable)
 end
