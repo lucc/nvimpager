@@ -1,0 +1,22 @@
+diff --git a/test/nvimpager_spec.lua b/test/nvimpager_spec.lua
+index 68e2097..4593495 100644
+--- a/test/nvimpager_spec.lua
++++ b/test/nvimpager_spec.lua
+@@ -405,3 +405,17 @@ describe("lua functions", function()
+     end)
+   end)
+ end)
++
++describe("parent detection", function()
++  it("handles git", function()
++    local output = run("test/fixtures/bin/git ./nvimpager -c test/fixtures/diff")
++    local expected = read("test/fixtures/diff.ansi")
++    assert.equal(expected, output)
++  end)
++
++  it("handles man", function()
++    local output = run("test/fixtures/bin/man ./nvimpager -c test/fixtures/man.cat")
++    local expected = read("test/fixtures/man.ansi")
++    assert.equal(expected, output)
++  end)
++end)

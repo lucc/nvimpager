@@ -2,11 +2,7 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
-
-AUTOLOAD_FILES = \
-		 autoload/AnsiEsc.vim \
-		 autoload/cat.vim     \
-		 autoload/pager.vim   \
+BUSTED = busted
 
 PLUGIN_FILES = \
 	       plugin/AnsiEscPlugin.vim \
@@ -18,12 +14,14 @@ BENCHMARK_OPTS = --warmup 2 --min-runs 100
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
 
-install: nvimpager.configured $(AUTOLOAD_FILES) $(PLUGIN_FILES) nvimpager.1
+install: nvimpager.configured autoload/AnsiEsc.vim $(PLUGIN_FILES) nvimpager.1
 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/autoload \
-	  $(DESTDIR)$(RUNTIME)/plugin $(DESTDIR)$(PREFIX)/share/man/man1
+	  $(DESTDIR)$(RUNTIME)/plugin $(DESTDIR)$(RUNTIME)/lua \
+	  $(DESTDIR)$(PREFIX)/share/man/man1
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
-	install $(AUTOLOAD_FILES) $(DESTDIR)$(RUNTIME)/autoload
+	install autoload/AnsiEsc.vim $(DESTDIR)$(RUNTIME)/autoload
 	install $(PLUGIN_FILES) $(DESTDIR)$(RUNTIME)/plugin
+	install lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 
 metadata.yaml:
@@ -48,7 +46,7 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 	sed -i -e '/hl=/d' autoload/AnsiEsc.vim
 
 test:
-	@bats test
+	@$(BUSTED) test
 benchmark:
 	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
 	@hyperfine $(BENCHMARK_OPTS) \

@@ -7,17 +7,15 @@ addons:
     sources:
       - sourceline: 'ppa:neovim-ppa/unstable'
     packages:
-      - pandoc
+      - luarocks
       - neovim
+      - pandoc
 before_install: |
   set -e
-  if [[ "$TRAVIS_OS_NAME" = linux ]]; then
-    # Install bats, there is no package for it in old ubuntu versions.
-    git clone https://github.com/sstephenson/bats.git
-    (cd bats && ./install.sh ~/.local)
-  else
+  if [[ "$TRAVIS_OS_NAME" = osx ]]; then
     brew update
-    brew install neovim pandoc bats
+    brew install neovim pandoc lua
   fi
+  luarocks --local install busted
 install: make install PREFIX=$HOME/.local
-script: make test
+script: make test BUSTED=$HOME/.luarocks/bin/busted

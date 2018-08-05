@@ -1,0 +1,22 @@
+[0;32mdiff --git a/test/nvimpager_spec.lua b/test/nvimpager_spec.lua
+[0;35mindex 68e2097..4593495 100644
+[0;32m--- a/test/nvimpager_spec.lua
+[0;32m+++ b/test/nvimpager_spec.lua
+[0;38;5;130m@@ -405,3 +405,17 @@[0;35m describe("lua functions", function()
+[0m     end)
+   end)
+ end)
+[0;36m+
++describe("parent detection", function()
++  it("handles git", function()
++    local output = run("test/fixtures/bin/git ./nvimpager -c test/fixtures/diff")
++    local expected = read("test/fixtures/diff.ansi")
++    assert.equal(expected, output)
++  end)
++
++  it("handles man", function()
++    local output = run("test/fixtures/bin/man ./nvimpager -c test/fixtures/man.cat")
++    local expected = read("test/fixtures/man.ansi")
++    assert.equal(expected, output)
++  end)
++end)[0m
