@@ -309,14 +309,6 @@ end
 -- Set some global options for interactive paging of files.
 local function set_options()
   nvim.nvim_set_option('mouse', 'a')
-  nvim.nvim_set_option('scrolloff', 0)
-  nvim.nvim_set_option('hlsearch', true)
-  nvim.nvim_set_option('incsearch', true)
-  -- FIXME Is this even necessary?  By default the search pattern is not saved
-  -- in the shada file.
-  --nvim.nvim_command('nohlsearch')
-  nvim.nvim_set_option('wrapscan', false)
-  nvim.nvim_set_option('lazyredraw', true)
   nvim.nvim_set_option('laststatus', 0)
 end
 
