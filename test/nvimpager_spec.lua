@@ -302,7 +302,7 @@ describe("lua functions", function()
 	nvimpager.init_cat_mode()
 	local escape = nvimpager.group2ansi(100)
 	assert.stub(m.nvim_get_hl_by_id).was.called_with(100, termguicolors)
-	assert.equal('\x1b[0m', escape)
+	assert.equal('\27[0m', escape)
       end
     end)
   end)

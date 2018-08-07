@@ -79,7 +79,7 @@ local function group2ansi(groupid)
   -- use sevel explicit reset codes: 22, 24, 25, 27 and 28.  If no foreground
   -- or background color was defined for a syntax item they were reset with
   -- 39 or 49.
-  local escape = '\x1b[0'
+  local escape = '\27[0'
 
   if info.bold then escape = escape .. ';1' end
   if info.italic then escape = escape .. ';3' end
@@ -115,7 +115,7 @@ local function check_escape_sequences()
   local filetype = nvim.nvim_buf_get_option(0, 'filetype')
   if filetype == '' or filetype == 'text' then
     for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 100, false)) do
-      if line:find('\x1b%[[;?]*[0-9.;]*[A-Za-z]') ~= nil then return true end
+      if line:find('\27%[[;?]*[0-9.;]*[A-Za-z]') ~= nil then return true end
     end
   end
   return false
