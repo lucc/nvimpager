@@ -384,6 +384,7 @@ return {
   _testable = {
     color2escape_24bit = color2escape_24bit,
     color2escape_8bit = color2escape_8bit,
+    detect_doc_viewer_from_ppid = detect_doc_viewer_from_ppid,
     group2ansi = group2ansi,
     highlight = highlight,
     init_cat_mode = init_cat_mode,

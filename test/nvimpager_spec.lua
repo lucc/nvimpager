@@ -410,6 +410,37 @@ describe("lua functions", function()
 end)
 
 describe("parent detection", function()
+
+  -- FIXME These tests are currently broken on travis with the osx build.
+  -- Until I find a solution to change the parent process name correctly they
+  -- are marked as pending.
+  local it = it  -- luacheck: ignore
+  if os.getenv('TRAVIS_OS_NAME') == 'osx' then
+    it = pending
+  end
+
+  -- Wrapper around run_with_parent() to execute some lua code in a --cmd
+  -- argument.
+  local function lua_with_parent(name, code)
+    -- First we have to shellescape the lua code.
+    code = code:gsub("'", "'\\''")
+    local command = [[
+      nvim --cmd 'set rtp+=.' --cmd 'lua ]]..code..[[' --cmd quit]]
+    return run("test/fixtures/bin/"..name.." "..command)
+  end
+
+  it("detects git correctly", function()
+    local output = lua_with_parent(
+      "git", "print(require('nvimpager')._testable.detect_doc_viewer_from_ppid())")
+    assert.equal("git", output)
+  end)
+
+  it("detects man correctly", function()
+    local output = lua_with_parent(
+      "man", "print(require('nvimpager')._testable.detect_doc_viewer_from_ppid())")
+    assert.equal("man", output)
+  end)
+
   it("handles git", function()
     local output = run("test/fixtures/bin/git ./nvimpager -c test/fixtures/diff")
     local expected = read("test/fixtures/diff.ansi")
