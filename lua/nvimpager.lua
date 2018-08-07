@@ -343,21 +343,6 @@ local function pager()
   nvim.nvim_buf_set_option(0, 'modified', false)
 end
 
--- Setup function for pager mode.  Called from -c.
-local function prepare_pager()
-  detect_filetype()
-  set_options()
-  set_maps()
-  nvim.nvim_command('autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()')
-end
-
--- Set up an VimEnter autocmd to print the files to stdout with highlighting.
--- Should be called from -c.
-local function prepare_cat()
-  detect_filetype()
-  nvim.nvim_command("autocmd NvimPager VimEnter * lua nvimpager.cat_mode()")
-end
-
 -- Setup function to be called from --cmd.  Some early options for both pager
 -- and cat mode are set here.
 local function start()
@@ -372,11 +357,29 @@ local function start()
   nvim.nvim_command('augroup END')
 end
 
+-- Set up autocomands to start the correct mode after startup or for each
+-- file.  This function assumes that in "cat mode" we are called with
+-- --headless and hence do not have a user interface.  This also means that
+-- this function can only be called with -c or later as the user interface
+-- would not be available in --cmd.
+local function prepare()
+  detect_filetype()
+  if #nvim.nvim_list_uis() == 0 then
+    -- cat mode
+    nvim.nvim_command("autocmd NvimPager VimEnter * lua nvimpager.cat_mode()")
+  else
+    -- pager mode
+    set_options()
+    set_maps()
+    nvim.nvim_command(
+      'autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()')
+  end
+end
+
 return {
   cat_mode = cat_mode,
   pager = pager,
-  prepare_cat = prepare_cat,
-  prepare_pager = prepare_pager,
+  prepare = prepare,
   start = start,
   _testable = {
     color2escape_24bit = color2escape_24bit,

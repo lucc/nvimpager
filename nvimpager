@@ -94,14 +94,13 @@ default_args=(
   --cmd 'set rtp+=$RUNTIME'
   --cmd 'lua nvimpager = require("nvimpager")'
   --cmd 'lua nvimpager.start()'
+  -c 'lua nvimpager.prepare()'
 )
 # Switch to pager mode if all files combined are shorter than the terminal
 # height.
 if [[ $mode = cat || \
       $mode = auto && $(cat "${files[@]}" | wc -l) -le $(tput lines) ]]
 then
-  default_args+=(--headless -c 'lua nvimpager.prepare_cat()')
-else
-  default_args+=(-c 'lua nvimpager.prepare_pager()')
+  default_args+=(--headless)
 fi
 nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty
