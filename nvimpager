@@ -33,10 +33,10 @@ description () {
 
 	If "-" or no files are given stdin is read.
 
-	In auto mode the cumulative length of all file arguments is smaller
-	than the terminal size, cat mode is used, otherwise pager mode is
-	used.  If any none file argument (neovim option) is given pager mode
-	is implied.
+	In auto mode, if the cumulative length of all file arguments is
+	smaller than the terminal size, cat mode is used, otherwise pager mode
+	is used.  If any none file argument (neovim option) is given pager
+	mode is implied.
 	EOF
 }
 
