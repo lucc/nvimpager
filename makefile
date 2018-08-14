@@ -42,8 +42,6 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 	  --cmd 'runtime plugin/vimballPlugin.vim' \
 	  -S AnsiEsc.vba \
 	  -c quitall!
-	# Remove setting of 'hl', not supported in NeoVim.
-	sed -i -e '/hl=/d' autoload/AnsiEsc.vim
 
 test:
 	@$(BUSTED) test
