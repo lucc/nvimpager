@@ -232,7 +232,7 @@ end
 -- Parse the command of the calling process to detect some common
 -- documentation programs (man, pydoc, perldoc, git, ...).  $PPID was exported
 -- by the calling bash script and points to the calling program.
-local function detect_doc_viewer_from_ppid()
+local function detect_parent_process()
   local ppid = os.getenv('PPID')
   local proc = nvim.nvim_get_proc(tonumber(ppid))
   if proc == nil then return 'none' end
@@ -285,7 +285,7 @@ end
 -- Detect possible filetypes for the current buffer by looking at the pstree or
 -- ansi escape sequences or manpage sequences in the current buffer.
 local function detect_filetype()
-  local doc = detect_doc_viewer_from_ppid()
+  local doc = detect_parent_process()
   if doc == 'none' then
     if detect_man_page_in_current_buffer() then
       -- FIXME: Why does this need to be the command?  Why doesn't this work:
@@ -384,7 +384,7 @@ return {
   _testable = {
     color2escape_24bit = color2escape_24bit,
     color2escape_8bit = color2escape_8bit,
-    detect_doc_viewer_from_ppid = detect_doc_viewer_from_ppid,
+    detect_parent_process = detect_parent_process,
     group2ansi = group2ansi,
     highlight = highlight,
     init_cat_mode = init_cat_mode,

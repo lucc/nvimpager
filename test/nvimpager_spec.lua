@@ -453,13 +453,13 @@ describe("parent detection", function()
 
   it("detects git correctly", function()
     local output = lua_with_parent(
-      "git", "print(require('nvimpager')._testable.detect_doc_viewer_from_ppid())")
+      "git", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("git", output)
   end)
 
   it("detects man correctly", function()
     local output = lua_with_parent(
-      "man", "print(require('nvimpager')._testable.detect_doc_viewer_from_ppid())")
+      "man", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("man", output)
   end)
 
