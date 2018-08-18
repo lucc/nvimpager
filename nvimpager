@@ -93,8 +93,8 @@ default_args=(
   ${rc:+-u "$rc"}
   --cmd 'set rtp+=$RUNTIME'
   --cmd 'lua nvimpager = require("nvimpager")'
-  --cmd 'lua nvimpager.start()'
-  -c 'lua nvimpager.prepare()'
+  --cmd 'lua nvimpager.stage1()'
+  -c 'lua nvimpager.stage2()'
 )
 # Switch to pager mode if all files combined are shorter than the terminal
 # height.

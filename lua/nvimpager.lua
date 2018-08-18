@@ -334,7 +334,7 @@ local function unset_maps()
 end
 
 -- Setup function for the VimEnter autocmd.
-local function pager()
+local function pager_mode()
   if check_escape_sequences() then
     -- Try to highlight ansi escape sequences with the AnsiEsc plugin.
     nvim.nvim_command('AnsiEsc')
@@ -345,7 +345,7 @@ end
 
 -- Setup function to be called from --cmd.  Some early options for both pager
 -- and cat mode are set here.
-local function start()
+local function stage1()
   fix_runtime_path()
   -- Don't remember file names and positions
   nvim.nvim_set_option('shada', '')
@@ -362,7 +362,7 @@ end
 -- --headless and hence do not have a user interface.  This also means that
 -- this function can only be called with -c or later as the user interface
 -- would not be available in --cmd.
-local function prepare()
+local function stage2()
   detect_filetype()
   if #nvim.nvim_list_uis() == 0 then
     -- cat mode
@@ -372,15 +372,15 @@ local function prepare()
     set_options()
     set_maps()
     nvim.nvim_command(
-      'autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager()')
+      'autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager_mode()')
   end
 end
 
 return {
   cat_mode = cat_mode,
-  pager = pager,
-  prepare = prepare,
-  start = start,
+  pager_mode = pager_mode,
+  stage1 = stage1,
+  stage2 = stage2,
   _testable = {
     color2escape_24bit = color2escape_24bit,
     color2escape_8bit = color2escape_8bit,

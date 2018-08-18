@@ -238,7 +238,7 @@ describe("backend:", function()
     -- lines otherwise.
     [[--cmd '
       set runtimepath+=.
-      lua require("nvimpager").start()' ]]..
+      lua require("nvimpager").stage1()' ]]..
     [[--cmd '
       let rtp = nvim_list_runtime_paths()
       echo index(rtp, $RUNTIME) == -1
