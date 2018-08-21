@@ -1,0 +1,19 @@
+commit 3d032f9e546fc8a1e987bbbef54e8dab1ceaf4bd
+Author: Lucas Hoffmann <lucc@posteo.de>
+Date:   Mon Aug 20 23:37:04 2018 +0200
+
+    This is based on the log entry of 3d032f9e546fc8a1e987bbbef54e8dab1ceaf4bd
+    but was modiefied for the tests.
+
+    The last line is turned into a valid modeline even with the diff prefix.
+    If it is interpreted it should result in an error message.
+
+diff --git a/test/fixtures/help.txt b/test/fixtures/help.txt
+index ad4baf6..ab64439 100644
+--- a/test/fixtures/help.txt
++++ b/test/fixtures/help.txt
+@@ -1,3 +1,3 @@
+-vim: filetype=help
+ *conceal-test* normal
+ conceal-test
++ vim: foobar=error

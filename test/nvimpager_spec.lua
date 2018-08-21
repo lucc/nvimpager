@@ -2,8 +2,8 @@
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
-local describe, it, assert, pending, mock, match =
-      describe, it, assert, pending, mock, match  -- luacheck: ignore
+local describe, it, assert, pending, mock =
+      describe, it, assert, pending, mock  -- luacheck: ignore
 
 -- gloabl varables to set $XDG_CONFIG_HOME and $XDG_DATA_HOME to for the
 -- tests.
@@ -159,22 +159,44 @@ describe("cat mode", function()
     assert.equal('', output)
   end)
 
-  pending("highlights files even after mode line files", function()
-    local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
-		       "test/fixtures/makefile " ..
-		       "--cmd \"let g:tex_flavor='latex'\"")
-    local expected = read("test/fixtures/conceal.tex.ansi") ..
-                     read("test/fixtures/makefile.ansi")
-    assert.equal(expected, output)
-  end)
+  describe("with modeline", function()
+    pending("highlights files even after mode line files", function()
+      local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
+			 "test/fixtures/makefile " ..
+			 "--cmd \"let g:tex_flavor='latex'\"")
+      local expected = read("test/fixtures/conceal.tex.ansi") ..
+		       read("test/fixtures/makefile.ansi")
+      assert.equal(expected, output)
+    end)
 
-  pending("honors mode lines in later files", function()
-    local output = run("./nvimpager -c test/fixtures/makefile " ..
-		       "test/fixtures/conceal.tex " ..
-		       "--cmd \"let g:tex_flavor='latex'\"")
-    local expected = read("test/fixtures/makefile.ansi") ..
-                     read("test/fixtures/conceal.tex.ansi")
-    assert.equal(expected, output)
+    pending("honors mode lines in later files", function()
+      local output = run("./nvimpager -c test/fixtures/makefile " ..
+			 "test/fixtures/conceal.tex " ..
+			 "--cmd \"let g:tex_flavor='latex'\"")
+      local expected = read("test/fixtures/makefile.ansi") ..
+		       read("test/fixtures/conceal.tex.ansi")
+      assert.equal(expected, output)
+    end)
+
+    it("ignores mode lines in diffs", function()
+      local output = run("./nvimpager -c test/fixtures/diff-modeline 2>&1")
+      local expected = read("test/fixtures/diff-modeline.ansi")
+      assert.equal(expected, output)
+    end)
+
+    it("ignores mode lines in git diffs", function()
+      local output = run("test/fixtures/bin/git ./nvimpager -c " ..
+			 "test/fixtures/diff-modeline 2>&1")
+      local expected = read("test/fixtures/diff-modeline.ansi")
+      assert.equal(expected, output)
+    end)
+
+    it("ignores mode lines in git log diffs", function()
+      local output = run("test/fixtures/bin/git ./nvimpager -c " ..
+			 "test/fixtures/git-log 2>&1")
+      local expected = read("test/fixtures/git-log.ansi")
+      assert.equal(expected, output)
+    end)
   end)
 
   describe("conceals", function()
@@ -216,7 +238,7 @@ describe("backend:", function()
     -- lines otherwise.
     [[--cmd '
       set runtimepath+=.
-      lua require("nvimpager").start()' ]]..
+      lua require("nvimpager").stage1()' ]]..
     [[--cmd '
       let rtp = nvim_list_runtime_paths()
       echo index(rtp, $RUNTIME) == -1
@@ -431,13 +453,13 @@ describe("parent detection", function()
 
   it("detects git correctly", function()
     local output = lua_with_parent(
-      "git", "print(require('nvimpager')._testable.detect_doc_viewer_from_ppid())")
+      "git", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("git", output)
   end)
 
   it("detects man correctly", function()
     local output = lua_with_parent(
-      "man", "print(require('nvimpager')._testable.detect_doc_viewer_from_ppid())")
+      "man", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("man", output)
   end)
 

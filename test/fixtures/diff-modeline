@@ -1,0 +1,10 @@
+diff --git a/nvimpager b/nvimpager
+index d7d4e2f..99fb715 100755
+--- a/nvimpager
++++ b/nvimpager
+@@ -104,4 +104,4 @@ then
+   default_args+=(--headless)
+ fi
+ nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty
+-# no modeline
++# vim: filetype=anythingbutdiff foobar=error
