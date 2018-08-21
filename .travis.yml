@@ -14,8 +14,14 @@ before_install: |
   set -e
   if [[ "$TRAVIS_OS_NAME" = osx ]]; then
     brew update
-    brew install neovim pandoc lua
+    brew install neovim pandoc luarocks
   fi
   luarocks --local install busted
 install: make install PREFIX=$HOME/.local
-script: make test BUSTED=$HOME/.luarocks/bin/busted
+script: |
+  if [[ "$TRAVIS_OS_NAME" = osx ]]; then
+    BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
+  else
+    BUSTED=$HOME/.luarocks/bin/busted
+  fi
+  make test BUSTED="$BUSTED"

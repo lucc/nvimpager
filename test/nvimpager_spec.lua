@@ -191,7 +191,7 @@ describe("cat mode", function()
       assert.equal(expected, output)
     end)
 
-    it("ignores mode lines in git log diffs", function()
+    it("ignores mode lines in git log diffs #osx_pending", function()
       local output = run("test/fixtures/bin/git ./nvimpager -c " ..
 			 "test/fixtures/git-log 2>&1")
       local expected = read("test/fixtures/git-log.ansi")
@@ -432,15 +432,6 @@ describe("lua functions", function()
 end)
 
 describe("parent detection", function()
-
-  -- FIXME These tests are currently broken on travis with the osx build.
-  -- Until I find a solution to change the parent process name correctly they
-  -- are marked as pending.
-  local it = it  -- luacheck: ignore
-  if os.getenv('TRAVIS_OS_NAME') == 'osx' then
-    it = pending
-  end
-
   -- Wrapper around run_with_parent() to execute some lua code in a --cmd
   -- argument.
   local function lua_with_parent(name, code)
@@ -451,25 +442,25 @@ describe("parent detection", function()
     return run("test/fixtures/bin/"..name.." "..command)
   end
 
-  it("detects git correctly", function()
+  it("detects git correctly #osx_pending", function()
     local output = lua_with_parent(
       "git", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("git", output)
   end)
 
-  it("detects man correctly", function()
+  it("detects man correctly #osx_pending", function()
     local output = lua_with_parent(
       "man", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("man", output)
   end)
 
-  it("handles git", function()
+  it("handles git #osx_pending", function()
     local output = run("test/fixtures/bin/git ./nvimpager -c test/fixtures/diff")
     local expected = read("test/fixtures/diff.ansi")
     assert.equal(expected, output)
   end)
 
-  it("handles man", function()
+  it("handles man #osx_pending", function()
     local output = run("test/fixtures/bin/man ./nvimpager -c test/fixtures/man.cat")
     local expected = read("test/fixtures/man.ansi")
     assert.equal(expected, output)
