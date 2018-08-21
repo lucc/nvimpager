@@ -21,6 +21,8 @@ local cache = {}
 -- mode.
 local colors_24_bit
 local color2escape
+-- This variable holds the name of the detected parent process for pager mode.
+local doc = nil
 
 local function split_rgb_number(color_number)
   -- The lua implementation of these bit shift operations is taken from
@@ -234,6 +236,7 @@ end
 -- by the calling bash script and points to the calling program.
 local function detect_parent_process()
   local ppid = os.getenv('PPID')
+  if not ppid then return nil end
   local proc = nvim.nvim_get_proc(tonumber(ppid))
   if proc == nil then return 'none' end
   local command = proc.name
@@ -249,7 +252,7 @@ local function detect_parent_process()
   elseif command == 'git' then
     return 'git'
   end
-  return 'none'
+  return nil
 end
 
 -- Search the begining of the current buffer to detect if it contains a man
@@ -285,8 +288,7 @@ end
 -- Detect possible filetypes for the current buffer by looking at the pstree or
 -- ansi escape sequences or manpage sequences in the current buffer.
 local function detect_filetype()
-  local doc = detect_parent_process()
-  if doc == 'none' then
+  if not doc then
     if detect_man_page_in_current_buffer() then
       -- FIXME: Why does this need to be the command?  Why doesn't this work:
       --nvim.nvim_buf_set_option(0, 'filetype', 'man')
@@ -355,6 +357,11 @@ local function stage1()
   nvim.nvim_command('augroup NvimPager')
   nvim.nvim_command('  autocmd!')
   nvim.nvim_command('augroup END')
+  doc = detect_parent_process()
+  if doc == 'git' then
+    --nvim.nvim_set_option('modeline', false)
+    nvim.nvim_command('set nomodeline')
+  end
 end
 
 -- Set up autocomands to start the correct mode after startup or for each

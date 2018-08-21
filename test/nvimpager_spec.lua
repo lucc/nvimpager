@@ -191,7 +191,7 @@ describe("cat mode", function()
       assert.equal(expected, output)
     end)
 
-    pending("ignores mode lines in git log diffs", function()
+    it("ignores mode lines in git log diffs", function()
       local output = run("test/fixtures/bin/git ./nvimpager -c " ..
 			 "test/fixtures/git-log 2>&1")
       local expected = read("test/fixtures/git-log.ansi")
