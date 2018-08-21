@@ -2,8 +2,8 @@
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
-local describe, it, assert, pending, mock, match =
-      describe, it, assert, pending, mock, match  -- luacheck: ignore
+local describe, it, assert, pending, mock =
+      describe, it, assert, pending, mock  -- luacheck: ignore
 
 -- gloabl varables to set $XDG_CONFIG_HOME and $XDG_DATA_HOME to for the
 -- tests.
