@@ -35,7 +35,13 @@ text][options].  The configuration is separated from the users config for
 neovim.  The main config file is `~/.config/nvimpager/init.vim`.  See [the
 manpage][configuration] for further explanation.
 
-## Technical stuff
+## Installation
+
+Nvimpager is already packaged for some distributions:
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/nvimpager.svg)](https://repology.org/metapackage/nvimpager/versions)
+
+If not for yours, you can install it manually, read on.
 
 ### Dependencies
 
@@ -55,19 +61,19 @@ variables:
 make PREFIX=$HOME/.local install
 ```
 
-### Development
+## Development
 
 Nvimpager is developed on [Github][nvimpager] where you are very much invited
 to [post][issues] bug reports, feature or pull requests!  The test can be run
 with `make test`.  They are also run on travis: [![Build Status]][travis]
 
-#### Known Bugs (and non features)
+### Known Bugs (and non features)
 
 * if reading from stdin, nvimpager (like nvim) waits for EOF until it starts up
 * large files are slowing down neovim on startup (less does a better, i.e.
   faster and more memory efficient job at paging large files)
 
-#### TODO and ideas list
+### TODO and ideas list
 
 * show a short message in the cmdline like less and vimpager do (file and help
   information)
