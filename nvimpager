@@ -62,7 +62,7 @@ if [[ ! -t 1 && $mode = auto ]]; then
 fi
 
 if [[ ! -r $rc ]]; then
-  rc=
+  rc=NORC
 fi
 
 # Collect all file arguments until the first non file into $files.  If one non
