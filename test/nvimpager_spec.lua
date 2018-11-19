@@ -404,7 +404,8 @@ describe("lua functions", function()
   describe("replace_prefix", function()
     it("can replace a simple prefix in a table of strings", function()
       local nvimpager = load_nvimpager()
-      local t = nvimpager._testable.replace_prefix({"foo", "bar", "baz"}, "b", "XXX")
+      local t = nvimpager._testable.replace_prefix({"foo", "bar", "baz"},
+	"b", "XXX")
       assert.same({"foo", "XXXar", "XXXaz"}, t)
     end)
 
@@ -455,13 +456,15 @@ describe("parent detection", function()
   end)
 
   it("handles git #osx_pending", function()
-    local output = run("test/fixtures/bin/git ./nvimpager -c test/fixtures/diff")
+    local output = run(
+      "test/fixtures/bin/git ./nvimpager -c test/fixtures/diff")
     local expected = read("test/fixtures/diff.ansi")
     assert.equal(expected, output)
   end)
 
   it("handles man #osx_pending", function()
-    local output = run("test/fixtures/bin/man ./nvimpager -c test/fixtures/man.cat")
+    local output = run(
+      "test/fixtures/bin/man ./nvimpager -c test/fixtures/man.cat")
     local expected = read("test/fixtures/man.ansi")
     assert.equal(expected, output)
   end)

@@ -26,7 +26,7 @@ local doc = nil
 
 local function split_rgb_number(color_number)
   -- The lua implementation of these bit shift operations is taken from
-  -- http://nova-fusion.com/2011/03/21/simulate-bitwise-shift-operators-in-lua/
+  -- http://nova-fusion.com/2011/03/21/simulate-bitwise-shift-operators-in-lua
   local r = math.floor(color_number / 2 ^ 16)
   local g = math.floor(math.floor(color_number / 2 ^ 8) % 2 ^ 8)
   local b = math.floor(color_number % 2 ^ 8)
@@ -145,7 +145,8 @@ local function highlight()
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
     for cnum = 1, line:len() do
-      local conceal_info = nvim.nvim_call_function('synconcealed', {lnum, cnum})
+      local conceal_info = nvim.nvim_call_function('synconcealed',
+	{lnum, cnum})
       local conceal = conceal_info[1] == 1
       local replace = conceal_info[2]
       local conceal_id = conceal_info[3]
@@ -285,8 +286,8 @@ local function strip_ansi_escape_sequences_from_current_buffer()
   nvim.nvim_buf_set_option(0, "modifiable", modifiable)
 end
 
--- Detect possible filetypes for the current buffer by looking at the pstree or
--- ansi escape sequences or manpage sequences in the current buffer.
+-- Detect possible filetypes for the current buffer by looking at the pstree
+-- or ansi escape sequences or manpage sequences in the current buffer.
 local function detect_filetype()
   if not doc then
     if detect_man_page_in_current_buffer() then
