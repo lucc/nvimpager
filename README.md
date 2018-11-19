@@ -30,11 +30,10 @@ Pager mode and cat mode can be enforced with the options `-p` and `-c`
 respectively.
 
 Nvimpager comes with a small set of command line options but you can also use
-all of neovim's command line options.  Use `nvimpager -h` to see the help text.
-Config files are searched as for plain neovim with the only difference that
-`~/.config/nvimpager` is searched instead of `~/.config/nvim` (same for
-`~/.local/share/nvimpager` and the `$XDG_..._HOME` variants).  In short: the
-user config file is `~/.config/nvimpager/init.vim`.
+all of neovim's command line options.  Use `nvimpager -h` to see the [help
+text][options].  The configuration is separated from the users config for
+neovim.  The main config file is `~/.config/nvimpager/init.vim`.  See [the
+manpage][configuration] for further explanation.
 
 ## Technical stuff
 
@@ -91,6 +90,8 @@ The project is licensed under a BSD-2-clause license.  See the
 
 [nvimpager]: https://github.com/lucc/nvimpager
 [issues]: https://github.com/lucc/nvimpager/issues
+[options]: ./nvimpager.md#OPTIONS
+[configuration]: ./nvimpager.md#CONFIGURATION
 [neovim]: https://github.com/neovim/neovim
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
