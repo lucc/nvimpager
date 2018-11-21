@@ -309,12 +309,6 @@ local function detect_filetype()
   end
 end
 
--- Set some global options for interactive paging of files.
-local function set_options()
-  nvim.nvim_set_option('mouse', 'a')
-  nvim.nvim_set_option('laststatus', 0)
-end
-
 -- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
   nvim.nvim_command('nnoremap q :quitall!<CR>')
@@ -346,8 +340,7 @@ local function pager_mode()
   nvim.nvim_buf_set_option(0, 'modified', false)
 end
 
--- Setup function to be called from --cmd.  Some early options for both pager
--- and cat mode are set here.
+-- Setup function to be called from --cmd.
 local function stage1()
   fix_runtime_path()
   -- Don't remember file names and positions
@@ -363,6 +356,11 @@ local function stage1()
     --nvim.nvim_set_option('modeline', false)
     nvim.nvim_command('set nomodeline')
   end
+  -- Theoretically these options only affect the pager mode so they could also
+  -- be set in stage2() but that would overwrite user settings from the init
+  -- file.
+  nvim.nvim_set_option('mouse', 'a')
+  nvim.nvim_set_option('laststatus', 0)
 end
 
 -- Set up autocomands to start the correct mode after startup or for each
@@ -377,7 +375,6 @@ local function stage2()
     nvim.nvim_command("autocmd NvimPager VimEnter * lua nvimpager.cat_mode()")
   else
     -- pager mode
-    set_options()
     set_maps()
     nvim.nvim_command(
       'autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager_mode()')
@@ -399,7 +396,6 @@ return {
     join = join,
     replace_prefix = replace_prefix,
     set_maps = set_maps,
-    set_options = set_options,
     split_rgb_number = split_rgb_number,
   }
 }
