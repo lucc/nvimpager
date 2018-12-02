@@ -148,7 +148,7 @@ local function highlight()
       local conceal = conceal_info[1] == 1
       local replace = conceal_info[2]
       local conceal_id = conceal_info[3]
-      if conceal and last_conceal_id == conceal_id then
+      if conceal and last_conceal_id == conceal_id then -- luacheck: ignore
 	-- skip this char
       else
 	local syntax_id, append
@@ -317,17 +317,6 @@ local function set_maps()
   map('n', '<Down>', '<C-E>')
   map('n', 'k', '<C-Y>')
   map('n', 'j', '<C-E>')
-end
-
--- Unset all mappings set in set_maps().
--- FIXME This is currently unused but keept for reference.
-local function unset_maps()
-  nvim.nvim_command("nunmap q")
-  nvim.nvim_command("nunmap <Space>")
-  nvim.nvim_command("nunmap <S-Space>")
-  nvim.nvim_command("nunmap g")
-  nvim.nvim_command("nunmap <Up>")
-  nvim.nvim_command("nunmap <Down>")
 end
 
 -- Setup function for the VimEnter autocmd.
