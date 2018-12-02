@@ -71,6 +71,9 @@ relevant for editing.  If one really wants to use the same config files for
 both nvimpager and nvim it is possible to do so by symlinking the config and
 site directories and the rplugin file.
 
+The environment variable `$NVIM` can be used to specify an nvim executable to
+use.  If unset it defaults to `nvim`.
+
 # EXAMPLES
 
 To use nvimpager to view a file (with neovim's syntax highlighting if the

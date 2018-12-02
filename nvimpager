@@ -10,6 +10,7 @@ export PPID
 name=nvimpager
 mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
+nvim=${NVIM:-nvim}
 
 usage () {
   echo "Usage: ${0##*/} [-acp] [--] [nvim options and files]"
@@ -103,4 +104,4 @@ if [[ $mode = cat || \
 then
   default_args+=(--headless)
 fi
-nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty
+$nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty

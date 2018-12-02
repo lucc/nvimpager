@@ -3,6 +3,7 @@ PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
 BUSTED = busted
+NVIM = nvim
 
 PLUGIN_FILES = \
 	       plugin/AnsiEscPlugin.vim \
@@ -36,7 +37,7 @@ AnsiEsc.vba:
 	  gunzip > $@
 
 $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
-	nvim -u NONE -i NONE -n --headless \
+	$(NVIM) -u NONE -i NONE -n --headless \
 	  --cmd 'set rtp^=.' \
 	  --cmd 'packadd vimball' \
 	  --cmd 'runtime plugin/vimballPlugin.vim' \

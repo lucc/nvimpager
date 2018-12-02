@@ -82,7 +82,7 @@ describe("auto mode", function()
       set -e
       set -u
       shopt -s expand_aliases
-      alias nvim='return; '
+      NVIM=:
       alias exec=:
       alias trap=:
       source ]] .. command .. "\nset"
