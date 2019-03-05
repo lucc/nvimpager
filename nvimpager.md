@@ -65,6 +65,15 @@ The rest of the `&runtimepath` is configured like for neovim.  The `-u` option
 of *nvim*(1) itself can be used to change the main config file from the command
 line.
 
+The default config files for neovim are not used by design as these
+potentially load many plugins and do a lot of configuration that is only
+relevant for editing.  If one really wants to use the same config files for
+both nvimpager and nvim it is possible to do so by symlinking the config and
+site directories and the rplugin file.
+
+The environment variable `$NVIM` can be used to specify an nvim executable to
+use.  If unset it defaults to `nvim`.
+
 # EXAMPLES
 
 To use nvimpager to view a file (with neovim's syntax highlighting if the

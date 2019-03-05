@@ -10,6 +10,7 @@ export PPID
 name=nvimpager
 mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
+nvim=${NVIM:-nvim}
 
 usage () {
   echo "Usage: ${0##*/} [-acp] [--] [nvim options and files]"
@@ -33,10 +34,10 @@ description () {
 
 	If "-" or no files are given stdin is read.
 
-	In auto mode the cumulative length of all file arguments is smaller
-	than the terminal size, cat mode is used, otherwise pager mode is
-	used.  If any none file argument (neovim option) is given pager mode
-	is implied.
+	In auto mode, if the cumulative length of all file arguments is
+	smaller than the terminal size, cat mode is used, otherwise pager mode
+	is used.  If any none file argument (neovim option) is given pager
+	mode is implied.
 	EOF
 }
 
@@ -47,7 +48,7 @@ while getopts achpv flag; do
     h) usage; description; exit;;
     p) mode=pager;;
     v)
-      version=v0.5.1
+      version=v0.6
       echo "$name $version"
       exit
       ;;
@@ -62,7 +63,7 @@ if [[ ! -t 1 && $mode = auto ]]; then
 fi
 
 if [[ ! -r $rc ]]; then
-  rc=
+  rc=NORC
 fi
 
 # Collect all file arguments until the first non file into $files.  If one non
@@ -92,15 +93,15 @@ default_args=(
   -R
   ${rc:+-u "$rc"}
   --cmd 'set rtp+=$RUNTIME'
-  --cmd 'call pager#start()'
+  --cmd 'lua nvimpager = require("nvimpager")'
+  --cmd 'lua nvimpager.stage1()'
+  -c 'lua nvimpager.stage2()'
 )
 # Switch to pager mode if all files combined are shorter than the terminal
 # height.
 if [[ $mode = cat || \
       $mode = auto && $(cat "${files[@]}" | wc -l) -le $(tput lines) ]]
 then
-  default_args+=(--headless -c 'call pager#prepare_cat()')
-else
-  default_args+=(-c 'call pager#prepare_pager()')
+  default_args+=(--headless)
 fi
-nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty
+$nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty

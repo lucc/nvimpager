@@ -30,11 +30,10 @@ Pager mode and cat mode can be enforced with the options `-p` and `-c`
 respectively.
 
 Nvimpager comes with a small set of command line options but you can also use
-all of neovim's command line options.  Use `nvimpager -h` to see the help text.
-Config files are searched as for plain neovim with the only difference that
-`~/.config/nvimpager` is searched instead of `~/.config/nvim` (same for
-`~/.local/share/nvimpager` and the `$XDG_..._HOME` variants).  In short: the
-user config file is `~/.config/nvimpager/init.vim`.
+all of neovim's command line options.  Use `nvimpager -h` to see the [help
+text][options].  The configuration is separated from the users config for
+neovim.  The main config file is `~/.config/nvimpager/init.vim`.  See [the
+manpage][configuration] for further explanation.
 
 ## Technical stuff
 
@@ -43,7 +42,7 @@ user config file is `~/.config/nvimpager/init.vim`.
 * [neovim] ≥ v0.3.0
 * [bash]
 * ([curl] during installation)
-* ([bats] for running the tests)
+* ([busted] for running the tests)
 * ([pandoc] to build the man page)
 
 ### Installation instructions
@@ -74,14 +73,13 @@ with `make test`.  They are also run on travis: [![Build Status]][travis]
   information)
 * see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) and
   [neovim#8246](https://github.com/neovim/neovim/issues/8246) are resolved and
-  maybe move more code (logic) from bash to vimscript
+  maybe move more code (logic) from bash to lua
 * check if terminal buffers can be used to render ansi escape codes,
   alternatively ...
 * check license options for bundling the AnsiEsc plugin, alternatively ...
 * see if nvim_buf_add_highlight() can be used to do basically the same stuff
   that AnsiEsc does
 * implement some more keybindings that make it behave more like less
-* see what parts can reasonably be implemented in lua (speed improvement?)
 * proper lazy pipe reading while paging (like less) to improve startup time and
   also memory usage for large input on pipes (maybe `stdioopen()` can be used?)
 
@@ -92,11 +90,13 @@ The project is licensed under a BSD-2-clause license.  See the
 
 [nvimpager]: https://github.com/lucc/nvimpager
 [issues]: https://github.com/lucc/nvimpager/issues
+[options]: ./nvimpager.md#OPTIONS
+[configuration]: ./nvimpager.md#CONFIGURATION
 [neovim]: https://github.com/neovim/neovim
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
 [curl]: https://curl.haxx.se
-[bats]: https://github.com/sstephenson/bats
+[busted]: http://olivinelabs.com/busted/
 [pandoc]: http://pandoc.org/
 [Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
 [travis]: https://travis-ci.org/lucc/nvimpager
