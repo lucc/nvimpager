@@ -442,13 +442,12 @@ describe("lua functions", function()
 end)
 
 describe("parent detection", function()
-  -- Wrapper around run_with_parent() to execute some lua code in a --cmd
-  -- argument.
+  -- Wrapper to execute some lua code in a --cmd argument.
   local function lua_with_parent(name, code)
     -- First we have to shellescape the lua code.
     code = code:gsub("'", "'\\''")
-    local command = [[
-      nvim -i NONE --cmd 'set rtp+=.' --cmd 'lua ]]..code..[[' --cmd quit]]
+    local command = [[nvim --headless -i NONE --cmd 'set rtp+=.' --cmd 'lua ]]
+		    ..code..[[' --cmd quit]]
     return run("test/fixtures/bin/"..name.." "..command)
   end
 
