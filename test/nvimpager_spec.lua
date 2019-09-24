@@ -91,7 +91,7 @@ describe("auto mode", function()
     file:write(script)
     file:close()
     local output = run("bash " .. filename)
-    --os.remove(filename)
+    os.remove(filename)
     return output
   end
 
