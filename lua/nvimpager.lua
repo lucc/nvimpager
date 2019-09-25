@@ -289,9 +289,7 @@ end
 local function detect_filetype()
   if not doc then
     if detect_man_page_in_current_buffer() then
-      -- FIXME: Why does this need to be the command?  Why doesn't this work:
-      --nvim.nvim_buf_set_option(0, 'filetype', 'man')
-      nvim.nvim_command('setfiletype man')
+      nvim.nvim_buf_set_option(0, 'filetype', 'man')
     end
   else
     if doc == 'git' then
@@ -301,9 +299,7 @@ local function detect_filetype()
     elseif doc == 'pydoc' or doc == 'perldoc' or doc == 'ri' then
       doc = 'man'
     end
-    -- FIXME: Why does this need to be the command?  Why doesn't this work:
-    --nvim.nvim_buf_set_option(0, 'filetype', doc)
-    nvim.nvim_command('setfiletype '..doc)
+    nvim.nvim_buf_set_option(0, 'filetype', doc)
   end
 end
 
