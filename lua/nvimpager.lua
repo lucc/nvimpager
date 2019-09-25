@@ -309,15 +309,18 @@ end
 
 -- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
-  nvim.nvim_command('nnoremap q :quitall!<CR>')
-  nvim.nvim_command('vnoremap q :quitall!<CR>')
-  nvim.nvim_command('nnoremap <Space> <PageDown>')
-  nvim.nvim_command('nnoremap <S-Space> <PageUp>')
-  nvim.nvim_command('nnoremap g gg')
-  nvim.nvim_command('nnoremap <Up> <C-Y>')
-  nvim.nvim_command('nnoremap <Down> <C-E>')
-  nvim.nvim_command('nnoremap k <C-Y>')
-  nvim.nvim_command('nnoremap j <C-E>')
+  local function map(mode, lhs, rhs)
+    nvim.nvim_set_keymap(mode, lhs, rhs, {noremap = true})
+  end
+  map('n', 'q', ':quitall!<CR>')
+  map('v', 'q', ':quitall!<CR>')
+  map('n', '<Space>', '<PageDown>')
+  map('n', '<S-Space>', '<PageUp>')
+  map('n', 'g', 'gg')
+  map('n', '<Up>', '<C-Y>')
+  map('n', '<Down>', '<C-E>')
+  map('n', 'k', '<C-Y>')
+  map('n', 'j', '<C-E>')
 end
 
 -- Unset all mappings set in set_maps().
