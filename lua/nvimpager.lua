@@ -394,11 +394,9 @@ return {
     color2escape_8bit = color2escape_8bit,
     detect_parent_process = detect_parent_process,
     group2ansi = group2ansi,
-    highlight = highlight,
     init_cat_mode = init_cat_mode,
     join = join,
     replace_prefix = replace_prefix,
-    set_maps = set_maps,
     split_rgb_number = split_rgb_number,
   }
 }
