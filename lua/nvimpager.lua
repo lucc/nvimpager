@@ -373,15 +373,18 @@ end
 -- would not be available in --cmd.
 local function stage2()
   detect_filetype()
+  local mode, events
   if #nvim.nvim_list_uis() == 0 then
-    -- cat mode
-    nvim.nvim_command("autocmd NvimPager VimEnter * lua nvimpager.cat_mode()")
+    mode, events = 'cat', 'VimEnter'
   else
-    -- pager mode
     set_maps()
-    nvim.nvim_command(
-      'autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager_mode()')
+    mode, events = 'pager', 'VimEnter,BufWinEnter'
   end
+  -- The "nested" in these autocomands enables nested executions of
+  -- autocomands inside the *_mode() functions.  See :h autocmd-nested, for
+  -- compatibility with nvim < 0.4 we use "nested" and not "++nested".
+  nvim.nvim_command(
+    'autocmd NvimPager '..events..' * nested lua nvimpager.'..mode..'_mode()')
 end
 
 return {

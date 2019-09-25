@@ -2,8 +2,8 @@
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
-local describe, it, assert, pending, mock =
-      describe, it, assert, pending, mock  -- luacheck: ignore
+local describe, it, assert, mock =
+      describe, it, assert, mock  -- luacheck: ignore
 
 -- gloabl varables to set $XDG_CONFIG_HOME and $XDG_DATA_HOME to for the
 -- tests.
@@ -164,21 +164,23 @@ describe("cat mode", function()
   end)
 
   describe("with modeline", function()
-    pending("highlights files even after mode line files", function()
+    it("highlights files even after mode line files", function()
       local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
 			 "test/fixtures/makefile " ..
+			 "--cmd 'set background=light' " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
-      local expected = read("test/fixtures/conceal.tex.ansi") ..
+      local expected = read("test/fixtures/conceal.tex.cole0.ansi") ..
 		       read("test/fixtures/makefile.ansi")
       assert.equal(expected, output)
     end)
 
-    pending("honors mode lines in later files", function()
+    it("honors mode lines in later files", function()
       local output = run("./nvimpager -c test/fixtures/makefile " ..
 			 "test/fixtures/conceal.tex " ..
+			 "--cmd 'set background=light' " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
       local expected = read("test/fixtures/makefile.ansi") ..
-		       read("test/fixtures/conceal.tex.ansi")
+		       read("test/fixtures/conceal.tex.cole0.ansi")
       assert.equal(expected, output)
     end)
 
