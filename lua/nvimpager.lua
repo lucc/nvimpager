@@ -356,8 +356,8 @@ local function stage1()
   nvim.nvim_command('augroup END')
   doc = detect_parent_process()
   if doc == 'git' then
-    --nvim.nvim_set_option('modeline', false)
-    nvim.nvim_command('set nomodeline')
+    nvim.nvim_buf_set_option(0, 'modeline', false)
+    nvim.nvim_set_option('modelines', 0)
   end
   -- Theoretically these options only affect the pager mode so they could also
   -- be set in stage2() but that would overwrite user settings from the init
