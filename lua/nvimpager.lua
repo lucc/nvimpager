@@ -59,12 +59,10 @@ local function color2escape_8bit(color_number, foreground)
     else
       prefix = '10'
     end
+  elseif foreground then
+    prefix = '38;5;'
   else
-    if foreground then
-      prefix = '38;5;'
-    else
-      prefix = '48;5;'
-    end
+    prefix = '48;5;'
   end
   return prefix .. color_number
 end
