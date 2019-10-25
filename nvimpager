@@ -85,7 +85,7 @@ done
 # any file arguments, read stdin into a temp file.
 if [[ ( $mode != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
   files=("$(mktemp)")
-  trap 'rm -f "${files[0]}"' HUP INT QUIT TERM ABRT PIPE ALRM EXIT
+  trap 'rm -f "${files[0]}"' EXIT
   cat > "${files[0]}"
 fi
 
