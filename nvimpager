@@ -85,6 +85,7 @@ done
 # any file arguments, read stdin into a temp file.
 if [[ ( $mode != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
   files=("$(mktemp)")
+  # Bash runs the EXIT trap also when exiting due to signals.
   trap 'rm -f "${files[0]}"' EXIT
   cat > "${files[0]}"
 fi
@@ -97,7 +98,7 @@ default_args=(
   --cmd 'lua nvimpager.stage1()'
   -c 'lua nvimpager.stage2()'
 )
-# Switch to pager mode if all files combined are shorter than the terminal
+# Switch to cat mode if all files combined are shorter than the terminal
 # height.
 if [[ $mode = cat || \
       $mode = auto && $(cat "${files[@]}" | wc -l) -le $(tput lines) ]]

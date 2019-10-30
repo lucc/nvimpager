@@ -354,6 +354,8 @@ local function stage1()
   nvim.nvim_command('augroup END')
   doc = detect_parent_process()
   if doc == 'git' then
+    -- We disable modelines for this buffer as they could disturb the git
+    -- highlighting in diffs.
     nvim.nvim_buf_set_option(0, 'modeline', false)
     nvim.nvim_set_option('modelines', 0)
   end
