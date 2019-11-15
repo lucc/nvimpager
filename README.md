@@ -82,6 +82,10 @@ with `make test`.  They are also run on travis: [![Build Status]][travis]
 * implement some more keybindings that make it behave more like less
 * proper lazy pipe reading while paging (like less) to improve startup time and
   also memory usage for large input on pipes (maybe `stdioopen()` can be used?)
+* properly kill the nvim process when the bash script is killed, alternatively
+  ...
+* move temp file handling (removal) to nvim/lua (in a VimLeave autocommand) and
+  exec nvim
 
 ## License
 
