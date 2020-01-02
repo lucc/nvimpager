@@ -85,10 +85,10 @@ local function group2ansi(groupid)
   if info.italic then escape = escape .. ';3' end
   if info.underline then escape = escape .. ';4' end
 
-  if info.foreground then
+  if info.foreground and info.foreground >= 0 then
     escape = escape .. ';' .. color2escape(info.foreground, true)
   end
-  if info.background then
+  if info.background and info.background >= 0 then
     escape = escape .. ';' .. color2escape(info.background, false)
   end
 
