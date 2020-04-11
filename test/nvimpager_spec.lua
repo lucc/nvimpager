@@ -479,3 +479,12 @@ describe("parent detection", function()
     assert.equal(expected, output)
   end)
 end)
+
+describe("show lines number", function()
+  it("cat mode with show lines number", function()
+    local output = run("./nvimpager -n -c test/fixtures/makefile " ..
+				    "--cmd 'set background=light'")
+    local expected = read("test/fixtures/makefile.showline")
+    assert.equal(expected, output)
+  end)
+end)

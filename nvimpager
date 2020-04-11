@@ -9,43 +9,47 @@ export PPID
 
 name=nvimpager
 mode=auto
+show_line=0
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 nvim=${NVIM:-nvim}
 
 usage () {
-  echo "Usage: ${0##*/} [-acp] [--] [nvim options and files]"
+  echo "Usage: ${0##*/} [-acpn] [--] [nvim options and files]"
+  echo "       ${0##*/} -n"
   echo "       ${0##*/} -h"
   echo "       ${0##*/} -v"
 }
 description () {
-  cat <<-EOF
+    cat <<-EOF
 
-	$name provides a simple pager based on neovim.
-	Options:
-	  -h		this help
-	  -v		version output
-	  -a		enforce auto mode (default)
-	  -c		enforce cat mode
-	  -p		enforce pager mode
+    $name provides a simple pager based on neovim.
+    Options:
+        -h          this help
+        -v          version output
+        -n          number all output lines
+        -a          enforce auto mode (default)
+        -c          enforce cat mode
+        -p          enforce pager mode
 
-	All further arguments are passed to neovim.  But one has to add "--"
-	if the first argument is an option in order to stop this script from
-	interpeting it.
+    All further arguments are passed to neovim.  But one has to add "--"
+    if the first argument is an option in order to stop this script from
+    interpeting it.
 
-	If "-" or no files are given stdin is read.
+    If "-" or no files are given stdin is read.
 
-	In auto mode, if the cumulative length of all file arguments is
-	smaller than the terminal size, cat mode is used, otherwise pager mode
-	is used.  If any none file argument (neovim option) is given pager
-	mode is implied.
-	EOF
+    In auto mode, if the cumulative length of all file arguments is
+    smaller than the terminal size, cat mode is used, otherwise pager mode
+    is used.  If any none file argument (neovim option) is given pager
+    mode is implied.
+EOF
 }
 
-while getopts achpv flag; do
+while getopts achnpv flag; do
   case $flag in
     a) mode=auto;;
     c) mode=cat;;
     h) usage; description; exit;;
+    n) show_line=1;;
     p) mode=pager;;
     v)
       version=$(git -C "$RUNTIME" describe 2>/dev/null) || version=v0.6
@@ -102,6 +106,7 @@ default_args=(
   --cmd 'set rtp+=$RUNTIME'
   --cmd 'lua nvimpager = require("nvimpager")'
   --cmd 'lua nvimpager.stage1()'
+  -c "let g:nvimpager_line=$show_line"
   -c 'lua nvimpager.stage2()'
 )
 # Switch to cat mode if all files combined are shorter than the terminal

@@ -140,8 +140,16 @@ local function highlight()
   local last_syntax_id = -1
   local last_conceal_id = -1
   local linecount = nvim.nvim_buf_line_count(0)
+  local show_line = nvim.nvim_get_var('nvimpager_line')
+  local last_ansi = ''
+  local line_nr_ansi = group2ansi(nvim.nvim_call_function('hlID', {'LineNr'}))
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
+    if show_line == 1 then
+        outline = '' .. line_nr_ansi .. 
+        string.format('%' .. string.len(linecount) .. 'd', lnum) .. ' ' ..
+        last_ansi
+    end
     for cnum = 1, line:len() do
       local conceal_info = nvim.nvim_call_function('synconcealed',
 	{lnum, cnum})
@@ -162,7 +170,8 @@ local function highlight()
 	  append = line:sub(cnum, cnum)
 	end
 	if syntax_id ~= last_syntax_id then
-	  outline = outline .. group2ansi(syntax_id)
+      last_ansi = group2ansi(syntax_id)
+	  outline = outline .. last_ansi
 	  last_syntax_id = syntax_id
 	end
 	outline = outline .. append
