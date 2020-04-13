@@ -45,6 +45,9 @@ and *-p* options.
 -h
 : show the help screen and exit
 
+-n
+: number all output lines
+
 -p
 : run in "pager mode".  Start the neovim TUI to display the given content. This
 overrides any previous *-a* and *-c* options.

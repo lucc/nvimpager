@@ -387,10 +387,27 @@ local function stage2()
     mode, events = 'cat', 'VimEnter'
   else
     set_maps()
-    if nvim.nvim_get_var('nvimpager_line') == 1 then
-      nvim.nvim_command('set number')
-    end
     mode, events = 'pager', 'VimEnter,BufWinEnter'
+  end
+
+  if nvim.nvim_get_var('nvimpager_line') == 1 then
+    if doc == 'man' then
+      local manwidth = os.getenv('MANWIDTH')
+      local lineswidth = string.len(nvim.nvim_buf_line_count(0))
+      if not os.getenv('MANWIDTH') then
+        -- When enable line number, man will produce a line wrapped issue
+        -- if the parent process didn't specify MANWIDTH variable.
+        local manwidth = nvim.nvim_get_var('winwidth') - lineswidth
+        nvim.nvim_command('let $MANWIDTH = ' .. manwidth)
+        -- Find target man file and reassign the MANWIDTH
+        nvim.nvim_command('edit')
+      end
+
+      nvim.nvim_command('autocmd NvimPager VimResized <buffer> ' ..
+          'let $MANWIDTH = winwidth(0) - ' .. lineswidth)
+      nvim.nvim_command('autocmd NvimPager BufEnter <buffer> setlocal number')
+    end
+    nvim.nvim_command('setlocal number')
   end
   -- The "nested" in these autocomands enables nested executions of
   -- autocomands inside the *_mode() functions.  See :h autocmd-nested, for

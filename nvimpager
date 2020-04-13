@@ -27,8 +27,8 @@ description () {
 	  -h		this help
 	  -v		version output
 	  -a		enforce auto mode (default)
-	  -n		number all output lines
 	  -c		enforce cat mode
+	  -n		number all output lines
 	  -p		enforce pager mode
 
 	All further arguments are passed to neovim.  But one has to add "--"
@@ -107,6 +107,7 @@ default_args=(
   --cmd 'lua nvimpager = require("nvimpager")'
   --cmd 'lua nvimpager.stage1()'
   -c "let g:nvimpager_line=$show_line"
+  -c "let g:winwidth=$(tput cols)"
   -c 'lua nvimpager.stage2()'
 )
 # Switch to cat mode if all files combined are shorter than the terminal
