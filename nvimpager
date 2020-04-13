@@ -20,28 +20,28 @@ usage () {
   echo "       ${0##*/} -v"
 }
 description () {
-    cat <<-EOF
+  cat <<-EOF
 
-    $name provides a simple pager based on neovim.
-    Options:
-        -h          this help
-        -v          version output
-        -n          number all output lines
-        -a          enforce auto mode (default)
-        -c          enforce cat mode
-        -p          enforce pager mode
+	$name provides a simple pager based on neovim.
+	Options:
+	  -h		this help
+	  -v		version output
+	  -a		enforce auto mode (default)
+	  -n		number all output lines
+	  -c		enforce cat mode
+	  -p		enforce pager mode
 
-    All further arguments are passed to neovim.  But one has to add "--"
-    if the first argument is an option in order to stop this script from
-    interpeting it.
+	All further arguments are passed to neovim.  But one has to add "--"
+	if the first argument is an option in order to stop this script from
+	interpeting it.
 
-    If "-" or no files are given stdin is read.
+	If "-" or no files are given stdin is read.
 
-    In auto mode, if the cumulative length of all file arguments is
-    smaller than the terminal size, cat mode is used, otherwise pager mode
-    is used.  If any none file argument (neovim option) is given pager
-    mode is implied.
-EOF
+	In auto mode, if the cumulative length of all file arguments is
+	smaller than the terminal size, cat mode is used, otherwise pager mode
+	is used.  If any none file argument (neovim option) is given pager
+	mode is implied.
+	EOF
 }
 
 while getopts achnpv flag; do

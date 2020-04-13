@@ -146,7 +146,7 @@ local function highlight()
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
     if show_line == 1 then
-        outline = '' .. line_nr_ansi .. 
+      outline = '' .. line_nr_ansi .. 
         string.format('%' .. string.len(linecount) .. 'd', lnum) .. ' ' ..
         last_ansi
     end
@@ -170,7 +170,7 @@ local function highlight()
 	  append = line:sub(cnum, cnum)
 	end
 	if syntax_id ~= last_syntax_id then
-      last_ansi = group2ansi(syntax_id)
+	  last_ansi = group2ansi(syntax_id)
 	  outline = outline .. last_ansi
 	  last_syntax_id = syntax_id
 	end
@@ -387,6 +387,9 @@ local function stage2()
     mode, events = 'cat', 'VimEnter'
   else
     set_maps()
+    if nvim.nvim_get_var('nvimpager_line') == 1 then
+      nvim.nvim_command('set number')
+    end
     mode, events = 'pager', 'VimEnter,BufWinEnter'
   end
   -- The "nested" in these autocomands enables nested executions of
