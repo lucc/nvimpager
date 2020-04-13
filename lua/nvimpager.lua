@@ -24,6 +24,11 @@ local color2escape
 -- This variable holds the name of the detected parent process for pager mode.
 local doc = nil
 
+-- The count of buffer lines.
+local linecount
+-- If enable show line number, linenr_signcolumn will greater than 0.
+local linenr_signcolumn = 0
+
 local function split_rgb_number(color_number)
   -- The lua implementation of these bit shift operations is taken from
   -- http://nova-fusion.com/2011/03/21/simulate-bitwise-shift-operators-in-lua
@@ -127,7 +132,7 @@ local function highlight()
   -- Detect an empty buffer, see :help line2byte().  We can not use
   -- nvim_buf_get_lines as the table will contain one empty string for both an
   -- empty file and a file with just one empty line.
-  if nvim.nvim_buf_line_count(0) == 1 and
+  if linecount == 1 and
     nvim.nvim_call_function("line2byte", {2}) == -1 then
     return
   elseif check_escape_sequences() then
@@ -139,16 +144,14 @@ local function highlight()
   local conceallevel = nvim.nvim_win_get_option(0, 'conceallevel')
   local last_syntax_id = -1
   local last_conceal_id = -1
-  local linecount = nvim.nvim_buf_line_count(0)
-  local show_line = nvim.nvim_get_var('nvimpager_line')
   local last_ansi = ''
   local line_nr_ansi = group2ansi(nvim.nvim_call_function('hlID', {'LineNr'}))
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
-    if show_line == 1 then
+    -- Enable show line number
+    if linenr_signcolumn > 0 then
       outline = '' .. line_nr_ansi .. 
-        string.format('%' .. string.len(linecount) .. 'd', lnum) .. ' ' ..
-        last_ansi
+        string.format('%' .. linenr_signcolumn .. 'd', lnum) .. ' ' .. last_ansi
     end
     for cnum = 1, line:len() do
       local conceal_info = nvim.nvim_call_function('synconcealed',
@@ -390,25 +393,28 @@ local function stage2()
     mode, events = 'pager', 'VimEnter,BufWinEnter'
   end
 
-  if nvim.nvim_get_var('nvimpager_line') == 1 then
+  linecount = nvim.nvim_buf_line_count(0)
+  if nvim.nvim_get_var('show_linenr') == 1 then
+    linenr_signcolumn = string.len(linecount)
     if doc == 'man' then
       local manwidth = os.getenv('MANWIDTH')
-      local lineswidth = string.len(nvim.nvim_buf_line_count(0))
       if not os.getenv('MANWIDTH') then
         -- When enable line number, man will produce a line wrapped issue
         -- if the parent process didn't specify MANWIDTH variable.
-        local manwidth = nvim.nvim_get_var('winwidth') - lineswidth
+        -- winwidth(0) always return default value 80 in headless mode.
+        local manwidth = nvim.nvim_get_var('winwidth') - linenr_signcolumn
         nvim.nvim_command('let $MANWIDTH = ' .. manwidth)
         -- Find target man file and reassign the MANWIDTH
         nvim.nvim_command('edit')
       end
 
       nvim.nvim_command('autocmd NvimPager VimResized <buffer> ' ..
-          'let $MANWIDTH = winwidth(0) - ' .. lineswidth)
+          'let $MANWIDTH = winwidth(0) - ' .. linenr_signcolumn)
       nvim.nvim_command('autocmd NvimPager BufEnter <buffer> setlocal number')
     end
     nvim.nvim_command('setlocal number')
   end
+
   -- The "nested" in these autocomands enables nested executions of
   -- autocomands inside the *_mode() functions.  See :h autocmd-nested, for
   -- compatibility with nvim < 0.4 we use "nested" and not "++nested".

@@ -9,7 +9,7 @@ export PPID
 
 name=nvimpager
 mode=auto
-show_line=0
+show_linenr=0
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
 nvim=${NVIM:-nvim}
 
@@ -49,7 +49,7 @@ while getopts achnpv flag; do
     a) mode=auto;;
     c) mode=cat;;
     h) usage; description; exit;;
-    n) show_line=1;;
+    n) show_linenr=1;;
     p) mode=pager;;
     v)
       version=$(git -C "$RUNTIME" describe 2>/dev/null) || version=v0.6
@@ -106,7 +106,7 @@ default_args=(
   --cmd 'set rtp+=$RUNTIME'
   --cmd 'lua nvimpager = require("nvimpager")'
   --cmd 'lua nvimpager.stage1()'
-  -c "let g:nvimpager_line=$show_line"
+  -c "let g:show_linenr=$show_linenr"
   -c "let g:winwidth=$(tput cols)"
   -c 'lua nvimpager.stage2()'
 )
