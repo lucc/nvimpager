@@ -7,8 +7,9 @@ local describe, it, assert, mock =
 
 -- gloabl varables to set $XDG_CONFIG_HOME and $XDG_DATA_HOME to for the
 -- tests.
-local confdir = "test/fixtures/no-config"
-local datadir = "test/fixtures/no-data"
+local tmp = os.getenv("TMPDIR") or "/tmp"
+local confdir = tmp .. "/nvimpager-testsuite/no-config"
+local datadir = tmp .. "/nvimpager-testsuite/no-data"
 
 -- Run a shell command, assert it terminates with return code 0 and return its
 -- output.
