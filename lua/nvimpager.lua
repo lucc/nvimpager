@@ -244,7 +244,7 @@ local function detect_parent_process()
   elseif command:find('^[Pp]ython[0-9.]*') ~= nil or
 	 command:find('^[Pp]ydoc[0-9.]*') ~= nil then
     return 'pydoc'
-  elseif command == 'ruby' or command == 'ri' then
+  elseif command == 'ruby' or command == 'irb' or command == 'ri' then
     return 'ri'
   elseif command == 'perl' or command == 'perldoc' then
     return 'perldoc'
@@ -298,7 +298,7 @@ local function detect_filetype()
       -- Use nvim's syntax highlighting for git buffers instead of git's
       -- internal highlighting.
       strip_ansi_escape_sequences_from_current_buffer()
-    elseif doc == 'pydoc' or doc == 'perldoc' then
+    elseif doc == 'pydoc' or doc == 'perldoc' or doc == 'ri' then
       doc = 'man'
     end
     -- FIXME: Why does this need to be the command?  Why doesn't this work:
