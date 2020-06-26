@@ -161,6 +161,20 @@ describe("cat mode", function()
     assert.equal('', output)
   end)
 
+  it("explicit - as file argument means stdin", function()
+    local shell_command = "echo foo | ./nvimpager -c - test/fixtures/makefile"
+    local output = run("sh -c '" .. shell_command .. "'")
+    local expected = "\27[0mfoo\27[0m\n" ..
+		     read("test/fixtures/makefile.ansi")
+    assert.equal(expected, output)
+  end)
+
+  pending("prefers file arguments over stdin", function()
+    local shell_command = "echo foo | ./nvimpager -c test/fixtures/makefile"
+    local output = run("sh -c '" .. shell_command .. "'")
+    assert.equal(read("test/fixtures/makefile.ansi"), output)
+  end)
+
   describe("with modeline", function()
     it("highlights files even after mode line files", function()
       local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
