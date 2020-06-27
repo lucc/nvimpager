@@ -243,6 +243,20 @@ describe("pager mode", function()
   end)
 end)
 
+describe("cat-exec mode", function()
+  it("is selected when stdin is not a tty", function()
+    local output = run("./nvimpager < README.md")
+    local expected = read("README.md")
+    assert.equal(expected, output)
+  end)
+
+  it("does not highlight files", function()
+    local output = run("./nvimpager < test/fixtures/makefile")
+    local expected = read("test/fixtures/makefile") -- NOTE: no highlight
+    assert.equal(expected, output)
+  end)
+end)
+
 describe("backend:", function()
   it("runtimepath doesn't include nvim's user dirs", function()
     local cmd = [[RUNTIME=special-test-value nvim -i NONE --headless ]]..
