@@ -169,7 +169,7 @@ describe("cat mode", function()
     assert.equal(expected, output)
   end)
 
-  pending("prefers file arguments over stdin", function()
+  it("prefers file arguments over stdin", function()
     local shell_command = "echo foo | ./nvimpager -c test/fixtures/makefile"
     local output = run("sh -c '" .. shell_command .. "'")
     assert.equal(read("test/fixtures/makefile.ansi"), output)
