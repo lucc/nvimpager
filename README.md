@@ -55,6 +55,20 @@ variables:
 make PREFIX=$HOME/.local install
 ```
 
+Or install with your operating system's package manager:
+
+**Void Linux**
+```
+# xbps-install -S nvimpager
+```
+
+**Arch Linux**
+
+Nvimpager can be found on the AUR as `nvimpager-git` and can be installed with an AUR helper such as `yay`
+```
+$ yay -S nvimpager-git
+```
+
 ### Development
 
 Nvimpager is developed on [Github][nvimpager] where you are very much invited
