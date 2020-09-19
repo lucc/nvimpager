@@ -189,19 +189,6 @@ local function cat_mode()
   nvim.nvim_command('quitall!')
 end
 
--- Join a table with a string
-local function join(table, seperator)
-  if #table == 0 then return '' end
-  local index = 1
-  local ret = table[index]
-  index = index + 1
-  while index <= #table do
-    ret = ret .. seperator .. table[index]
-    index = index + 1
-  end
-  return ret
-end
-
 -- Replace a string prefix in all items in a list
 local function replace_prefix(table, old_prefix, new_prefix)
   -- Escape all punctuation chars to protect from lua pattern chars.
@@ -224,7 +211,7 @@ local function fix_runtime_path()
     new = original .."pager"
     runtimepath = replace_prefix(runtimepath, original, new)
   end
-  runtimepath = os.getenv("RUNTIME") .. "," .. join(runtimepath, ",")
+  runtimepath = os.getenv("RUNTIME") .. "," .. table.concat(runtimepath, ",")
   nvim.nvim_set_option("runtimepath", runtimepath)
   new = new .. '/rplugin.vim'
   nvim.nvim_command("let $NVIM_RPLUGIN_MANIFEST = '" .. new .. "'")
@@ -386,7 +373,6 @@ return {
     detect_parent_process = detect_parent_process,
     group2ansi = group2ansi,
     init_cat_mode = init_cat_mode,
-    join = join,
     replace_prefix = replace_prefix,
     split_rgb_number = split_rgb_number,
   }
