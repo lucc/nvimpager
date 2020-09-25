@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Copyright (c) 2017 Lucas Hoffmann
 # Licenced under a BSD-2-clause licence.  See the LICENSE file.
@@ -48,7 +48,7 @@ while getopts achpv flag; do
     h) usage; description; exit;;
     p) mode=pager;;
     v)
-      version=v0.6
+      version=v0.7
       echo "$name $version"
       exit
       ;;
@@ -56,6 +56,12 @@ while getopts achpv flag; do
   esac
 done
 shift $((OPTIND - 1))
+
+# Display the usage text if no arguments where given and stdin is a tty.
+if [[ $# -eq 0 && -t 0 ]]; then
+  usage
+  exit 2
+fi
 
 # If we are not on a tty just "be" cat.
 if [[ ! -t 1 && $mode = auto ]]; then
@@ -85,7 +91,8 @@ done
 # any file arguments, read stdin into a temp file.
 if [[ ( $mode != pager && ${#files[@]} -eq 0 ) || ! -t 0 ]]; then
   files=("$(mktemp)")
-  trap 'rm -f "${files[0]}"' HUP INT QUIT TERM ABRT PIPE ALRM EXIT
+  # Bash runs the EXIT trap also when exiting due to signals.
+  trap 'rm -f "${files[0]}"' EXIT
   cat > "${files[0]}"
 fi
 
@@ -97,7 +104,7 @@ default_args=(
   --cmd 'lua nvimpager.stage1()'
   -c 'lua nvimpager.stage2()'
 )
-# Switch to pager mode if all files combined are shorter than the terminal
+# Switch to cat mode if all files combined are shorter than the terminal
 # height.
 if [[ $mode = cat || \
       $mode = auto && $(cat "${files[@]}" | wc -l) -le $(tput lines) ]]

@@ -1,5 +1,5 @@
 language: minimal
-dist: xenial
+dist: bionic
 matrix:
   include:
     - os: linux

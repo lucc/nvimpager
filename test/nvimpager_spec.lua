@@ -2,13 +2,14 @@
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
-local describe, it, assert, pending, mock =
-      describe, it, assert, pending, mock  -- luacheck: ignore
+local describe, it, assert, mock =
+      describe, it, assert, mock  -- luacheck: ignore
 
 -- gloabl varables to set $XDG_CONFIG_HOME and $XDG_DATA_HOME to for the
 -- tests.
-local confdir = "test/fixtures/no-config"
-local datadir = "test/fixtures/no-data"
+local tmp = os.getenv("TMPDIR") or "/tmp"
+local confdir = tmp .. "/nvimpager-testsuite/no-config"
+local datadir = tmp .. "/nvimpager-testsuite/no-data"
 
 -- Run a shell command, assert it terminates with return code 0 and return its
 -- output.
@@ -91,7 +92,7 @@ describe("auto mode", function()
     file:write(script)
     file:close()
     local output = run("bash " .. filename)
-    --os.remove(filename)
+    os.remove(filename)
     return output
   end
 
@@ -164,21 +165,23 @@ describe("cat mode", function()
   end)
 
   describe("with modeline", function()
-    pending("highlights files even after mode line files", function()
+    it("highlights files even after mode line files", function()
       local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
 			 "test/fixtures/makefile " ..
+			 "--cmd 'set background=light' " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
-      local expected = read("test/fixtures/conceal.tex.ansi") ..
+      local expected = read("test/fixtures/conceal.tex.cole0.ansi") ..
 		       read("test/fixtures/makefile.ansi")
       assert.equal(expected, output)
     end)
 
-    pending("honors mode lines in later files", function()
+    it("honors mode lines in later files", function()
       local output = run("./nvimpager -c test/fixtures/makefile " ..
 			 "test/fixtures/conceal.tex " ..
+			 "--cmd 'set background=light' " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
       local expected = read("test/fixtures/makefile.ansi") ..
-		       read("test/fixtures/conceal.tex.ansi")
+		       read("test/fixtures/conceal.tex.cole0.ansi")
       assert.equal(expected, output)
     end)
 
@@ -237,6 +240,20 @@ end)
 describe("pager mode", function()
   it("starts up and quits correctly", function()
     run("./nvimpager -p makefile -c quit")
+  end)
+end)
+
+describe("cat-exec mode", function()
+  it("is selected when stdin is not a tty", function()
+    local output = run("./nvimpager < README.md")
+    local expected = read("README.md")
+    assert.equal(expected, output)
+  end)
+
+  it("does not highlight files", function()
+    local output = run("./nvimpager < test/fixtures/makefile")
+    local expected = read("test/fixtures/makefile") -- NOTE: no highlight
+    assert.equal(expected, output)
   end)
 end)
 
@@ -442,13 +459,12 @@ describe("lua functions", function()
 end)
 
 describe("parent detection", function()
-  -- Wrapper around run_with_parent() to execute some lua code in a --cmd
-  -- argument.
+  -- Wrapper to execute some lua code in a --cmd argument.
   local function lua_with_parent(name, code)
     -- First we have to shellescape the lua code.
     code = code:gsub("'", "'\\''")
-    local command = [[
-      nvim -i NONE --cmd 'set rtp+=.' --cmd 'lua ]]..code..[[' --cmd quit]]
+    local command = [[nvim --headless -i NONE --cmd 'set rtp+=.' --cmd 'lua ]]
+		    ..code..[[' --cmd quit]]
     return run("test/fixtures/bin/"..name.." "..command)
   end
 

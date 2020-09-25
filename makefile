@@ -46,6 +46,11 @@ $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
 
 test:
 	@$(BUSTED) test
+luacov.stats.out: nvimpager lua/nvimpager.lua test/nvimpager_spec.lua
+	@$(BUSTED) --coverage test
+luacov.report.out: luacov.stats.out
+	luacov lua/nvimpager.lua
+
 benchmark:
 	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
 	@hyperfine $(BENCHMARK_OPTS) \
@@ -61,7 +66,7 @@ benchmark:
 
 cleanall: clean clean-ansiesc
 clean:
-	$(RM) nvimpager.configured nvimpager.1 metadata.yaml
+	$(RM) nvimpager.configured nvimpager.1 metadata.yaml luacov.*
 clean-ansiesc:
 	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
 .PHONY: benchmark cleanall clean clean-ansiesc install test

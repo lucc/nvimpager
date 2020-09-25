@@ -59,12 +59,10 @@ local function color2escape_8bit(color_number, foreground)
     else
       prefix = '10'
     end
+  elseif foreground then
+    prefix = '38;5;'
   else
-    if foreground then
-      prefix = '38;5;'
-    else
-      prefix = '48;5;'
-    end
+    prefix = '48;5;'
   end
   return prefix .. color_number
 end
@@ -128,7 +126,7 @@ end
 local function highlight()
   -- Detect an empty buffer, see :help line2byte().  We can not use
   -- nvim_buf_get_lines as the table will contain one empty string for both an
-  -- empty file and a file with just one emptay line.
+  -- empty file and a file with just one empty line.
   if nvim.nvim_buf_line_count(0) == 1 and
     nvim.nvim_call_function("line2byte", {2}) == -1 then
     return
@@ -246,7 +244,7 @@ local function detect_parent_process()
   elseif command:find('^[Pp]ython[0-9.]*') ~= nil or
 	 command:find('^[Pp]ydoc[0-9.]*') ~= nil then
     return 'pydoc'
-  elseif command == 'ruby' or command == 'ri' then
+  elseif command == 'ruby' or command == 'irb' or command == 'ri' then
     return 'ri'
   elseif command == 'perl' or command == 'perldoc' then
     return 'perldoc'
@@ -300,7 +298,7 @@ local function detect_filetype()
       -- Use nvim's syntax highlighting for git buffers instead of git's
       -- internal highlighting.
       strip_ansi_escape_sequences_from_current_buffer()
-    elseif doc == 'pydoc' or doc == 'perldoc' then
+    elseif doc == 'pydoc' or doc == 'perldoc' or doc == 'ri' then
       doc = 'man'
     end
     -- FIXME: Why does this need to be the command?  Why doesn't this work:
@@ -312,11 +310,14 @@ end
 -- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
   nvim.nvim_command('nnoremap q :quitall!<CR>')
+  nvim.nvim_command('vnoremap q :quitall!<CR>')
   nvim.nvim_command('nnoremap <Space> <PageDown>')
   nvim.nvim_command('nnoremap <S-Space> <PageUp>')
   nvim.nvim_command('nnoremap g gg')
   nvim.nvim_command('nnoremap <Up> <C-Y>')
   nvim.nvim_command('nnoremap <Down> <C-E>')
+  nvim.nvim_command('nnoremap k <C-Y>')
+  nvim.nvim_command('nnoremap j <C-E>')
 end
 
 -- Unset all mappings set in set_maps().
@@ -353,8 +354,10 @@ local function stage1()
   nvim.nvim_command('augroup END')
   doc = detect_parent_process()
   if doc == 'git' then
-    --nvim.nvim_set_option('modeline', false)
-    nvim.nvim_command('set nomodeline')
+    -- We disable modelines for this buffer as they could disturb the git
+    -- highlighting in diffs.
+    nvim.nvim_buf_set_option(0, 'modeline', false)
+    nvim.nvim_set_option('modelines', 0)
   end
   -- Theoretically these options only affect the pager mode so they could also
   -- be set in stage2() but that would overwrite user settings from the init
@@ -370,15 +373,18 @@ end
 -- would not be available in --cmd.
 local function stage2()
   detect_filetype()
+  local mode, events
   if #nvim.nvim_list_uis() == 0 then
-    -- cat mode
-    nvim.nvim_command("autocmd NvimPager VimEnter * lua nvimpager.cat_mode()")
+    mode, events = 'cat', 'VimEnter'
   else
-    -- pager mode
     set_maps()
-    nvim.nvim_command(
-      'autocmd NvimPager BufWinEnter,VimEnter * lua nvimpager.pager_mode()')
+    mode, events = 'pager', 'VimEnter,BufWinEnter'
   end
+  -- The "nested" in these autocomands enables nested executions of
+  -- autocomands inside the *_mode() functions.  See :h autocmd-nested, for
+  -- compatibility with nvim < 0.4 we use "nested" and not "++nested".
+  nvim.nvim_command(
+    'autocmd NvimPager '..events..' * nested lua nvimpager.'..mode..'_mode()')
 end
 
 return {
@@ -391,11 +397,9 @@ return {
     color2escape_8bit = color2escape_8bit,
     detect_parent_process = detect_parent_process,
     group2ansi = group2ansi,
-    highlight = highlight,
     init_cat_mode = init_cat_mode,
     join = join,
     replace_prefix = replace_prefix,
-    set_maps = set_maps,
     split_rgb_number = split_rgb_number,
   }
 }
