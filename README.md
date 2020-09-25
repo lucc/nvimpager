@@ -47,7 +47,7 @@ install it manually, read on.
 
 ### Dependencies
 
-* [neovim] ≥ v0.3.0
+* [neovim] ≥ v0.4.0
 * [bash]
 * ([curl] during installation)
 * ([busted] for running the tests)
