@@ -290,6 +290,89 @@ local function detect_filetype()
   end
 end
 
+-- local namespace = nvim.nvim_create_namespace("")
+local ansi2highlight_table = {
+  [0] = "black",
+  [1] = "red",
+  [2] = "green",
+  [3] = "yellow",
+  [4] = "blue",
+  [5] = "magenta",
+  [6] = "cyan",
+  [7] = "white",
+}
+local state = {}
+
+state.clear = function(self)
+  self.foreground = ""
+  self.background = ""
+  self.bold = false
+  self.bright = false
+  self.italic = false
+  self.reverse = false
+  self.strikethrough = false
+  self.underline = false
+end
+
+state.parse = function(self, string)
+  for token in string:gmatch("[^;]*") do
+    if token == "" then token = 0 else token = tonumber(token) end
+    if token == 0 then
+      self:clear()
+    elseif token == 1 then
+      self.bold = true
+    elseif token >= 30 and token <= 37 then -- foreground color
+      self.foreground = ansi2highlight_table[token - 30]
+    elseif token >= 40 and token <= 47 then -- background color
+      self.background = ansi2highlight_table[token - 40]
+    elseif token >= 90 and token <= 97 then -- bright foreground color
+      self.foreground = ansi2highlight_table[token - 90]
+      self.bright = true
+    elseif token >= 100 and token <= 107 then -- bright foreground color
+      self.background = ansi2highlight_table[token - 100]
+      self.bright = true
+    end
+  end
+end
+
+state.render = function(self, from_line, from_column, to_line, to_column)
+  if self.color == "" then
+    return
+  end
+  local function add_hl(line, from, to)
+    nvim.nvim_buf_add_highlight(0, namespace, "hlgroup", line, from or 1,
+				to or -1)
+  end
+  if from_line == to_line then
+    add_hl(from_line, from_column, to_column)
+  else
+    add_hl(from_line, from_column)
+    for line = from_line+1, to_line-1 do
+      add_hl(line)
+    end
+    add_hl(to_line, 1, to_column)
+  end
+end
+
+-- Parse the current buffer for ansi escape sequences and add buffer
+-- highlights to the buffer instead.
+local function ansi2highlight()
+  local pattern = "\27\\[([0-9;]*)m"
+  nvim.nvim_command("syntax match NvimPagerConceal conceal '\\e\\[[0-9;]*m'")
+  local last_line = 1
+  local last_column = 1
+  for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
+    local start, end_, spec = nil, nil, nil
+    start, end_, spec = line:find(pattern,column)
+    if start ~= nil then
+      state:render(last_line, last_column, lnum, start)
+      last_line = lnum
+      last_column = end_
+      state:parse(spec)
+    end
+  end
+end
+
 -- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
   local function map(mode, lhs, rhs)
@@ -307,10 +390,11 @@ local function set_maps()
 end
 
 -- Setup function for the VimEnter autocmd.
+-- This function will be called for each buffer once
 local function pager_mode()
   if check_escape_sequences() then
-    -- Try to highlight ansi escape sequences with the AnsiEsc plugin.
-    nvim.nvim_command('AnsiEsc')
+    -- Try to highlight ansi escape sequences.
+    ansi2highlight()
   end
   nvim.nvim_buf_set_option(0, 'modifiable', false)
   nvim.nvim_buf_set_option(0, 'modified', false)
@@ -375,5 +459,6 @@ return {
     init_cat_mode = init_cat_mode,
     replace_prefix = replace_prefix,
     split_rgb_number = split_rgb_number,
+    state = state,
   }
 }
