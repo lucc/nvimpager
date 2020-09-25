@@ -309,7 +309,7 @@ local function set_maps()
     nvim.nvim_set_keymap(mode, lhs, rhs, {noremap = true})
   end
   map('n', 'q', ':quitall!<CR>')
-  map('v', 'q', ':quitall!<CR>')
+  map('v', 'q', ':<C-U>quitall!<CR>')
   map('n', '<Space>', '<PageDown>')
   map('n', '<S-Space>', '<PageUp>')
   map('n', 'g', 'gg')
