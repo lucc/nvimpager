@@ -3,10 +3,8 @@ name: CI
 on: [push]
 
 jobs:
-  build:
-
+  ci-ubuntu:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
     - name: install dependencies
@@ -14,6 +12,17 @@ jobs:
         sudo add-apt-repository -y ppa:neovim-ppa/stable
         sudo apt-get update
         sudo apt-get install -yqq --no-install-recommends neovim pandoc luarocks
+        luarocks --local install busted
+    - name: Run the test suite
+      run: make test BUSTED=$HOME/.luarocks/bin/busted
+  ci-osx:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: install dependencies
+      run: |
+        brew update
+        brew install neovim pandoc luarocks
         luarocks --local install busted
     - name: Run the test suite
       run: make test BUSTED=$HOME/.luarocks/bin/busted
