@@ -4,8 +4,9 @@
 # Licenced under a BSD-2-clause licence.  See the LICENSE file.
 
 RUNTIME=${BASH_SOURCE%/*}
+PARENT=$PPID
 export RUNTIME
-export PPID
+export PARENT
 
 name=nvimpager
 mode=auto

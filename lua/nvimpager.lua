@@ -218,10 +218,10 @@ local function fix_runtime_path()
 end
 
 -- Parse the command of the calling process to detect some common
--- documentation programs (man, pydoc, perldoc, git, ...).  $PPID was exported
--- by the calling bash script and points to the calling program.
+-- documentation programs (man, pydoc, perldoc, git, ...).  $PARENT was
+-- exported by the calling bash script and points to the calling program.
 local function detect_parent_process()
-  local ppid = os.getenv('PPID')
+  local ppid = os.getenv('PARENT')
   if not ppid then return nil end
   local proc = nvim.nvim_get_proc(tonumber(ppid))
   if proc == nil then return 'none' end
