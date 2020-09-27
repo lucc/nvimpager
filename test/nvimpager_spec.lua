@@ -460,7 +460,7 @@ describe("parent detection", function()
     assert.equal("man", output)
   end)
 
-  it("handles git #osx_pending", function()
+  it("handles git", function()
     local output = run("test/fixtures/bin/git ./nvimpager -c " ..
 		       "test/fixtures/diff --cmd 'set background=light'")
     local expected = read("test/fixtures/diff.ansi")
