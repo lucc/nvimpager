@@ -150,9 +150,9 @@ describe("cat mode", function()
 
   it("produces no output for empty files", function()
     local tmp = os.tmpname()
+    finally(function() os.remove(tmp) end)
     -- This hangs if /dev/null is used instead.
     local output = run("./nvimpager -c "..tmp)
-    os.execute('rm '..tmp)
     assert.equal('', output)
   end)
 
