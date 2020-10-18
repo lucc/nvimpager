@@ -440,6 +440,43 @@ describe("lua functions", function()
       assert.same({"XXX-c"}, actual)
     end)
   end)
+
+  describe("ansi parser", function()
+    local state
+    setup(function() state = load_nvimpager()._testable.state end)
+    before_each(function() state:clear() end)
+
+    it("clears all attributes on 0", function()
+      state.foreground = "foo"
+      state.background = "bar"
+      state.strikethrough = true
+      state:parse("0")
+      for key, val in pairs(state) do
+	if type(val) == "string" then assert.equal("", val)
+	elseif type(val) == "boolean" then assert.is_false(val)
+	end
+      end
+    end)
+
+    it("parses 1 as bold #xxx", function()
+      state:parse("1")
+      assert.is_true(state.bold)
+    end)
+    it("parses 31 as red foreground", function()
+      state:parse("31")
+      assert.equal("red", state.foreground)
+    end)
+    it("parses 42 as green background", function()
+      state:parse("42")
+      assert.equal("green", state.background)
+    end)
+
+    it("can parse combinations", function()
+      state:parse("33;44")
+      assert.equal("yellow", state.foreground)
+      assert.equal("blue", state.background)
+    end)
+  end)
 end)
 
 describe("parent detection", function()
@@ -476,42 +513,5 @@ describe("parent detection", function()
 		       "test/fixtures/man.cat")
     local expected = read("test/fixtures/man.ansi")
     assert.equal(expected, output)
-  end)
-end)
-
-describe("ansi parser", function()
-  local state
-  setup(function() state = require("lua/nvimpager")._testable.state end)
-  before_each(function() state:clear() end)
-
-  it("clears all attributes on 0", function()
-    state.foreground = "foo"
-    state.background = "bar"
-    state.strikethrough = true
-    state:parse("0")
-    for key, val in pairs(state) do
-      if type(val) == "string" then assert.equal(val, "")
-      elseif type(val) == "boolean" then assert.is_false(val)
-      end
-    end
-  end)
-
-  it("parses 1 as bold", function()
-    state:parse("1")
-    assert.is_true(state.bold)
-  end)
-  it("parses 31 as red foreground", function()
-    state:parse("31")
-    assert.equal(state.foreground, "red")
-  end)
-  it("parses 42 as green background", function()
-    state:parse("31")
-    assert.equal(state.background, "green")
-  end)
-
-  it("can parse combinations", function()
-    state:parse("33;44")
-    assert.equal(state.foreground, "yellow")
-    assert.equal(state.background, "blue")
   end)
 end)
