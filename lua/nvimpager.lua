@@ -353,9 +353,15 @@ state.render = function(self, from_line, from_column, to_line, to_column)
   if from_line == to_line and from_column == to_column then
     return
   end
+  local groupname = self:state2highlight_group_name()
+
   local function add_hl(line, from, to)
-    nvim.nvim_buf_add_highlight(0, namespace, "hlgroup", line, from or 1,
-				to or -1)
+    -- This function expects 0 based line numbers and column numbers.
+    -- Set the start column to 0, the end column to -1 if not given.
+    local line_0 = line - 1
+    local from_0 = (from or 1) - 1
+    local to_0 = (to or 0) - 1
+    nvim.nvim_buf_add_highlight(0, namespace, groupname, line_0, from_0, to_0)
   end
   if from_line == to_line then
     add_hl(from_line, from_column, to_column)
