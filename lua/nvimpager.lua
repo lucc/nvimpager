@@ -314,6 +314,17 @@ state.clear = function(self)
   self.underline = false
 end
 
+state.state2highlight_group_name = function(self)
+  local name = "NvimPagerFG_" .. self.foreground .. "_BG_" .. self.background
+  for _, field in ipairs({"bold","bright", "italic", "reverse",
+			  "strikethrough", "underline"}) do
+    if type(self[field]) == "boolean" and self[field] then
+      name = name .. "_" .. field
+    end
+  end
+  return name
+end
+
 state.parse = function(self, string)
   for token in string:gmatch("[^;]*") do
     if token == "" then token = 0 else token = tonumber(token) end
