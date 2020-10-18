@@ -374,6 +374,7 @@ local function ansi2highlight()
   local pattern = "\27%[([0-9;]*)m"
   local last_line = 1
   local last_column = 1
+  state:clear()
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local start, end_, spec = nil, nil, nil
     start, end_, spec = line:find(pattern,column)
