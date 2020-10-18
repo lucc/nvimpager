@@ -368,8 +368,10 @@ end
 -- Parse the current buffer for ansi escape sequences and add buffer
 -- highlights to the buffer instead.
 local function ansi2highlight()
-  local pattern = "\27\\[([0-9;]*)m"
   nvim.nvim_command("syntax match NvimPagerConceal conceal '\\e\\[[0-9;]*m'")
+  nvim.nvim_win_set_option(0, "conceallevel", 3)
+  nvim.nvim_win_set_option(0, "concealcursor", "nv")
+  local pattern = "\27%[([0-9;]*)m"
   local last_line = 1
   local last_column = 1
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
