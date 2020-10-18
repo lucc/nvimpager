@@ -290,7 +290,7 @@ local function detect_filetype()
   end
 end
 
-local namespace = nvim.nvim_create_namespace("")
+local namespace
 local ansi2highlight_table = {
   [0] = "black",
   [1] = "red",
@@ -395,6 +395,7 @@ local function ansi2highlight()
   local last_line = 1
   local last_column = 1
   state:clear()
+  namespace = nvim.nvim_create_namespace("")
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local start, end_, spec = nil, nil, nil
     start, end_, spec = line:find(pattern,column)
