@@ -290,7 +290,7 @@ local function detect_filetype()
   end
 end
 
--- local namespace = nvim.nvim_create_namespace("")
+local namespace = nvim.nvim_create_namespace("")
 local ansi2highlight_table = {
   [0] = "black",
   [1] = "red",
