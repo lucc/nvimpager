@@ -354,6 +354,17 @@ state.render = function(self, from_line, from_column, to_line, to_column)
     return
   end
   local groupname = self:state2highlight_group_name()
+  -- check if the hl group already exists
+  if not pcall(nvim.nvim_get_hl_by_name, groupname, false) then
+    local args = ""
+    if self.foreground ~= "" then args = args.." guifg="..self.foreground end
+    if self.background ~= "" then args = args.." guibg="..self.background end
+    if args == "" then
+      nvim.nvim_command("highlight link " .. groupname .. " Normal")
+    else
+      nvim.nvim_command("highlight " .. groupname .. args)
+    end
+  end
 
   local function add_hl(line, from, to)
     -- This function expects 0 based line numbers and column numbers.
