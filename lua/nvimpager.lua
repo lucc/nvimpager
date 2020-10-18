@@ -350,6 +350,9 @@ state.render = function(self, from_line, from_column, to_line, to_column)
   if self.color == "" then
     return
   end
+  if from_line == to_line and from_column == to_column then
+    return
+  end
   local function add_hl(line, from, to)
     nvim.nvim_buf_add_highlight(0, namespace, "hlgroup", line, from or 1,
 				to or -1)
