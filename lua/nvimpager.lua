@@ -290,6 +290,19 @@ local function detect_filetype()
   end
 end
 
+-- Split a string at a seperator
+--
+-- The seperator must not be a special character in regex, otherwise this
+-- function will break.
+--
+-- Because neovim uses lua 5.1 the gmatch method on strings includes an empty
+-- match at the end *in some cases* (not with ";").  Therefore this function
+-- is needed.  Code adopted from https://stackoverflow.com/questions/61053903.
+local function split(input, seperator)
+  local seperator = seperator or ";"
+  return string.gmatch(input..seperator, '([^'..seperator..']*)'..seperator)
+end
+
 local namespace
 local ansi2highlight_table = {
   [0] = "black",
@@ -326,7 +339,7 @@ state.state2highlight_group_name = function(self)
 end
 
 state.parse = function(self, string)
-  for token in string:gmatch("[^;]*") do
+  for token in split(string, ";") do
     if token == "" then token = 0 else token = tonumber(token) end
     if token == 0 then
       self:clear()
