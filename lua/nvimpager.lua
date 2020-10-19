@@ -506,6 +506,7 @@ return {
     group2ansi = group2ansi,
     init_cat_mode = init_cat_mode,
     replace_prefix = replace_prefix,
+    split = split,
     split_rgb_number = split_rgb_number,
     state = state,
   }

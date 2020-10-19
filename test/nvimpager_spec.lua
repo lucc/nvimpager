@@ -441,6 +441,47 @@ describe("lua functions", function()
     end)
   end)
 
+  describe("split", function()
+    local nvimpager
+    local function test(input, seperator)
+      local actual = {}
+      for item in nvimpager._testable.split(input, seperator) do
+	table.insert(actual, item)
+      end
+      return actual
+    end
+    setup(function() nvimpager = load_nvimpager() end)
+
+    it("returns one element from the empty string", function()
+      local actual = test("", ";")
+      assert.same({""}, actual)
+    end)
+    it("returns two elements if the input is just the seperator", function()
+      local actual = test(";", ";")
+      assert.same({"", ""}, actual)
+    end)
+    it("returns the input for strings without the seperator", function()
+      local actual = test("foo", ";")
+      assert.same({"foo"}, actual)
+    end)
+    it("does simple splits", function()
+      local actual = test("foo;bar;baz", ";")
+      assert.same({"foo", "bar", "baz"}, actual)
+    end)
+    it("yields an empty item for two consecutive seperators", function()
+      local actual = test("foo;;bar", ";")
+      assert.same({"foo", "", "bar"}, actual)
+    end)
+    it("does honour delimiters at the beginning", function()
+      local actual = test(";foo;bar", ";")
+      assert.same({"", "foo", "bar"}, actual)
+    end)
+    it("does honour delimiters at the end", function()
+      local actual = test("foo;bar;", ";")
+      assert.same({"foo", "bar", ""}, actual)
+    end)
+  end)
+
   describe("ansi parser", function()
     local state
     setup(function() state = load_nvimpager()._testable.state end)
