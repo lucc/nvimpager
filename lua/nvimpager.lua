@@ -320,16 +320,16 @@ state.clear = function(self)
   self.foreground = ""
   self.background = ""
   self.bold = false
-  self.bright = false
   self.italic = false
   self.reverse = false
+  self.standout = false
   self.strikethrough = false
   self.underline = false
 end
 
 state.state2highlight_group_name = function(self)
   local name = "NvimPagerFG_" .. self.foreground .. "_BG_" .. self.background
-  for _, field in ipairs({"bold","bright", "italic", "reverse",
+  for _, field in ipairs({"bold","standout", "italic", "reverse",
 			  "strikethrough", "underline"}) do
     if type(self[field]) == "boolean" and self[field] then
       name = name .. "_" .. field
@@ -351,10 +351,10 @@ state.parse = function(self, string)
       self.background = ansi2highlight_table[token - 40]
     elseif token >= 90 and token <= 97 then -- bright foreground color
       self.foreground = ansi2highlight_table[token - 90]
-      self.bright = true
+      self.standout = true
     elseif token >= 100 and token <= 107 then -- bright foreground color
       self.background = ansi2highlight_table[token - 100]
-      self.bright = true
+      self.standout = true
     end
   end
 end
