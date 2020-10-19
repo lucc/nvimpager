@@ -359,6 +359,27 @@ state.parse = function(self, string)
   end
 end
 
+state.compute_highlight_command = function(self)
+  local args = ""
+  if self.foreground ~= "" then args = args.." guifg="..self.foreground end
+  if self.background ~= "" then args = args.." guibg="..self.background end
+  local attrs = ""
+  for key, val in pairs(self) do
+    if type(val) == "boolean" and val then
+      attrs = attrs .. "," .. key
+    end
+  end
+  attrs = attrs:sub(2)
+  if attrs ~= "" then
+    args = args .. " gui=" .. attrs .. " cterm=" .. attrs
+  end
+  if args == "" then
+    return "highlight default link " .. groupname .. " Normal"
+  else
+    return "highlight default " .. groupname .. args
+  end
+end
+
 state.render = function(self, from_line, from_column, to_line, to_column)
   if self.color == "" then
     return
@@ -369,14 +390,7 @@ state.render = function(self, from_line, from_column, to_line, to_column)
   local groupname = self:state2highlight_group_name()
   -- check if the hl group already exists
   if not pcall(nvim.nvim_get_hl_by_name, groupname, false) then
-    local args = ""
-    if self.foreground ~= "" then args = args.." guifg="..self.foreground end
-    if self.background ~= "" then args = args.." guibg="..self.background end
-    if args == "" then
-      nvim.nvim_command("highlight link " .. groupname .. " Normal")
-    else
-      nvim.nvim_command("highlight " .. groupname .. args)
-    end
+    nvim.nvim_command(self:compute_highlight_command())
   end
 
   local function add_hl(line, from, to)
