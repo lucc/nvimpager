@@ -314,24 +314,24 @@ local ansi2highlight_table = {
   [6] = "cyan",
   [7] = "white",
 }
-local state = {}
+local state = {
+  -- the list of terminal attributes that we can handle (this is used for
+  -- iteration)
+  attrs = {
+    "bold", "italic", "reverse", "standout", "strikethrough", "underline"
+  }
+}
 
 state.clear = function(self)
   self.foreground = ""
   self.background = ""
-  self.bold = false
-  self.italic = false
-  self.reverse = false
-  self.standout = false
-  self.strikethrough = false
-  self.underline = false
+  for _, k in ipairs(self.attrs) do self[k] = false end
 end
 
 state.state2highlight_group_name = function(self)
   local name = "NvimPagerFG_" .. self.foreground .. "_BG_" .. self.background
-  for _, field in ipairs({"bold","standout", "italic", "reverse",
-			  "strikethrough", "underline"}) do
-    if type(self[field]) == "boolean" and self[field] then
+  for _, field in ipairs(self.attrs) do
+    if self[field] then
       name = name .. "_" .. field
     end
   end
@@ -364,8 +364,8 @@ state.compute_highlight_command = function(self)
   if self.foreground ~= "" then args = args.." guifg="..self.foreground end
   if self.background ~= "" then args = args.." guibg="..self.background end
   local attrs = ""
-  for key, val in pairs(self) do
-    if type(val) == "boolean" and val then
+  for _, key in ipairs(self.attrs) do
+    if self[key] then
       attrs = attrs .. "," .. key
     end
   end
