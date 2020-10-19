@@ -359,7 +359,7 @@ state.parse = function(self, string)
   end
 end
 
-state.compute_highlight_command = function(self)
+state.compute_highlight_command = function(self, groupname)
   local args = ""
   if self.foreground ~= "" then args = args.." guifg="..self.foreground end
   if self.background ~= "" then args = args.." guibg="..self.background end
@@ -390,7 +390,7 @@ state.render = function(self, from_line, from_column, to_line, to_column)
   local groupname = self:state2highlight_group_name()
   -- check if the hl group already exists
   if not pcall(nvim.nvim_get_hl_by_name, groupname, false) then
-    nvim.nvim_command(self:compute_highlight_command())
+    nvim.nvim_command(self:compute_highlight_command(groupname))
   end
 
   local function add_hl(line, from, to)
