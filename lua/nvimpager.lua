@@ -315,6 +315,9 @@ local ansi2highlight_table = {
   [7] = "white",
 }
 local state = {
+  -- The line and column where the currently described state starts
+  line = 1,
+  column = 1,
   -- the list of terminal attributes that we can handle (this is used for
   -- iteration)
   attrs = {
@@ -419,19 +422,22 @@ local function ansi2highlight()
   nvim.nvim_win_set_option(0, "conceallevel", 3)
   nvim.nvim_win_set_option(0, "concealcursor", "nv")
   local pattern = "\27%[([0-9;]*)m"
-  local last_line = 1
-  local last_column = 1
   state:clear()
   namespace = nvim.nvim_create_namespace("")
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local start, end_, spec = nil, nil, nil
-    start, end_, spec = line:find(pattern,column)
-    if start ~= nil then
-      state:render(last_line, last_column, lnum, start)
-      last_line = lnum
-      last_column = end_
-      state:parse(spec)
-    end
+    local col = 1
+    repeat
+      start, end_, spec = line:find(pattern, col)
+      if start ~= nil then
+	state:render(state.line, state.column, lnum, start)
+	state.line = lnum
+	state.column = end_
+	state:parse(spec)
+	-- update the position to find the next match in the line
+	col = end_
+      end
+    until start == nil
   end
 end
 
