@@ -33,7 +33,7 @@ metadata.yaml:
 nvimpager.1: nvimpager.md metadata.yaml
 	pandoc --standalone --to man --output $@ $^
 AnsiEsc.vba:
-	curl https://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \
+	curl https://www.vim.org/scripts/download_script.php?src_id=14498 | \
 	  gunzip > $@
 
 $(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
