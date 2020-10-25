@@ -350,8 +350,12 @@ state.parse = function(self, string)
       self.bold = true
     elseif token >= 30 and token <= 37 then -- foreground color
       self.foreground = ansi2highlight_table[token - 30]
+    elseif token == 39 then -- reset foreground
+      self.foreground = ""
     elseif token >= 40 and token <= 47 then -- background color
       self.background = ansi2highlight_table[token - 40]
+    elseif token == 49 then -- reset background
+      self.background = ""
     elseif token >= 90 and token <= 97 then -- bright foreground color
       self.foreground = ansi2highlight_table[token - 90]
       self.standout = true
