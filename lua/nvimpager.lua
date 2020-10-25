@@ -348,6 +348,14 @@ state.parse = function(self, string)
       self:clear()
     elseif token == 1 then
       self.bold = true
+    elseif token == 3 then
+      self.italic = true
+    elseif token == 4 then
+      self.underline = true
+    elseif token == 7 then
+      self.reverse = true
+    elseif token == 9 then
+      self.strikethrough = true
     elseif token >= 30 and token <= 37 then -- foreground color
       self.foreground = ansi2highlight_table[token - 30]
     elseif token == 39 then -- reset foreground
