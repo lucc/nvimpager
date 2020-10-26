@@ -321,7 +321,7 @@ local state = {
   -- the list of terminal attributes that we can handle (this is used for
   -- iteration)
   attrs = {
-    "bold", "italic", "reverse", "standout", "strikethrough", "underline"
+    "bold", "italic", "reverse", "standout", "strikethrough", "underline", "conceal"
   }
 }
 
@@ -332,6 +332,7 @@ state.clear = function(self)
 end
 
 state.state2highlight_group_name = function(self)
+  if self.conceal then return "NvimPagerConceal" end
   local name = "NvimPagerFG_" .. self.foreground .. "_BG_" .. self.background
   for _, field in ipairs(self.attrs) do
     if self[field] then
@@ -354,6 +355,8 @@ state.parse = function(self, string)
       self.underline = true
     elseif token == 7 then
       self.reverse = true
+    elseif token == 8 then
+      self.conceal = true
     elseif token == 9 then
       self.strikethrough = true
     elseif token >= 30 and token <= 37 then -- foreground color
@@ -430,7 +433,8 @@ end
 -- Parse the current buffer for ansi escape sequences and add buffer
 -- highlights to the buffer instead.
 local function ansi2highlight()
-  nvim.nvim_command("syntax match NvimPagerConceal conceal '\\e\\[[0-9;]*m'")
+  nvim.nvim_command("syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-9;]*m'")
+  nvim.nvim_command("highlight NvimPagerConceal gui=NONE guisp=NONE guifg=background guibg=background")
   nvim.nvim_win_set_option(0, "conceallevel", 3)
   nvim.nvim_win_set_option(0, "concealcursor", "nv")
   local pattern = "\27%[([0-9;]*)m"
