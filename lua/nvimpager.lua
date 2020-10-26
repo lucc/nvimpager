@@ -359,6 +359,16 @@ state.parse = function(self, string)
       self.conceal = true
     elseif token == 9 then
       self.strikethrough = true
+    elseif token == 22 then
+      self.bold = false
+    elseif token == 23 then
+      self.italic = false
+    elseif token == 24 then
+      self.underline = false
+    elseif token == 27 then
+      self.reverse = false
+    elseif token == 29 then
+      self.strikethrough = false
     elseif token >= 30 and token <= 37 then -- foreground color
       self.foreground = ansi2highlight_table[token - 30]
     elseif token == 39 then -- reset foreground
