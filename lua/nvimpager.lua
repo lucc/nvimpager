@@ -46,7 +46,8 @@ local attributes = {
 -- These variables will be initialized during the first call to cat_mode() or
 -- pager_mode().
 --
--- A cache to map syntax groups to ansi escape sequences in cat mode.
+-- A cache to map syntax groups to ansi escape sequences in cat mode or
+-- remember defined syntax groups in the ansi rendering functions.
 local cache = {}
 -- A local copy of the termguicolors option, used for color output in cat
 -- mode.
@@ -429,8 +430,9 @@ state.render = function(self, from_line, from_column, to_line, to_column)
   end
   local groupname = self:state2highlight_group_name()
   -- check if the hl group already exists
-  if not pcall(nvim.nvim_get_hl_by_name, groupname, false) then
+  if not cache[groupname] then
     nvim.nvim_command(self:compute_highlight_command(groupname))
+    cache[groupname] = true
   end
 
   local function add_hl(line, from, to)
