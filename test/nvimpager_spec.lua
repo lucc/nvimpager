@@ -499,23 +499,56 @@ describe("lua functions", function()
       end
     end)
 
-    it("parses 1 as bold #xxx", function()
-      state:parse("1")
-      assert.is_true(state.bold)
-    end)
-    it("parses 31 as red foreground", function()
-      state:parse("31")
-      assert.equal("red", state.foreground)
-    end)
-    it("parses 42 as green background", function()
-      state:parse("42")
-      assert.equal("green", state.background)
+    describe("can parse special terminal attributes:", function()
+      local attrs = {[1]="bold", [3]="italic", [4]="underline", [7]="reverse",
+		     [8]="conceal", [9]="strikethrough"}
+      for num, name in pairs(attrs) do
+	it(""..num.." is "..name, function()
+	state:parse(""..num) assert.is_true(state[name])
+	end)
+      end
     end)
 
-    it("can parse combinations", function()
+    local colors = {[0]="black", [1]="red", [2]="green", [3]="yellow",
+		    [4]="blue", [5]="magenta", [6]="cyan", [7]="white"}
+    describe("can parse foreground colors:", function()
+      for num, name in pairs(colors) do
+	it("3"..num.." is "..name, function()
+	state:parse("3"..num) assert.equal(name, state.foreground)
+	end)
+      end
+    end)
+    describe("can parse background colors:", function()
+      for num, name in pairs(colors) do
+	it("4"..num.." is "..name, function()
+	state:parse("4"..num) assert.equal(name, state.background)
+	end)
+      end
+    end)
+    it("can parse color combinations", function()
       state:parse("33;44")
       assert.equal("yellow", state.foreground)
       assert.equal("blue", state.background)
+    end)
+    it("parses sequences that partly override themself", function()
+      state:parse("35;3;36")
+      assert.equal("cyan", state.foreground)
+      assert.is_true(state.italic)
+    end)
+    it("can turn off foreground colors", function()
+      state:parse("37;45;39")
+      assert.equal("", state.foreground)
+      assert.equal("magenta", state.background)
+    end)
+    it("can turn off background colors", function()
+      state:parse("47;35;49")
+      assert.equal("magenta", state.foreground)
+      assert.equal("", state.background)
+    end)
+    it("can turn off selected terminal attributes", function()
+      state:parse("3;7;23")
+      assert.is_false(state.italic)
+      assert.is_true(state.reverse)
     end)
   end)
 end)
