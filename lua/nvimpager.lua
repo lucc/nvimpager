@@ -349,13 +349,13 @@ local state = {
   column = 1,
 }
 
-state.clear = function(self)
+function state.clear(self)
   self.foreground = ""
   self.background = ""
   for _, k in pairs(attributes) do self[k] = false end
 end
 
-state.state2highlight_group_name = function(self)
+function state.state2highlight_group_name(self)
   if self.conceal then return "NvimPagerConceal" end
   local name = "NvimPagerFG_" .. self.foreground .. "_BG_" .. self.background
   for _, field in pairs(attributes) do
@@ -366,7 +366,7 @@ state.state2highlight_group_name = function(self)
   return name
 end
 
-state.parse = function(self, string)
+function state.parse(self, string)
   for token in split(string, ";") do
     if token == "" then token = 0 else token = tonumber(token) end
     if token == 0 then
@@ -405,7 +405,7 @@ state.parse = function(self, string)
   end
 end
 
-state.compute_highlight_command = function(self, groupname)
+function state.compute_highlight_command(self, groupname)
   local args = ""
   if self.foreground ~= "" then args = args.." guifg="..self.foreground end
   if self.background ~= "" then args = args.." guibg="..self.background end
@@ -426,7 +426,7 @@ state.compute_highlight_command = function(self, groupname)
   end
 end
 
-state.render = function(self, from_line, from_column, to_line, to_column)
+function state.render(self, from_line, from_column, to_line, to_column)
   if from_line == to_line and from_column == to_column then
     return
   end
