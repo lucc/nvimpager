@@ -14,15 +14,49 @@
 -- shortcut and tell luacheck to ignore it.
 local nvim = vim.api -- luacheck: ignore
 
--- These variables will be initialized by the first call to init_cat_mode():
--- We cache the calculated escape sequences for the syntax groups.
+-- A mapping of ansi color numbers to neovim color names
+local colors = {
+  [0] = "black",
+  [1] = "red",
+  [2] = "green",
+  [3] = "yellow",
+  [4] = "blue",
+  [5] = "magenta",
+  [6] = "cyan",
+  [7] = "white",
+}
+
+-- the names of neovim's highlighting attributes that are handled by this
+-- module
+-- Most attributes are refered to by their highlighting attribute name in
+-- neovim's :highlight command.
+local attributes = {
+  [1] = "bold",
+  --[2] = "faint", -- not handled by neovim
+  [3] = "italic",
+  [4] = "underline",
+  --[5] = "slow blink", -- not handled by neovim
+  --[6] = "underline", -- not handled by neovim
+  [7] = "reverse",
+  [8] = "conceal",
+  [9] = "strikethrough",
+  -- TODO when to use the gui attribute "standout"?
+}
+
+-- These variables will be initialized during the first call to cat_mode() or
+-- pager_mode().
+--
+-- A cache to map syntax groups to ansi escape sequences in cat mode.
 local cache = {}
 -- A local copy of the termguicolors option, used for color output in cat
 -- mode.
 local colors_24_bit
 local color2escape
 -- This variable holds the name of the detected parent process for pager mode.
-local doc = nil
+local doc
+-- A neovim highlight namespace to group together all highlights added to
+-- buffers by this module.
+local namespace
 
 local function split_rgb_number(color_number)
   -- The lua implementation of these bit shift operations is taken from
@@ -303,38 +337,22 @@ local function split(input, seperator)
   return string.gmatch(input..seperator, '([^'..seperator..']*)'..seperator)
 end
 
-local namespace
-local ansi2highlight_table = {
-  [0] = "black",
-  [1] = "red",
-  [2] = "green",
-  [3] = "yellow",
-  [4] = "blue",
-  [5] = "magenta",
-  [6] = "cyan",
-  [7] = "white",
-}
 local state = {
   -- The line and column where the currently described state starts
   line = 1,
   column = 1,
-  -- the list of terminal attributes that we can handle (this is used for
-  -- iteration)
-  attrs = {
-    "bold", "italic", "reverse", "standout", "strikethrough", "underline", "conceal"
-  }
 }
 
 state.clear = function(self)
   self.foreground = ""
   self.background = ""
-  for _, k in ipairs(self.attrs) do self[k] = false end
+  for _, k in pairs(attributes) do self[k] = false end
 end
 
 state.state2highlight_group_name = function(self)
   if self.conceal then return "NvimPagerConceal" end
   local name = "NvimPagerFG_" .. self.foreground .. "_BG_" .. self.background
-  for _, field in ipairs(self.attrs) do
+  for _, field in pairs(attributes) do
     if self[field] then
       name = name .. "_" .. field
     end
@@ -347,42 +365,36 @@ state.parse = function(self, string)
     if token == "" then token = 0 else token = tonumber(token) end
     if token == 0 then
       self:clear()
-    elseif token == 1 then
-      self.bold = true
-    elseif token == 3 then
-      self.italic = true
-    elseif token == 4 then
-      self.underline = true
-    elseif token == 7 then
-      self.reverse = true
-    elseif token == 8 then
-      self.conceal = true
-    elseif token == 9 then
-      self.strikethrough = true
+    elseif token == 1 or token == 3 or token == 4 or token == 7 or token == 8
+        or token == 9 then
+      -- 2, 5 and 6 could be handled here if they were supported.
+      self[attributes[token]] = true
+    elseif token == 21 then
+      -- 22 means "doubley underline" or "bold off", we could implement
+      -- doubley underline by undercurl.
+      --self.undercurl = true
     elseif token == 22 then
       self.bold = false
-    elseif token == 23 then
-      self.italic = false
-    elseif token == 24 then
-      self.underline = false
-    elseif token == 27 then
-      self.reverse = false
-    elseif token == 29 then
-      self.strikethrough = false
+      --self.faint = false
+    elseif token == 23 or token == 24 or token == 27 or token == 28
+	or token == 29 then
+      -- 25 means blink off so it could also be handled here if it was
+      -- supported.
+      self[attributes[token - 20]] = false
     elseif token >= 30 and token <= 37 then -- foreground color
-      self.foreground = ansi2highlight_table[token - 30]
+      self.foreground = colors[token - 30]
     elseif token == 39 then -- reset foreground
       self.foreground = ""
     elseif token >= 40 and token <= 47 then -- background color
-      self.background = ansi2highlight_table[token - 40]
+      self.background = colors[token - 40]
     elseif token == 49 then -- reset background
       self.background = ""
     elseif token >= 90 and token <= 97 then -- bright foreground color
-      self.foreground = ansi2highlight_table[token - 90]
-      self.standout = true
+      self.foreground = "light" .. colors[token - 90]
+      --self.standout = true
     elseif token >= 100 and token <= 107 then -- bright foreground color
-      self.background = ansi2highlight_table[token - 100]
-      self.standout = true
+      self.background = "light" .. colors[token - 100]
+      --self.standout = true
     end
   end
 end
@@ -392,7 +404,7 @@ state.compute_highlight_command = function(self, groupname)
   if self.foreground ~= "" then args = args.." guifg="..self.foreground end
   if self.background ~= "" then args = args.." guibg="..self.background end
   local attrs = ""
-  for _, key in ipairs(self.attrs) do
+  for _, key in pairs(attributes) do
     if self[key] then
       attrs = attrs .. "," .. key
     end
