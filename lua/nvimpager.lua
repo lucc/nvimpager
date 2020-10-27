@@ -422,9 +422,6 @@ state.compute_highlight_command = function(self, groupname)
 end
 
 state.render = function(self, from_line, from_column, to_line, to_column)
-  if self.color == "" then
-    return
-  end
   if from_line == to_line and from_column == to_column then
     return
   end
