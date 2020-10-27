@@ -430,29 +430,34 @@ function state.render(self, from_line, from_column, to_line, to_column)
   if from_line == to_line and from_column == to_column then
     return
   end
+  local add_highlight
   local groupname = self:state2highlight_group_name()
   -- check if the hl group already exists
-  if not cache[groupname] then
+  if cache[groupname] == nil then
     nvim.nvim_command(self:compute_highlight_command(groupname))
-    cache[groupname] = true
+    function add_highlight(line, from, to)
+      -- The function nvim_buf_add_highlight expects 0 based line numbers and
+      -- column numbers.  Set the start column to 0, the end column to -1 if
+      -- not given.
+      local line_0 = line - 1
+      local from_0 = (from or 1) - 1
+      local to_0 = (to or 0) - 1
+      nvim.nvim_buf_add_highlight(0, namespace, groupname, line_0, from_0,
+				  to_0)
+    end
+    cache[groupname] = add_highlight
+  else
+    add_highlight = cache[groupname]
   end
 
-  local function add_hl(line, from, to)
-    -- This function expects 0 based line numbers and column numbers.
-    -- Set the start column to 0, the end column to -1 if not given.
-    local line_0 = line - 1
-    local from_0 = (from or 1) - 1
-    local to_0 = (to or 0) - 1
-    nvim.nvim_buf_add_highlight(0, namespace, groupname, line_0, from_0, to_0)
-  end
   if from_line == to_line then
-    add_hl(from_line, from_column, to_column)
+    add_highlight(from_line, from_column, to_column)
   else
-    add_hl(from_line, from_column)
+    add_highlight(from_line, from_column)
     for line = from_line+1, to_line-1 do
-      add_hl(line)
+      add_highlight(line)
     end
-    add_hl(to_line, 1, to_column)
+    add_highlight(to_line, 1, to_column)
   end
 end
 
