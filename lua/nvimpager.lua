@@ -59,6 +59,7 @@ local doc
 -- buffers by this module.
 local namespace
 
+-- Split a 24 bit color number into the three red, green and blue values
 local function split_rgb_number(color_number)
   -- The lua implementation of these bit shift operations is taken from
   -- http://nova-fusion.com/2011/03/21/simulate-bitwise-shift-operators-in-lua
@@ -68,6 +69,7 @@ local function split_rgb_number(color_number)
   return r, g, b
 end
 
+-- Compute the escape sequences for a 24 bit color number.
 local function color2escape_24bit(color_number, foreground)
   local red, green, blue = split_rgb_number(color_number)
   local escape
@@ -79,6 +81,7 @@ local function color2escape_24bit(color_number, foreground)
   return escape .. red .. ';' .. green .. ';' .. blue
 end
 
+-- Compute the escape sequences for a 8 bit color number.
 local function color2escape_8bit(color_number, foreground)
   local prefix
   if color_number < 8 then
@@ -102,6 +105,7 @@ local function color2escape_8bit(color_number, foreground)
   return prefix .. color_number
 end
 
+-- Compute a ansi escape sequences to render a syntax group on the terminal.
 local function group2ansi(groupid)
   if cache[groupid] then
     return cache[groupid]
@@ -132,6 +136,7 @@ local function group2ansi(groupid)
   return escape
 end
 
+-- Initialize some module level variables for cat mode.
 local function init_cat_mode()
   -- Initialize the ansi group to color cache with the "Normal" hl group.
   cache[0] = group2ansi(nvim.nvim_call_function('hlID', {'Normal'}))
