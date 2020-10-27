@@ -343,6 +343,24 @@ local function split(input, seperator)
   return string.gmatch(input..seperator, '([^'..seperator..']*)'..seperator)
 end
 
+-- Create an iterator that tokenizes the given input string into ansi escape
+-- sequences.
+--
+-- Lua patterns for string.gmatch
+local function tokenize(input_string)
+  -- The empty input string is a special case where we return one single
+  -- token.
+  if input_string == "" then return string.gmatch("", "") end
+  -- we keep track of the position in the input with a local variable so that
+  -- our "next" function does not need to rely on the second argument.
+  -- Especially if a token appears twice in the input that might be of
+  -- importance.
+  local position = 1
+  local function next(input)
+  end
+  return next, input_string, nil
+end
+
 local state = {
   -- The line and column where the currently described state starts
   line = 1,
@@ -578,5 +596,6 @@ return {
     split = split,
     split_rgb_number = split_rgb_number,
     state = state,
+    tokenize = tokenize,
   }
 }

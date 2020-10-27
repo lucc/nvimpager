@@ -482,6 +482,23 @@ describe("lua functions", function()
     end)
   end)
 
+  describe("tokenize", function()
+    local nvimpager
+    local function tokenize(input)
+      local result = {}
+      for token in nvimpager._testable.tokenize(input) do
+	table.insert(result, token)
+      end
+      return result
+    end
+    setup(function() nvimpager = load_nvimpager() end)
+
+    it("treats empty strings as a single empty token", function()
+      local actual = tokenize("")
+      assert.same({""}, actual)
+    end)
+  end)
+
   describe("ansi parser", function()
     local state
     setup(function() state = load_nvimpager()._testable.state end)
