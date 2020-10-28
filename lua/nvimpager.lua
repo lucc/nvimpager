@@ -357,7 +357,55 @@ local function tokenize(input_string)
   -- importance.
   local position = 1
   local function next(input)
+    -- If the position we are currently tokenizing is beyond the input string
+    -- return nil => stop tokenizing.
+    if input:len() < position then return nil end
+
+    -- If we are on the last character and it is a semicolon, return an empty
+    -- token and move position beyond the input to stop on the next call.
+    -- This is hard to handle properly in the tokenizer below.
+    if input:len() == position and input:sub(-1) == ";" then
+      position = position + 1
+      return ""
+    end
+
+    -- first check for the special sequences "38;" "48;"
+    local init = input:sub(position, position+2)
+    if init == "38;" or init == "48;" then
+      -- Try to match an 8 bit or a 24 bit color sequence
+      local patterns = {"([34]8;5);(%d+);?", "([34]8;2);(%d+);(%d+);(%d+);?"}
+      for _, pattern in ipairs(patterns) do
+	local start, stop, match, c1, c2, c3 = input:find(pattern, position)
+	if start == position then
+	  position = stop + 1
+	  return match, c1, c2, c3
+	end
+      end
+      -- If no valid special sequence was found we fall through to the normal
+      -- tokenization.
+    end
+
+    -- handle all other tokens, we expect a simple number followed by either a
+    -- semicolon or the end of the string, or the end of the input string
+    -- directly.
+    local oldpos = position
+    local next_pos = input:find(";", position)
+    if next_pos == nil then
+      -- no further semicolon was found, we reached the end of the input
+      -- string, the next call to this function will return nil
+      position = input:len() + 1
+      return input:sub(oldpos, -1)
+    else
+      position = next_pos
+      -- We only skip the semicolon if it was not at the end of the input
+      -- string.
+      if next_pos < input:len() then
+	position = next_pos + 1
+      end
+      return input:sub(oldpos, next_pos - 1)
+    end
   end
+
   return next, input_string, nil
 end
 
