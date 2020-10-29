@@ -323,7 +323,6 @@ describe("lua functions", function()
 
   describe("split_rgb_number", function()
     it("handles numbers from 0 to 16777215", function()
-      local nvimpager = load_nvimpager()
       local r, g, b = nvimpager._testable.split_rgb_number(0x000000)
       assert.equal(0, r)
       assert.equal(0, g)
@@ -335,7 +334,6 @@ describe("lua functions", function()
     end)
 
     it("correctly splits rgb values", function()
-      local nvimpager = load_nvimpager()
       local r, g, b = nvimpager._testable.split_rgb_number(0x55AACC)
       assert.equal(0x55, r)
       assert.equal(0xAA, g)
@@ -363,13 +361,11 @@ describe("lua functions", function()
 
   describe("color2escape_24bit", function()
     it("creates foreground escape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_24bit(0xaabbcc, true)
       assert.equal('38;2;170;187;204', e)
     end)
 
     it("creates background escape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_24bit(0xccbbaa, false)
       assert.equal('48;2;204;187;170', e)
     end)
@@ -377,37 +373,31 @@ describe("lua functions", function()
 
   describe("color2escape_8bit", function()
     it("creates 8 colors foreground escaape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_8bit(5, true)
       assert.equal('35', e)
     end)
 
     it("creates 8 colors background escaape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_8bit(7, false)
       assert.equal('47', e)
     end)
 
     it("creates 16 colors foreground escaape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_8bit(5 + 8, true)
       assert.equal('95', e)
     end)
 
     it("creates 16 colors background escaape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_8bit(7 + 8, false)
       assert.equal('107', e)
     end)
 
     it("creates foreground escape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_8bit(0xaa, true)
       assert.equal('38;5;170', e)
     end)
 
     it("creates background escape sequences", function()
-      local nvimpager = load_nvimpager()
       local e = nvimpager._testable.color2escape_8bit(0xbb, false)
       assert.equal('48;5;187', e)
     end)
@@ -438,28 +428,24 @@ describe("lua functions", function()
 
   describe("replace_prefix", function()
     it("can replace a simple prefix in a table of strings", function()
-      local nvimpager = load_nvimpager()
       local t = nvimpager._testable.replace_prefix({"foo", "bar", "baz"},
 	"b", "XXX")
       assert.same({"foo", "XXXar", "XXXaz"}, t)
     end)
 
     it("can replace strings with slashes", function()
-      local nvimpager = load_nvimpager()
       local t = nvimpager._testable.replace_prefix(
 	{"/a/b/c", "/a/b/d", "/g/e/f"}, "/a/b", "/x/y")
       assert.same({"/x/y/c", "/x/y/d", "/g/e/f"}, t)
     end)
 
     it("only replaces at the start of the items", function()
-      local nvimpager = load_nvimpager()
       local t = nvimpager._testable.replace_prefix(
 	{"abc", "cab"}, "ab", "XXX")
       assert.same({"XXXc", "cab"}, t)
     end)
 
     it("can replace lua pattern chars",  function()
-      local nvimpager = load_nvimpager()
       local actual = nvimpager._testable.replace_prefix(
 	  {"a-b-c"}, "a-b", "XXX")
       assert.same({"XXX-c"}, actual)
@@ -467,7 +453,6 @@ describe("lua functions", function()
   end)
 
   describe("split", function()
-    local nvimpager
     local function test(input, seperator)
       local actual = {}
       for item in nvimpager._testable.split(input, seperator) do
@@ -475,7 +460,6 @@ describe("lua functions", function()
       end
       return actual
     end
-    setup(function() nvimpager = load_nvimpager() end)
 
     it("returns one element from the empty string", function()
       local actual = test("", ";")
@@ -508,7 +492,6 @@ describe("lua functions", function()
   end)
 
   describe("tokenize", function()
-    local nvimpager
     local function tokenize(input)
       local result = {}
       for token in nvimpager._testable.tokenize(input) do
@@ -516,7 +499,6 @@ describe("lua functions", function()
       end
       return result
     end
-    setup(function() nvimpager = load_nvimpager() end)
 
     it("treats empty strings as a single empty token", function()
       local actual = tokenize("")
@@ -580,7 +562,7 @@ describe("lua functions", function()
 
   describe("ansi parser", function()
     local state
-    setup(function() state = load_nvimpager()._testable.state end)
+    setup(function() state = nvimpager._testable.state end)
     before_each(function() state:clear() end)
 
     it("clears all attributes on 0", function()
