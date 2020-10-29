@@ -69,6 +69,18 @@ local function split_rgb_number(color_number)
   return r, g, b
 end
 
+local function hexformat_rgb_numbers(r, g, b)
+  return string.format("#%06x", r * 2^16 + g * 2^8 + b)
+end
+
+local function split_predifined_terminal_color(color_number)
+  local r = math.floor(color_number / 36)
+  local g = math.floor(math.floor(color_number / 6) % 6)
+  local b = math.floor(color_number % 6)
+  local lookup = {[0]=0, [1]=95, [2]=135, [3]=175, [4]=215, [5]=255}
+  return lookup[r], lookup[g], lookup[b]
+end
+
 -- Compute the escape sequences for a 24 bit color number.
 local function color2escape_24bit(color_number, foreground)
   local red, green, blue = split_rgb_number(color_number)
@@ -639,9 +651,11 @@ return {
     color2escape_8bit = color2escape_8bit,
     detect_parent_process = detect_parent_process,
     group2ansi = group2ansi,
+    hexformat_rgb_numbers = hexformat_rgb_numbers,
     init_cat_mode = init_cat_mode,
     replace_prefix = replace_prefix,
     split = split,
+    split_predifined_terminal_color = split_predifined_terminal_color,
     split_rgb_number = split_rgb_number,
     state = state,
     tokenize = tokenize,

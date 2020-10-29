@@ -289,7 +289,6 @@ describe("backend:", function()
 end)
 
 describe("lua functions", function()
-
   -- Reload the nvimpager script.
   --
   -- api: table|nil -- a mock for the neovim api table
@@ -318,6 +317,9 @@ describe("lua functions", function()
     package.loaded["lua/nvimpager"] = nil
     return require("lua/nvimpager")
   end
+  local nvimpager
+
+  setup(function() nvimpager = load_nvimpager() end)
 
   describe("split_rgb_number", function()
     it("handles numbers from 0 to 16777215", function()
@@ -409,6 +411,29 @@ describe("lua functions", function()
       local e = nvimpager._testable.color2escape_8bit(0xbb, false)
       assert.equal('48;5;187', e)
     end)
+  end)
+
+  describe("hexformat_rgb_numbers #x", function()
+    local function test(r, g, b, expected)
+      local actual = nvimpager._testable.hexformat_rgb_numbers(r, g, b)
+      assert.equal(expected, actual)
+    end
+    it("small numbers", function() test(1, 2, 3, '#010203') end)
+    it("big numbers", function() test(100, 200, 150, '#64c896') end)
+    it("0,0,0 is black", function() test(0, 0, 0, '#000000') end)
+    it("255,255,255 is white", function() test(255, 255, 255, '#ffffff') end)
+  end)
+
+  describe("split_predifined_terminal_color #x", function()
+    local function test(col, exp_r, exp_g, exp_b)
+      local r, g, b = nvimpager._testable.split_predifined_terminal_color(col)
+      assert.equal(exp_r, r)
+      assert.equal(exp_g, g)
+      assert.equal(exp_b, b)
+    end
+    it("handles 0 as black", function() test(0, 0, 0, 0) end)
+    it("handles 215 as white", function() test(215, 255, 255, 255) end)
+    it("handles 137 as something", function() test(137, 175, 215, 255) end)
   end)
 
   describe("replace_prefix", function()
@@ -585,14 +610,14 @@ describe("lua functions", function()
     describe("can parse foreground colors:", function()
       for num, name in pairs(colors) do
 	it("3"..num.." is "..name, function()
-	state:parse("3"..num) assert.equal(name, state.foreground)
+	  state:parse("3"..num) assert.equal(name, state.foreground)
 	end)
       end
     end)
     describe("can parse background colors:", function()
       for num, name in pairs(colors) do
 	it("4"..num.." is "..name, function()
-	state:parse("4"..num) assert.equal(name, state.background)
+	  state:parse("4"..num) assert.equal(name, state.background)
 	end)
       end
     end)
