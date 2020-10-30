@@ -430,6 +430,8 @@ local state = {
 function state.clear(self)
   self.foreground = ""
   self.background = ""
+  self.ctermfg = ""
+  self.ctermbg = ""
   for _, k in pairs(attributes) do self[k] = false end
 end
 
@@ -452,7 +454,13 @@ function state.parse(self, string)
     if init == "38;2" or init == "48;2" then
       self:parse24bit(init:sub(1, 1), token:sub(6))
     elseif init == "38;5" or init == "48;5" then
-      self:parse8bit(init:sub(1, 1), token:sub(6))
+      local colornr = tonumber(token:sub(6))
+      self:parse8bit(init:sub(1, 1), colornr)
+      if init:sub(1, 1) == "3" then
+	self.ctermfg = colornr
+      else
+	self.ctermbg = colornr
+      end
     else
       if token == "" then token = 0 else token = tonumber(token) end
       if token == 0 then
@@ -475,12 +483,16 @@ function state.parse(self, string)
 	self[attributes[token - 20]] = false
       elseif token >= 30 and token <= 37 then -- foreground color
 	self.foreground = colors[token - 30]
+	self.ctermfg = token - 30
       elseif token == 39 then -- reset foreground
 	self.foreground = ""
+	self.ctermfg = ""
       elseif token >= 40 and token <= 47 then -- background color
 	self.background = colors[token - 40]
+	self.ctermbg = token - 40
       elseif token == 49 then -- reset background
 	self.background = ""
+	self.ctermbg = ""
       elseif token >= 90 and token <= 97 then -- bright foreground color
 	self.foreground = "light" .. colors[token - 90]
 	--self.standout = true
@@ -523,8 +535,18 @@ end
 
 function state.compute_highlight_command(self, groupname)
   local args = ""
-  if self.foreground ~= "" then args = args.." guifg="..self.foreground end
-  if self.background ~= "" then args = args.." guibg="..self.background end
+  if self.foreground ~= "" then
+    args = args.." guifg="..self.foreground
+    if self.ctermfg ~= "" then
+      args = args .. " ctermfg=" .. self.ctermfg
+    end
+  end
+  if self.background ~= "" then
+    args = args.." guibg="..self.background
+    if self.ctermbg ~= "" then
+      args = args .. " ctermbg=" .. self.ctermbg
+    end
+  end
   local attrs = ""
   for _, key in pairs(attributes) do
     if self[key] then
