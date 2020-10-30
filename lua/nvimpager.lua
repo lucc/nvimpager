@@ -445,40 +445,48 @@ function state.state2highlight_group_name(self)
 end
 
 function state.parse(self, string)
-  for token in split(string, ";") do
-    if token == "" then token = 0 else token = tonumber(token) end
-    if token == 0 then
-      self:clear()
-    elseif token == 1 or token == 3 or token == 4 or token == 7 or token == 8
-        or token == 9 then
-      -- 2, 5 and 6 could be handled here if they were supported.
-      self[attributes[token]] = true
-    elseif token == 21 then
-      -- 22 means "doubley underline" or "bold off", we could implement
-      -- doubley underline by undercurl.
-      --self.undercurl = true
-    elseif token == 22 then
-      self.bold = false
-      --self.faint = false
-    elseif token == 23 or token == 24 or token == 27 or token == 28
-	or token == 29 then
-      -- 25 means blink off so it could also be handled here if it was
-      -- supported.
-      self[attributes[token - 20]] = false
-    elseif token >= 30 and token <= 37 then -- foreground color
-      self.foreground = colors[token - 30]
-    elseif token == 39 then -- reset foreground
-      self.foreground = ""
-    elseif token >= 40 and token <= 47 then -- background color
-      self.background = colors[token - 40]
-    elseif token == 49 then -- reset background
-      self.background = ""
-    elseif token >= 90 and token <= 97 then -- bright foreground color
-      self.foreground = "light" .. colors[token - 90]
-      --self.standout = true
-    elseif token >= 100 and token <= 107 then -- bright foreground color
-      self.background = "light" .. colors[token - 100]
-      --self.standout = true
+  for token in tokenize(string) do
+    -- First we check for longer 256 colors and 24 bit color sequences.
+    local init = token:sub(1, 4)
+    if init == "38;2" or init == "48;2" then
+      self:parse24bit(init:sub(1, 1), token:sub(6))
+    elseif init == "38;5" or init == "48;5" then
+      self:parse8bit(init:sub(1, 1), token:sub(6))
+    else
+      if token == "" then token = 0 else token = tonumber(token) end
+      if token == 0 then
+	self:clear()
+      elseif token == 1 or token == 3 or token == 4 or token == 7
+	  or token == 8 or token == 9 then
+	-- 2, 5 and 6 could be handled here if they were supported.
+	self[attributes[token]] = true
+      elseif token == 21 then
+	-- 22 means "doubley underline" or "bold off", we could implement
+	-- doubley underline by undercurl.
+	--self.undercurl = true
+      elseif token == 22 then
+	self.bold = false
+	--self.faint = false
+      elseif token == 23 or token == 24 or token == 27 or token == 28
+	  or token == 29 then
+	-- 25 means blink off so it could also be handled here if it was
+	-- supported.
+	self[attributes[token - 20]] = false
+      elseif token >= 30 and token <= 37 then -- foreground color
+	self.foreground = colors[token - 30]
+      elseif token == 39 then -- reset foreground
+	self.foreground = ""
+      elseif token >= 40 and token <= 47 then -- background color
+	self.background = colors[token - 40]
+      elseif token == 49 then -- reset background
+	self.background = ""
+      elseif token >= 90 and token <= 97 then -- bright foreground color
+	self.foreground = "light" .. colors[token - 90]
+	--self.standout = true
+      elseif token >= 100 and token <= 107 then -- bright foreground color
+	self.background = "light" .. colors[token - 100]
+	--self.standout = true
+      end
     end
   end
 end
