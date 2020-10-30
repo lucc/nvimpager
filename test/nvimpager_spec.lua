@@ -629,7 +629,7 @@ describe("lua functions", function()
       end)
     end)
 
-    describe("parse8bit #x", function()
+    describe("parse8bit", function()
       it("parses pallet terminal colors (fg)", function()
 	state:parse8bit("3", "4")
 	assert.equal("blue", state.foreground)

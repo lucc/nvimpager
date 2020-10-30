@@ -385,12 +385,12 @@ local function tokenize(input_string)
     local init = input:sub(position, position+2)
     if init == "38;" or init == "48;" then
       -- Try to match an 8 bit or a 24 bit color sequence
-      local patterns = {"([34]8;5);(%d+);?", "([34]8;2);(%d+);(%d+);(%d+);?"}
+      local patterns = {"([34]8;5;%d+);?", "([34]8;2;%d+;%d+;%d+);?"}
       for _, pattern in ipairs(patterns) do
-	local start, stop, match, c1, c2, c3 = input:find(pattern, position)
+	local start, stop, match = input:find(pattern, position)
 	if start == position then
 	  position = stop + 1
-	  return match, c1, c2, c3
+	  return match
 	end
       end
       -- If no valid special sequence was found we fall through to the normal
