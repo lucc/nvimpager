@@ -483,6 +483,35 @@ function state.parse(self, string)
   end
 end
 
+function state.parse8bit(self, fgbg, color)
+  local colornr = tonumber(color)
+  if colornr >= 0 and colornr <= 7 then return self:parse(fgbg .. color) end
+  local bg_diff = tonumber(fgbg) - 3
+  if colornr >= 8 and colornr <= 15 then -- high pallet colors
+    return self:parse("" .. (colornr + 82 + 10 * bg_diff))
+  elseif colornr >= 16 and colornr <= 231 then -- color cube
+    color = hexformat_rgb_numbers(split_predifined_terminal_color(colornr-16))
+  else -- grayscale ramp
+    colornr = 8 + 10 * (colornr - 232)
+    color = hexformat_rgb_numbers(colornr, colornr, colornr)
+  end
+  if fgbg == "3" then
+    self.foreground = color
+  else
+    self.background = color
+  end
+end
+
+function state.parse24bit(self, fgbg, color)
+  local next_ = split(color, ";")
+  local r, g, b = tonumber(next_()), tonumber(next_()), tonumber(next_())
+  if fgbg == "3" then
+    self.foreground = hexformat_rgb_numbers(r, g, b)
+  else
+    self.background = hexformat_rgb_numbers(r, g, b)
+  end
+end
+
 function state.compute_highlight_command(self, groupname)
   local args = ""
   if self.foreground ~= "" then args = args.." guifg="..self.foreground end
