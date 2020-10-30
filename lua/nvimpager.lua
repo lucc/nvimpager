@@ -435,7 +435,8 @@ end
 
 function state.state2highlight_group_name(self)
   if self.conceal then return "NvimPagerConceal" end
-  local name = "NvimPagerFG_" .. self.foreground .. "_BG_" .. self.background
+  local name = "NvimPagerFG_" .. self.foreground:gsub("#", "") ..
+	       "_BG_" .. self.background:gsub("#", "")
   for _, field in pairs(attributes) do
     if self[field] then
       name = name .. "_" .. field
