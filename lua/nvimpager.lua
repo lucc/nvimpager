@@ -648,6 +648,11 @@ local function pager_mode()
   if check_escape_sequences() then
     -- Try to highlight ansi escape sequences.
     ansi2highlight()
+    -- Lines with concealed ansi esc sequences seem shorter than they are (by
+    -- character count) so it looks like they wrap to early and the concealing
+    -- of escape sequences only works for the first &synmaxcol chars.
+    nvim.nvim_buf_set_option(0, "synmaxcol", 0) -- unlimited
+    nvim.nvim_win_set_option(0, "wrap", false)
   end
   nvim.nvim_buf_set_option(0, 'modifiable', false)
   nvim.nvim_buf_set_option(0, 'modified', false)
