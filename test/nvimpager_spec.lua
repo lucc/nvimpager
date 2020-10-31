@@ -573,7 +573,7 @@ describe("lua functions", function()
     end)
 
     local colors = {[0]="black", [1]="red", [2]="green", [3]="yellow",
-		    [4]="blue", [5]="magenta", [6]="cyan", [7]="white"}
+		    [4]="blue", [5]="magenta", [6]="cyan", [7]="lightgray"}
     describe("can parse foreground colors:", function()
       for num, name in pairs(colors) do
 	it("3"..num.." is "..name, function()

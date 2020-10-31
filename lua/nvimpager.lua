@@ -16,14 +16,14 @@ local nvim = vim.api -- luacheck: ignore
 
 -- A mapping of ansi color numbers to neovim color names
 local colors = {
-  [0] = "black",
-  [1] = "red",
-  [2] = "green",
-  [3] = "yellow",
-  [4] = "blue",
-  [5] = "magenta",
-  [6] = "cyan",
-  [7] = "white",
+  [0] = "black",     [8] = "darkgray",
+  [1] = "red",       [9] = "lightred",
+  [2] = "green",     [10] = "lightgreen",
+  [3] = "yellow",    [11] = "lightyellow",
+  [4] = "blue",      [12] = "lightblue",
+  [5] = "magenta",   [13] = "lightmagenta",
+  [6] = "cyan",      [14] = "lightcyan",
+  [7] = "lightgray", [15] = "white",
 }
 
 -- the names of neovim's highlighting attributes that are handled by this
@@ -494,11 +494,9 @@ function state.parse(self, string)
 	self.background = ""
 	self.ctermbg = ""
       elseif token >= 90 and token <= 97 then -- bright foreground color
-	self.foreground = "light" .. colors[token - 90]
-	--self.standout = true
-      elseif token >= 100 and token <= 107 then -- bright foreground color
-	self.background = "light" .. colors[token - 100]
-	--self.standout = true
+	self.foreground = colors[token - 82]
+      elseif token >= 100 and token <= 107 then -- bright background color
+	self.background = colors[token - 92]
       end
     end
   end
