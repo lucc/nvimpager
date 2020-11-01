@@ -1,8 +1,4 @@
 nvimpager.configured
-.VimballRecord
-AnsiEsc*
-doc/tags
-plugin/
 metadata.yaml
 nvimpager.1
 luacov.*.out
