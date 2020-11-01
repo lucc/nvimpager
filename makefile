@@ -14,9 +14,11 @@ BENCHMARK_OPTS = --warmup 2 --min-runs 100
 install: nvimpager.configured nvimpager.1
 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/lua \
 	  $(DESTDIR)$(PREFIX)/share/man/man1
+	  $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
 	install lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
+	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
 metadata.yaml:
 	echo "---" > $@
