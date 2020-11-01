@@ -148,7 +148,7 @@ local function highlight()
       local conceal = conceal_info[1] == 1
       local replace = conceal_info[2]
       local conceal_id = conceal_info[3]
-      if conceal and last_conceal_id == conceal_id then
+      if conceal and last_conceal_id == conceal_id then -- luacheck: ignore
 	-- skip this char
       else
 	local syntax_id, append
@@ -189,19 +189,6 @@ local function cat_mode()
   nvim.nvim_command('quitall!')
 end
 
--- Join a table with a string
-local function join(table, seperator)
-  if #table == 0 then return '' end
-  local index = 1
-  local ret = table[index]
-  index = index + 1
-  while index <= #table do
-    ret = ret .. seperator .. table[index]
-    index = index + 1
-  end
-  return ret
-end
-
 -- Replace a string prefix in all items in a list
 local function replace_prefix(table, old_prefix, new_prefix)
   -- Escape all punctuation chars to protect from lua pattern chars.
@@ -224,17 +211,17 @@ local function fix_runtime_path()
     new = original .."pager"
     runtimepath = replace_prefix(runtimepath, original, new)
   end
-  runtimepath = os.getenv("RUNTIME") .. "," .. join(runtimepath, ",")
+  runtimepath = os.getenv("RUNTIME") .. "," .. table.concat(runtimepath, ",")
   nvim.nvim_set_option("runtimepath", runtimepath)
   new = new .. '/rplugin.vim'
   nvim.nvim_command("let $NVIM_RPLUGIN_MANIFEST = '" .. new .. "'")
 end
 
 -- Parse the command of the calling process to detect some common
--- documentation programs (man, pydoc, perldoc, git, ...).  $PPID was exported
--- by the calling bash script and points to the calling program.
+-- documentation programs (man, pydoc, perldoc, git, ...).  $PARENT was
+-- exported by the calling bash script and points to the calling program.
 local function detect_parent_process()
-  local ppid = os.getenv('PPID')
+  local ppid = os.getenv('PARENT')
   if not ppid then return nil end
   local proc = nvim.nvim_get_proc(tonumber(ppid))
   if proc == nil then return 'none' end
@@ -289,9 +276,7 @@ end
 local function detect_filetype()
   if not doc then
     if detect_man_page_in_current_buffer() then
-      -- FIXME: Why does this need to be the command?  Why doesn't this work:
-      --nvim.nvim_buf_set_option(0, 'filetype', 'man')
-      nvim.nvim_command('setfiletype man')
+      nvim.nvim_buf_set_option(0, 'filetype', 'man')
     end
   else
     if doc == 'git' then
@@ -301,34 +286,24 @@ local function detect_filetype()
     elseif doc == 'pydoc' or doc == 'perldoc' or doc == 'ri' then
       doc = 'man'
     end
-    -- FIXME: Why does this need to be the command?  Why doesn't this work:
-    --nvim.nvim_buf_set_option(0, 'filetype', doc)
-    nvim.nvim_command('setfiletype '..doc)
+    nvim.nvim_buf_set_option(0, 'filetype', doc)
   end
 end
 
 -- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
-  nvim.nvim_command('nnoremap q :quitall!<CR>')
-  nvim.nvim_command('vnoremap q :quitall!<CR>')
-  nvim.nvim_command('nnoremap <Space> <PageDown>')
-  nvim.nvim_command('nnoremap <S-Space> <PageUp>')
-  nvim.nvim_command('nnoremap g gg')
-  nvim.nvim_command('nnoremap <Up> <C-Y>')
-  nvim.nvim_command('nnoremap <Down> <C-E>')
-  nvim.nvim_command('nnoremap k <C-Y>')
-  nvim.nvim_command('nnoremap j <C-E>')
-end
-
--- Unset all mappings set in set_maps().
--- FIXME This is currently unused but keept for reference.
-local function unset_maps()
-  nvim.nvim_command("nunmap q")
-  nvim.nvim_command("nunmap <Space>")
-  nvim.nvim_command("nunmap <S-Space>")
-  nvim.nvim_command("nunmap g")
-  nvim.nvim_command("nunmap <Up>")
-  nvim.nvim_command("nunmap <Down>")
+  local function map(mode, lhs, rhs)
+    nvim.nvim_set_keymap(mode, lhs, rhs, {noremap = true})
+  end
+  map('n', 'q', ':quitall!<CR>')
+  map('v', 'q', ':<C-U>quitall!<CR>')
+  map('n', '<Space>', '<PageDown>')
+  map('n', '<S-Space>', '<PageUp>')
+  map('n', 'g', 'gg')
+  map('n', '<Up>', '<C-Y>')
+  map('n', '<Down>', '<C-E>')
+  map('n', 'k', '<C-Y>')
+  map('n', 'j', '<C-E>')
 end
 
 -- Setup function for the VimEnter autocmd.
@@ -398,7 +373,6 @@ return {
     detect_parent_process = detect_parent_process,
     group2ansi = group2ansi,
     init_cat_mode = init_cat_mode,
-    join = join,
     replace_prefix = replace_prefix,
     split_rgb_number = split_rgb_number,
   }

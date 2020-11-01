@@ -47,7 +47,7 @@ install it manually, read on.
 
 ### Dependencies
 
-* [neovim] ≥ v0.3.0
+* [neovim] ≥ v0.4.0
 * [bash]
 * ([curl] during installation)
 * ([busted] for running the tests)
@@ -77,17 +77,15 @@ with `make test`.  They are also run on travis: [![Build Status]][travis]
 
 ### TODO and ideas list
 
-* show a short message in the cmdline like less and vimpager do (file and help
-  information)
 * see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) and
   [neovim#8246](https://github.com/neovim/neovim/issues/8246) are resolved and
-  maybe move more code (logic) from bash to lua
+  maybe move more code (logic) from bash to lua (bash's `[[ -t ... ]]` can be
+  replaced by `has('ttyin')`, `has('ttyout')`)
 * check if terminal buffers can be used to render ansi escape codes,
   alternatively ...
 * check license options for bundling the AnsiEsc plugin, alternatively ...
 * see if nvim_buf_add_highlight() can be used to do basically the same stuff
   that AnsiEsc does
-* implement some more keybindings that make it behave more like less
 * proper lazy pipe reading while paging (like less) to improve startup time and
   also memory usage for large input on pipes (maybe `stdioopen()` can be used?)
 * properly kill the nvim process when the bash script is killed, alternatively

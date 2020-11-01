@@ -113,15 +113,14 @@ end)
 
 describe("cat mode", function()
   it("displays a small file with syntax highlighting to stdout", function()
-    local output = run("./nvimpager -c test/fixtures/makefile " ..
-				    "--cmd 'set background=light'")
+    local output = run("./nvimpager -c test/fixtures/makefile")
     local expected = read("test/fixtures/makefile.ansi")
     assert.equal(expected, output)
   end)
 
   it("reads stdin with syntax highlighting", function()
     local output = run("./nvimpager -c -- " ..
-		       "-c 'set filetype=make background=light' " ..
+		       "-c 'set filetype=make' " ..
                        "< test/fixtures/makefile")
     local expected = read("test/fixtures/makefile.ansi")
     assert.equal(expected, output)
@@ -135,8 +134,7 @@ describe("cat mode", function()
 
   it("highlights all files", function()
     local output = run("./nvimpager -c test/fixtures/makefile " ..
-                                      "test/fixtures/help.txt " ..
-				      "--cmd 'set background=light'")
+                                      "test/fixtures/help.txt ")
     local expected = read("test/fixtures/makefile.ansi") ..
                      read("test/fixtures/help.txt.ansi")
     assert.equal(expected, output)
@@ -144,8 +142,7 @@ describe("cat mode", function()
 
   it("concatenates the same file twice", function()
     local output = run("./nvimpager -c test/fixtures/makefile " ..
-                                      "test/fixtures/makefile " ..
-				      "--cmd 'set background=light'")
+                                      "test/fixtures/makefile ")
     local expected = read("test/fixtures/makefile.ansi")
     expected = expected .. expected
     assert.equal(expected, output)
@@ -153,9 +150,9 @@ describe("cat mode", function()
 
   it("produces no output for empty files", function()
     local tmp = os.tmpname()
+    finally(function() os.remove(tmp) end)
     -- This hangs if /dev/null is used instead.
     local output = run("./nvimpager -c "..tmp)
-    os.execute('rm '..tmp)
     assert.equal('', output)
   end)
 
@@ -164,11 +161,24 @@ describe("cat mode", function()
     assert.equal('', output)
   end)
 
+  it("explicit - as file argument means stdin", function()
+    local shell_command = "echo foo | ./nvimpager -c - test/fixtures/makefile"
+    local output = run("sh -c '" .. shell_command .. "'")
+    local expected = "\27[0mfoo\27[0m\n" ..
+		     read("test/fixtures/makefile.ansi")
+    assert.equal(expected, output)
+  end)
+
+  it("prefers file arguments over stdin", function()
+    local shell_command = "echo foo | ./nvimpager -c test/fixtures/makefile"
+    local output = run("sh -c '" .. shell_command .. "'")
+    assert.equal(read("test/fixtures/makefile.ansi"), output)
+  end)
+
   describe("with modeline", function()
     it("highlights files even after mode line files", function()
       local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
 			 "test/fixtures/makefile " ..
-			 "--cmd 'set background=light' " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
       local expected = read("test/fixtures/conceal.tex.cole0.ansi") ..
 		       read("test/fixtures/makefile.ansi")
@@ -178,7 +188,6 @@ describe("cat mode", function()
     it("honors mode lines in later files", function()
       local output = run("./nvimpager -c test/fixtures/makefile " ..
 			 "test/fixtures/conceal.tex " ..
-			 "--cmd 'set background=light' " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
       local expected = read("test/fixtures/makefile.ansi") ..
 		       read("test/fixtures/conceal.tex.cole0.ansi")
@@ -186,24 +195,21 @@ describe("cat mode", function()
     end)
 
     it("ignores mode lines in diffs", function()
-      local output = run("./nvimpager -c test/fixtures/diff-modeline 2>&1 " ..
-				      "--cmd 'set background=light'")
+      local output = run("./nvimpager -c test/fixtures/diff-modeline 2>&1")
       local expected = read("test/fixtures/diff-modeline.ansi")
       assert.equal(expected, output)
     end)
 
     it("ignores mode lines in git diffs", function()
       local output = run("test/fixtures/bin/git ./nvimpager -c " ..
-			 "test/fixtures/diff-modeline 2>&1 " ..
-			 "--cmd 'set background=light'")
+			 "test/fixtures/diff-modeline 2>&1")
       local expected = read("test/fixtures/diff-modeline.ansi")
       assert.equal(expected, output)
     end)
 
     it("ignores mode lines in git log diffs #osx_pending", function()
       local output = run("test/fixtures/bin/git ./nvimpager -c " ..
-			 "test/fixtures/git-log 2>&1 " ..
-			 "--cmd 'set background=light'")
+			 "test/fixtures/git-log 2>&1")
       local expected = read("test/fixtures/git-log.ansi")
       assert.equal(expected, output)
     end)
@@ -212,7 +218,6 @@ describe("cat mode", function()
   describe("conceals", function()
     local function test_level(level)
       local output = run("./nvimpager -c test/fixtures/help.txt " ..
-				      "--cmd 'set background=light' " ..
 				      "-c 'set cole="..level.."'")
       local expected = read("test/fixtures/help.txt.cole"..level..".ansi")
       assert.equal(expected, output)
@@ -226,8 +231,7 @@ describe("cat mode", function()
     local function test_replace(level)
       local output = run("./nvimpager -c test/fixtures/conceal.tex "..
 			 "--cmd \"let g:tex_flavor='latex'\" "..
-			 "-c 'set cole="..level.."' " ..
-			 "--cmd 'set background=light'")
+			 "-c 'set cole="..level.."'")
       local expected = read("test/fixtures/conceal.tex.cole"..level..".ansi")
       assert.equal(expected, output)
     end
@@ -407,26 +411,6 @@ describe("lua functions", function()
     end)
   end)
 
-  describe("join", function()
-    it("returns the empty string for empty tables", function()
-      local nvimpager = load_nvimpager()
-      local s = nvimpager._testable.join({}, "long string")
-      assert.equal("", s)
-    end)
-
-    it("returns the single element for length one tables", function()
-      local nvimpager = load_nvimpager()
-      local s = nvimpager._testable.join({"foo"}, "xxx")
-      assert.equal("foo", s)
-    end)
-
-    it("joins tables with several elements", function()
-      local nvimpager = load_nvimpager()
-      local s = nvimpager._testable.join({"foo", "bar", "baz"}, ",")
-      assert.equal("foo,bar,baz", s)
-    end)
-  end)
-
   describe("replace_prefix", function()
     it("can replace a simple prefix in a table of strings", function()
       local nvimpager = load_nvimpager()
@@ -480,16 +464,16 @@ describe("parent detection", function()
     assert.equal("man", output)
   end)
 
-  it("handles git #osx_pending", function()
+  it("handles git", function()
     local output = run("test/fixtures/bin/git ./nvimpager -c " ..
-		       "test/fixtures/diff --cmd 'set background=light'")
+		       "test/fixtures/diff")
     local expected = read("test/fixtures/diff.ansi")
     assert.equal(expected, output)
   end)
 
   it("handles man #osx_pending", function()
     local output = run("test/fixtures/bin/man ./nvimpager -c " ..
-		       "test/fixtures/man.cat --cmd 'set background=light'")
+		       "test/fixtures/man.cat")
     local expected = read("test/fixtures/man.ansi")
     assert.equal(expected, output)
   end)
