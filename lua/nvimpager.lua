@@ -706,7 +706,7 @@ function nvimpager.stage1()
   nvim.nvim_command('augroup NvimPager')
   nvim.nvim_command('  autocmd!')
   if os.getenv('TMPFILE') then
-    nvim.nvim_command('autocmd VimLeave * call delete($TMPFILE)')
+    nvim.nvim_command('autocmd VimEnter * ++once call delete($TMPFILE)')
   end
   nvim.nvim_command('augroup END')
   doc = detect_parent_process()
