@@ -3,7 +3,6 @@ PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
 BUSTED = busted
-NVIM = nvim
 
 BENCHMARK_OPTS = --warmup 2 --min-runs 100
 
