@@ -64,6 +64,35 @@ local function read(filename)
   return contents
 end
 
+-- Freshly require the nvimpager module, optinally with mocks
+--
+-- api: table|nil -- a mock for the neovim api table (:help lua-api)
+-- return: table -- the nvimpager module
+local function load_nvimpager(api)
+  -- Create a local mock of the vim module that is provided by neovim.
+  local default_api = {
+    nvim_get_hl_by_id = function() return {} end,
+    -- These can return different types so we just default to nil.
+    nvim_call_function = function() end,
+    nvim_get_option = function() end,
+  }
+  if api == nil then
+    api = default_api
+  else
+    for key, value in pairs(default_api) do
+      if api[key] == nil then
+	api[key] = value
+      end
+    end
+  end
+  local vim = { api = api }
+  -- Register the api mock in the globals.
+  _G.vim = vim
+  -- Reload the nvimpager script
+  package.loaded["lua/nvimpager"] = nil
+  return require("lua/nvimpager")
+end
+
 describe("auto mode", function()
   -- Auto mode only exists during the run of the bash script.  At the end of
   -- the bash script it has to decide if pager or cat mode is used.  This
@@ -289,34 +318,6 @@ describe("backend:", function()
 end)
 
 describe("lua functions", function()
-  -- Reload the nvimpager script.
-  --
-  -- api: table|nil -- a mock for the neovim api table
-  -- return: table -- the nvimpager module
-  local function load_nvimpager(api)
-    -- Create a local mock of the vim module that is provided by neovim.
-    local default_api = {
-      nvim_get_hl_by_id = function() return {} end,
-      -- These can return different types so we just default to nil.
-      nvim_call_function = function() end,
-      nvim_get_option = function() end,
-    }
-    if api == nil then
-      api = default_api
-    else
-      for key, value in pairs(default_api) do
-	if api[key] == nil then
-	  api[key] = value
-	end
-      end
-    end
-    local vim = { api = api }
-    -- Register the api mock in the globals.
-    _G.vim = vim
-    -- Reload the nvimpager script
-    package.loaded["lua/nvimpager"] = nil
-    return require("lua/nvimpager")
-  end
   local nvimpager
 
   setup(function() nvimpager = load_nvimpager() end)
