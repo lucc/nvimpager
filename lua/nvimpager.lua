@@ -342,19 +342,6 @@ local function detect_filetype()
   end
 end
 
--- Split a string at a seperator
---
--- The seperator must not be a special character in regex, otherwise this
--- function will break.
---
--- Because neovim uses lua 5.1 the gmatch method on strings includes an empty
--- match at the end *in some cases* (not with ";").  Therefore this function
--- is needed.  Code adopted from https://stackoverflow.com/questions/61053903.
-local function split(input, seperator)
-  local seperator = seperator or ";"
-  return string.gmatch(input..seperator, '([^'..seperator..']*)'..seperator)
-end
-
 -- Create an iterator that tokenizes the given input string into ansi escape
 -- sequences.
 --
@@ -385,12 +372,12 @@ local function tokenize(input_string)
     local init = input:sub(position, position+2)
     if init == "38;" or init == "48;" then
       -- Try to match an 8 bit or a 24 bit color sequence
-      local patterns = {"([34]8;5;%d+);?", "([34]8;2;%d+;%d+;%d+);?"}
+      local patterns = {"([34])8;5;(%d+);?", "([34])8;2;(%d+);(%d+);(%d+);?"}
       for _, pattern in ipairs(patterns) do
-	local start, stop, match = input:find(pattern, position)
+	local start, stop, token, c1, c2, c3 = input:find(pattern, position)
 	if start == position then
 	  position = stop + 1
-	  return match
+	  return token == "3" and "foreground" or "background", c1, c2, c3
 	end
       end
       -- If no valid special sequence was found we fall through to the normal
@@ -448,19 +435,14 @@ function state.state2highlight_group_name(self)
 end
 
 function state.parse(self, string)
-  for token in tokenize(string) do
-    -- First we check for longer 256 colors and 24 bit color sequences.
-    local init = token:sub(1, 4)
-    if init == "38;2" or init == "48;2" then
-      self:parse24bit(init:sub(1, 1), token:sub(6))
-    elseif init == "38;5" or init == "48;5" then
-      local colornr = tonumber(token:sub(6))
-      self:parse8bit(init:sub(1, 1), colornr)
-      if init:sub(1, 1) == "3" then
-	self.ctermfg = colornr
-      else
-	self.ctermbg = colornr
-      end
+  for token, c1, c2, c3 in tokenize(string) do
+    -- First we check for 256 colors and 24 bit color sequences.
+    if c3 ~= nil then
+	self[token] = hexformat_rgb_numbers(tonumber(c1), tonumber(c2),
+					    tonumber(c3))
+    elseif c1 ~= nil then
+      self:parse8bit(token, c1)
+      self["cterm"..token:sub(1, 1).."g"] = tonumber(c1)
     else
       if token == "" then token = 0 else token = tonumber(token) end
       if token == 0 then
@@ -504,31 +486,17 @@ end
 
 function state.parse8bit(self, fgbg, color)
   local colornr = tonumber(color)
-  if colornr >= 0 and colornr <= 7 then return self:parse(fgbg .. color) end
-  local bg_diff = tonumber(fgbg) - 3
-  if colornr >= 8 and colornr <= 15 then -- high pallet colors
-    return self:parse("" .. (colornr + 82 + 10 * bg_diff))
+  if colornr >= 0 and colornr <= 7 then
+    color = colors[colornr]
+  elseif colornr >= 8 and colornr <= 15 then -- high pallet colors
+    color = colors[colornr] -- + 82 + 10 * (fgbg == "background" and 1 or 0)
   elseif colornr >= 16 and colornr <= 231 then -- color cube
     color = hexformat_rgb_numbers(split_predifined_terminal_color(colornr-16))
   else -- grayscale ramp
     colornr = 8 + 10 * (colornr - 232)
     color = hexformat_rgb_numbers(colornr, colornr, colornr)
   end
-  if fgbg == "3" then
-    self.foreground = color
-  else
-    self.background = color
-  end
-end
-
-function state.parse24bit(self, fgbg, color)
-  local next_ = split(color, ";")
-  local r, g, b = tonumber(next_()), tonumber(next_()), tonumber(next_())
-  if fgbg == "3" then
-    self.foreground = hexformat_rgb_numbers(r, g, b)
-  else
-    self.background = hexformat_rgb_numbers(r, g, b)
-  end
+  self[fgbg] = ""..color
 end
 
 function state.compute_highlight_command(self, groupname)
@@ -715,7 +683,6 @@ return {
     hexformat_rgb_numbers = hexformat_rgb_numbers,
     init_cat_mode = init_cat_mode,
     replace_prefix = replace_prefix,
-    split = split,
     split_predifined_terminal_color = split_predifined_terminal_color,
     split_rgb_number = split_rgb_number,
     state = state,
