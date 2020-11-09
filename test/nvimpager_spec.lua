@@ -290,7 +290,7 @@ end)
 
 describe("backend:", function()
   it("runtimepath doesn't include nvim's user dirs", function()
-    local cmd = [[RUNTIME=special-test-value nvim -i NONE --headless ]]..
+    local cmd = [[RUNTIME=special-test-value nvim --clean --headless ]]..
     -- We have to end the --cmd after the lua command as it will eat the next
     -- lines otherwise.
     [[--cmd '
@@ -686,7 +686,7 @@ describe("parent detection", function()
   local function lua_with_parent(name, code)
     -- First we have to shellescape the lua code.
     code = code:gsub("'", "'\\''")
-    local command = [[nvim --headless -i NONE --cmd 'set rtp+=.' --cmd 'lua ]]
+    local command = [[nvim --headless --clean --cmd 'set rtp+=.' --cmd 'lua ]]
 		    ..code..[[' --cmd quit]]
     return run("test/fixtures/bin/"..name.." "..command)
   end
