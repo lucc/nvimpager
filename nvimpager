@@ -86,6 +86,7 @@ while [[ $# -gt 0 ]]; do
     shift
   elif [[ $1 = - ]]; then
     TMPFILE=$(mktemp)
+    files+=("$TMPFILE")
     shift
   else
     if [[ $mode = auto ]]; then
@@ -99,12 +100,12 @@ done
 # into a temp file.
 if [[ -z $TMPFILE && ${#files[@]} -eq 0 && ! -t 0 ]]; then
   TMPFILE=$(mktemp)
+  files=("$TMPFILE")
 fi
 if [[ $TMPFILE ]]; then
   # Bash runs the EXIT trap also when exiting due to signals.
   trap 'rm -f "$TMPFILE"' EXIT
   cat > "$TMPFILE"
-  files=("$TMPFILE")
 fi
 
 # these come before all user supplied -c and --cmd arguments
