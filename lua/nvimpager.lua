@@ -705,7 +705,8 @@ function nvimpager.stage1()
   -- Define autocmd group for nvimpager.
   nvim.nvim_command('augroup NvimPager')
   nvim.nvim_command('  autocmd!')
-  if os.getenv('TMPFILE') then
+  local tmp = os.getenv('TMPFILE')
+  if tmp and tmp ~= "" then
     nvim.nvim_command('autocmd VimEnter * ++once call delete($TMPFILE)')
   end
   nvim.nvim_command('augroup END')
