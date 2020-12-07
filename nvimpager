@@ -106,11 +106,14 @@ if [[ $stdin != false ]]; then
   cat > "$stdin"
 fi
 
-default_args=(
+# these come before all user supplied -c and --cmd arguments
+args1=(
   -R
   ${rc:+-u "$rc"}
-  --cmd 'set rtp+=$RUNTIME'
-  --cmd 'lua nvimpager = require("nvimpager")'
+  --cmd 'set rtp+=$RUNTIME | lua nvimpager = require("nvimpager")'
+)
+# these come after all user supplied -c and --cmd arguments
+args2=(
   --cmd 'lua nvimpager.stage1()'
   -c 'lua nvimpager.stage2()'
 )
@@ -119,6 +122,6 @@ default_args=(
 if [[ $mode = cat || \
       $mode = auto && $(cat "${files[@]}" | wc -l) -le $(tput lines) ]]
 then
-  default_args+=(--headless)
+  args1+=(--headless)
 fi
-$nvim "${default_args[@]}" "${files[@]}" "$@" </dev/tty
+$nvim "${args1[@]}" "${files[@]}" "$@" "${args2[@]}" </dev/tty
