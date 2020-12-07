@@ -84,12 +84,17 @@ specific to nvimpager.
 
 The following fields (options) exist:
 
--------------------------------------------------------------
-option name  type  default  explanation
------------  ----  -------  ----------------------------------
-maps         bool  true     if some default less like maps should be
-                            defined inside pager mode
-------------------------------------------------------------
+| option | type | default | explanation                    |
+| ------ | ---- | ------- | ------------------------------ |
+| maps   | bool | true    | if some default less like maps should be defined inside pager mode |
+
+So to disable all mappings defined by nvimpager the user can put
+
+```vim
+lua nvimpager.maps = false
+```
+
+in the init file (or on the command line).
 
 # EXAMPLES
 
