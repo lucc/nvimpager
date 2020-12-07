@@ -670,11 +670,13 @@ local function stage2()
     'autocmd NvimPager '..events..' * nested lua nvimpager.'..mode..'_mode()')
 end
 
-return {
+local nvimpager = {
+  -- exported functions
   cat_mode = cat_mode,
   pager_mode = pager_mode,
   stage1 = stage1,
   stage2 = stage2,
+  -- functions only exported for tests
   _testable = {
     color2escape_24bit = color2escape_24bit,
     color2escape_8bit = color2escape_8bit,
@@ -689,3 +691,5 @@ return {
     tokenize = tokenize,
   }
 }
+
+return nvimpager
