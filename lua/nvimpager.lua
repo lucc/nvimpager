@@ -660,7 +660,9 @@ local function stage2()
   if #nvim.nvim_list_uis() == 0 then
     mode, events = 'cat', 'VimEnter'
   else
-    set_maps()
+    if nvimpager.maps then
+      set_maps()
+    end
     mode, events = 'pager', 'VimEnter,BufWinEnter'
   end
   -- The "nested" in these autocomands enables nested executions of
@@ -671,6 +673,8 @@ local function stage2()
 end
 
 local nvimpager = {
+  -- user facing options
+  maps = true,  -- if the default mappings should be defined
   -- exported functions
   cat_mode = cat_mode,
   pager_mode = pager_mode,

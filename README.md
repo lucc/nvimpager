@@ -94,7 +94,7 @@ The project is licensed under a BSD-2-clause license.  See the
 
 [nvimpager]: https://github.com/lucc/nvimpager
 [issues]: https://github.com/lucc/nvimpager/issues
-[options]: ./nvimpager.md#OPTIONS
+[options]: ./nvimpager.md#COMMAND-LINE-OPTIONS
 [configuration]: ./nvimpager.md#CONFIGURATION
 [neovim]: https://github.com/neovim/neovim
 [vimpager]: https://github.com/rkitover/vimpager

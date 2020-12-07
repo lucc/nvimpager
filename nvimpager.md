@@ -22,7 +22,7 @@ Internally it uses neovim with the default TUI to display the text. This means
 it has all the fancy syntax highlighting, mouse support and other features of
 neovim available in the pager, possibly including plugins!
 
-# OPTIONS
+# COMMAND LINE OPTIONS
 
 Nvimpager itself interprets only very few options but all neovim options can
 also be specified.  If options to neovim are specified before the first file
@@ -71,8 +71,25 @@ relevant for editing.  If one really wants to use the same config files for
 both nvimpager and nvim it is possible to do so by symlinking the config and
 site directories and the rplugin file.
 
+## Environment variables
+
 The environment variable `$NVIM` can be used to specify an nvim executable to
 use.  If unset it defaults to `nvim`.
+
+## Configuration variables
+
+The script exposes a lua table called `nvimpager` to `--cmd`/`-c` options and
+the `init.vim` file. It can be modified to change some options that are
+specific to nvimpager.
+
+The following fields (options) exist:
+
+-------------------------------------------------------------
+option name  type  default  explanation
+-----------  ----  -------  ----------------------------------
+maps         bool  true     if some default less like maps should be
+                            defined inside pager mode
+------------------------------------------------------------
 
 # EXAMPLES
 
