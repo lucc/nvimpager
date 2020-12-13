@@ -7,6 +7,7 @@ matrix:
     - os: linux
       env: NVIM_VERSION=unstable
     - os: osx
+      osx_image: xcode10.3
   allow_failures:
     - os: linux
       env: NVIM_VERSION=unstable

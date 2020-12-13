@@ -49,9 +49,8 @@ install it manually, read on.
 
 * [neovim] ≥ v0.4.0
 * [bash]
-* ([curl] during installation)
-* ([busted] for running the tests)
-* ([pandoc] to build the man page)
+* [busted] (for running the tests)
+* [pandoc] (to build the man page)
 
 ### Installation instructions
 
@@ -81,11 +80,6 @@ with `make test`.  They are also run on travis: [![Build Status]][travis]
   [neovim#8246](https://github.com/neovim/neovim/issues/8246) are resolved and
   maybe move more code (logic) from bash to lua (bash's `[[ -t ... ]]` can be
   replaced by `has('ttyin')`, `has('ttyout')`)
-* check if terminal buffers can be used to render ansi escape codes,
-  alternatively ...
-* check license options for bundling the AnsiEsc plugin, alternatively ...
-* see if nvim_buf_add_highlight() can be used to do basically the same stuff
-  that AnsiEsc does
 * proper lazy pipe reading while paging (like less) to improve startup time and
   also memory usage for large input on pipes (maybe `stdioopen()` can be used?)
 * properly kill the nvim process when the bash script is killed, alternatively
@@ -100,12 +94,11 @@ The project is licensed under a BSD-2-clause license.  See the
 
 [nvimpager]: https://github.com/lucc/nvimpager
 [issues]: https://github.com/lucc/nvimpager/issues
-[options]: ./nvimpager.md#OPTIONS
-[configuration]: ./nvimpager.md#CONFIGURATION
+[options]: ./nvimpager.md#command-line-options
+[configuration]: ./nvimpager.md#configuration
 [neovim]: https://github.com/neovim/neovim
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
-[curl]: https://curl.haxx.se
 [busted]: http://olivinelabs.com/busted/
 [pandoc]: http://pandoc.org/
 [Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop

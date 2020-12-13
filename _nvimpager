@@ -1,0 +1,17 @@
+#compdef nvimpager
+
+typeset -A opt_args
+local ret=1
+
+local context curcontext="$curcontext" state line
+
+local arguments
+arguments=(
+  '(* -)-h[show the help text and exit]'
+  '(* -)-v[show version into and exit]'
+  '-p[pager mode (overrides -a, -c)]'
+  '-a[auto mode (overrides -c, -p)]'
+  '-c[cat mode (overrides -a, -p)]'
+  '(-)*:file:_files'
+)
+_arguments -C -S $arguments && ret=0

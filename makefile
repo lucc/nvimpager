@@ -3,11 +3,6 @@ PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
 BUSTED = busted
-NVIM = nvim
-
-PLUGIN_FILES = \
-	       plugin/AnsiEscPlugin.vim \
-	       plugin/cecutil.vim       \
 
 BENCHMARK_OPTS = --warmup 2 --min-runs 100
 
@@ -15,15 +10,14 @@ BENCHMARK_OPTS = --warmup 2 --min-runs 100
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
 
-install: nvimpager.configured autoload/AnsiEsc.vim $(PLUGIN_FILES) nvimpager.1
-	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/autoload \
-	  $(DESTDIR)$(RUNTIME)/plugin $(DESTDIR)$(RUNTIME)/lua \
-	  $(DESTDIR)$(PREFIX)/share/man/man1
+install: nvimpager.configured nvimpager.1
+	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/lua \
+	  $(DESTDIR)$(PREFIX)/share/man/man1 \
+	  $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
-	install autoload/AnsiEsc.vim $(DESTDIR)$(RUNTIME)/autoload
-	install $(PLUGIN_FILES) $(DESTDIR)$(RUNTIME)/plugin
 	install lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
+	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
 metadata.yaml:
 	echo "---" > $@
@@ -32,17 +26,6 @@ metadata.yaml:
 	echo "..." >> $@
 nvimpager.1: nvimpager.md metadata.yaml
 	pandoc --standalone --to man --output $@ $^
-AnsiEsc.vba:
-	curl https://www.drchip.org/astronaut/vim/vbafiles/AnsiEsc.vba.gz | \
-	  gunzip > $@
-
-$(PLUGIN_FILES) autoload/AnsiEsc.vim: AnsiEsc.vba
-	$(NVIM) -u NONE -i NONE -n --headless \
-	  --cmd 'set rtp^=.' \
-	  --cmd 'packadd vimball' \
-	  --cmd 'runtime plugin/vimballPlugin.vim' \
-	  -S AnsiEsc.vba \
-	  -c quitall!
 
 test:
 	@$(BUSTED) test
@@ -64,9 +47,6 @@ benchmark:
 	  './nvimpager -p -- makefile -c quit' \
 	  './nvimpager -p test/fixtures/makefile -c quit'
 
-cleanall: clean clean-ansiesc
 clean:
 	$(RM) nvimpager.configured nvimpager.1 metadata.yaml luacov.*
-clean-ansiesc:
-	$(RM) -r autoload/AnsiEsc.vim plugin doc .VimballRecord AnsiEsc.vba
-.PHONY: benchmark cleanall clean clean-ansiesc install test
+.PHONY: benchmark clean install test
