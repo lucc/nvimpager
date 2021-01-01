@@ -20,6 +20,9 @@ local nvimpager = {
   -- user facing options
   maps = true,          -- if the default mappings should be defined
   git_colors = false,   -- if the highlighting from the git should be used
+  -- follow the end of the file when it changes (like tail -f or less +F)
+  follow = false,
+  follow_intervall = 500, -- intervall to check the underlying file in ms
 }
 
 -- A mapping of ansi color numbers to neovim color names
@@ -656,6 +659,25 @@ local function ansi2highlight()
   end
 end
 
+local follow = {}
+follow.timer = nil
+follow.active = false
+function follow.toggle(self)
+  if self.timer ~= nil then
+    vim.fn.timer_pause(self.timer, self.active)
+    self.active = not self.active
+  else
+    self.timer = vim.fn.timer_start(
+      nvimpager.follow_intervall,
+      function()
+	nvim.nvim_command("silent checktime")
+	nvim.nvim_command("silent $")
+      end,
+      { ["repeat"] = -1 })
+    self.active = true
+  end
+end
+
 -- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
   local function map(mode, lhs, rhs)
@@ -756,6 +778,7 @@ nvimpager._testable = {
   split_rgb_number = split_rgb_number,
   state = state,
   tokenize = tokenize,
+  toggle_follow = function() follow:toggle() end,
 }
 
 return nvimpager
