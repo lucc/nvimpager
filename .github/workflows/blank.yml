@@ -15,4 +15,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -yqq --no-install-recommends neovim scdoc lua-busted
     - name: Run the test suite
-      run: make test
+      run: script -ec "make test"
+      env:
+        TERM: dumb
