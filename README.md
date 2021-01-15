@@ -50,7 +50,6 @@ install it manually, read on.
 * [neovim] ≥ v0.4.0
 * [bash]
 * [busted] (for running the tests)
-* [pandoc] (to build the man page)
 
 ### Installation instructions
 
@@ -100,6 +99,5 @@ The project is licensed under a BSD-2-clause license.  See the
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: http://www.gnu.org/software/bash/bash.html
 [busted]: http://olivinelabs.com/busted/
-[pandoc]: http://pandoc.org/
 [Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
 [travis]: https://travis-ci.org/lucc/nvimpager

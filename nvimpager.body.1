@@ -1,0 +1,182 @@
+.\" TH line inserted by make
+.hy
+.SH NAME
+.P
+nvimpager - using neovim as a pager
+.SH SYNOPSIS
+.PD 0
+.P
+.B nvimpager
+.RB [ \-acp ]
+.RB [ \-\- ]
+.RI [ nvim
+.IR "options and files" ]
+.P
+.B nvimpager
+.B \-h
+.P
+.PD
+.B nvimpager
+.B \-v
+.SH DESCRIPTION
+.P
+Nvimpager is a small program that can be used like most other pagers.
+Internally it uses neovim with the default TUI to display the text.
+This means it has all the fancy syntax highlighting, mouse support and
+other features of neovim available in the pager, possibly including
+plugins!
+.SH COMMAND LINE OPTIONS
+.P
+Nvimpager itself interprets only very few options but all neovim options
+can also be specified.
+If options to neovim are specified before the first file name they must
+be preceded by
+.B \-\-
+to prevent nvimpager from trying to interpret them.
+.P
+The following options are interpreted by nvimpager itself:
+.TP
+.B \-a
+run in
+.I "auto mode"
+(default).
+Auto mode will detect the terminal size and switch to pager mode if the
+content to display would not fit on one screen.
+If the content will fit on one screen it will switch to cat mode.
+This overrides any previous
+.I \-c
+and
+.I \-p
+options.
+.TP
+.B \-c
+run in
+.IR "cat mode" .
+Do not start the neovim TUI, only use neovim for syntax highlighting and
+print the result to stdout.
+This overrides any previous
+.I \-a
+and
+.I \-p
+options.
+.TP
+.B \-h
+show the help screen and exit
+.TP
+.B \-p
+run in
+.I "pager mode"
+Start the neovim TUI to display the given content.
+This overrides any previous
+.I \-a
+and
+.I \-c
+options.
+.TP
+.B \-v
+show version information and exit
+.SH CONFIGURATION
+.P
+Like neovim itself nvimpager will honour $XDG_CONFIG_HOME and
+$XDG_DATA_HOME, which default to \[ti]/.config and
+\[ti]/.local respectively.
+The main config directory is $XDG_CONFIG_HOME/nvimpager and
+the main user config file is
+$XDG_CONFIG_HOME/nvimpager/init.vim.
+The site directory is
+$XDG_DATA_HOME/.local/share/nvimpager/site.
+The manifest for remote plugins is read from (and written to)
+$XDG_DATA_HOME/nvimpager/rplugin.vim.
+.P
+The rest of the &runtimepath is configured like for neovim.
+The
+.I \-u
+option of
+.BR nvim(1)
+itself can be used to
+change the main config file from the command line.
+.P
+The default config files for neovim are not used by design as these
+potentially load many plugins and do a lot of configuration that is only
+relevant for editing.
+If one really wants to use the same config files for both nvimpager and
+nvim it is possible to do so by symlinking the config and site
+directories and the rplugin file.
+.SS Environment variables
+.P
+The environment variable $NVIM can be used to specify an nvim
+executable to use.
+If unset it defaults to nvim.
+.SS Configuration variables
+.P
+The script exposes a lua table called nvimpager to
+.B \-\-cmd
+.B \-c
+options and the
+.I init.vim
+file.
+It can be modified to change some options that are specific to
+nvimpager.
+.P
+The following fields (options) exist:
+.P
+.TS
+tab(@);
+lw(8.9n) lw(6.0n) lw(10.4n) lw(44.7n).
+T{
+option
+T}@T{
+type
+T}@T{
+default
+T}@T{
+explanation
+T}
+_
+T{
+maps
+T}@T{
+bool
+T}@T{
+true
+T}@T{
+if some default less like maps should be defined inside pager mode
+T}
+.TE
+.P
+So to disable all mappings defined by nvimpager the user can put
+.IP
+.nf
+lua nvimpager.maps = false
+.fi
+.P
+in the init file (or on the command line).
+.SH EXAMPLES
+.P
+To use nvimpager to view a file (with neovim\[cq]s syntax highlighting
+if the filetype is detected):
+.IP
+.nf
+nvimpager file
+.fi
+.P
+Pipe text into nvimpager to view it:
+.IP
+.nf
+echo text | nvimpager
+.fi
+.P
+Use nvimpager as your default $PAGER to view man pages or git diffs:
+.IP
+.nf
+export PAGER=nvimpager
+man nvimpager
+git diff
+.fi
+.SH SEE ALSO
+.P
+.BR nvim(1) " https://github.com/neovim/neovim"
+.P
+.BR vimpager(1) " https://github.com/rkitover/vimpager"
+.SH AUTHORS
+Lucas Hoffmann.

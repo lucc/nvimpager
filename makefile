@@ -2,6 +2,7 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
+DATE = $(shell git log -1 --format=format:'%aI' 2>/dev/null | cut -f 1 -d T)
 BUSTED = busted
 
 BENCHMARK_OPTS = --warmup 2 --min-runs 100
@@ -19,13 +20,11 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
-metadata.yaml:
-	echo "---" > $@
-	echo "footer: Version $(VERSION)" >> $@
-	git log -1 --format=format:'date: %aI' 2>/dev/null | cut -f 1 -d T >> $@
-	echo "..." >> $@
-nvimpager.1: nvimpager.md metadata.yaml
-	pandoc --standalone --to man --output $@ $^
+metadata.man:
+	@echo .TH \"NVIMPAGER\" \"1\" \"$(DATE)\" \"Version $(VERSION)\" \"General Commands Manual\" >metadata.man
+
+nvimpager.1: metadata.man
+	@cat metadata.man nvimpager.body.1 >nvimpager.1
 
 test:
 	@$(BUSTED) test
@@ -48,5 +47,5 @@ benchmark:
 	  './nvimpager -p test/fixtures/makefile -c quit'
 
 clean:
-	$(RM) nvimpager.configured nvimpager.1 metadata.yaml luacov.*
+	$(RM) nvimpager.configured metadata.man nvimpager.1 luacov.*
 .PHONY: benchmark clean install test
