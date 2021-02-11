@@ -2,6 +2,8 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
+DATE = $(shell git log -1 --pretty="%cs")
+MARKDOWN_PROCESSOR = pandoc
 BUSTED = busted
 
 BENCHMARK_OPTS = --warmup 2 --min-runs 100
@@ -19,13 +21,18 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
+ifeq ($(MARKDOWN_PROCESSOR),lowdown)
+nvimpager.1: nvimpager.md
+	lowdown -Tman -m "date: $(DATE)" -m "source: $(VERSION)" -s -o $@ $<
+else # the default is pandoc
 metadata.yaml:
 	echo "---" > $@
 	echo "footer: Version $(VERSION)" >> $@
-	git log -1 --format=format:'date: %aI' 2>/dev/null | cut -f 1 -d T >> $@
+	echo "date: $(DATE)" >> $@
 	echo "..." >> $@
 nvimpager.1: nvimpager.md metadata.yaml
 	pandoc --standalone --to man --output $@ $^
+endif
 
 test:
 	@$(BUSTED) test
