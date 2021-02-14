@@ -101,9 +101,9 @@ The project is licensed under a BSD-2-clause license.  See the
 [configuration]: ./nvimpager.md#configuration
 [neovim]: https://github.com/neovim/neovim
 [vimpager]: https://github.com/rkitover/vimpager
-[bash]: http://www.gnu.org/software/bash/bash.html
-[busted]: http://olivinelabs.com/busted/
-[pandoc]: http://pandoc.org/
+[bash]: https://www.gnu.org/software/bash/bash.html
+[busted]: https://olivinelabs.com/busted/
+[pandoc]: https://pandoc.org/
 [lowdown]: https://kristaps.bsd.lv/lowdown/
 [Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
 [travis]: https://travis-ci.org/lucc/nvimpager
