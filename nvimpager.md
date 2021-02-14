@@ -1,9 +1,6 @@
----
 title: NVIMPAGER
 section: 1
-author: Lucas Hoffmann
 header: General Commands Manual
-...
 
 # NAME
 
@@ -124,3 +121,7 @@ git diff
 *nvim*(1) https://github.com/neovim/neovim
 
 *vimpager*(1) https://github.com/rkitover/vimpager
+
+# AUTHORS
+
+Lucas Hoffmann
