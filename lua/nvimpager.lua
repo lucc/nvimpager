@@ -13,6 +13,7 @@
 -- Neovim defines this object but luacheck doesn't know it.  So we define a
 -- shortcut and tell luacheck to ignore it.
 local nvim = vim.api -- luacheck: ignore
+local vim = vim      -- luacheck: ignore
 
 -- A mapping of ansi color numbers to neovim color names
 local colors = {
@@ -173,6 +174,16 @@ local function check_escape_sequences()
   return false
 end
 
+-- turn a listchars string into a table
+local function parse_listchars(listchars)
+  local t = {}
+  for item in vim.gsplit(listchars, ",", true) do
+    local kv = vim.split(item, ":", true)
+    t[kv[1]] = kv[2]
+  end
+  return t
+end
+
 -- Iterate through the current buffer and print it to stdout with terminal
 -- color codes for highlighting.
 local function highlight()
@@ -189,6 +200,12 @@ local function highlight()
     return
   end
   local conceallevel = nvim.nvim_win_get_option(0, 'conceallevel')
+  local syntax_id_conceal = nvim.nvim_call_function('hlID', {'Conceal'})
+  local syntax_id_whitespace = nvim.nvim_call_function('hlID', {'Whitespace'})
+  local syntax_id_non_text = nvim.nvim_call_function('hlID', {'NonText'})
+  local list = nvim.nvim_win_get_option(0, "list")
+  local listchars =
+    list and parse_listchars(nvim.nvim_get_option("listchars")) or {}
   local last_syntax_id = -1
   local last_conceal_id = -1
   local linecount = nvim.nvim_buf_line_count(0)
@@ -205,13 +222,18 @@ local function highlight()
       else
 	local syntax_id, append
 	if conceal then
-	  syntax_id = nvim.nvim_call_function('hlID', {'Conceal'})
+	  syntax_id = syntax_id_conceal
 	  if replace == '' and conceallevel == 1 then replace = ' ' end
 	  append = replace
 	  last_conceal_id = conceal_id
 	else
-	  syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
 	  append = line:sub(cnum, cnum)
+	  if list and string.find(" ", append, 1, true) ~= nil then
+	    syntax_id = syntax_id_whitespace
+	    if append == " " then append = listchars.space or append end
+	  else
+	    syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
+	  end
 	end
 	if syntax_id ~= last_syntax_id then
 	  outline = outline .. group2ansi(syntax_id)
@@ -219,6 +241,15 @@ local function highlight()
 	end
 	outline = outline .. append
       end
+    end
+    -- append a eol listchar if &list is set
+    if list and listchars.eol ~= nil then
+      syntax_id = syntax_id_non_text
+      if syntax_id ~= last_syntax_id then
+	outline = outline .. group2ansi(syntax_id)
+	last_syntax_id = syntax_id
+      end
+      outline = outline .. listchars.eol
     end
     -- Write the whole line and a newline char.  If this was the last line
     -- also reset the terminal attributes.
