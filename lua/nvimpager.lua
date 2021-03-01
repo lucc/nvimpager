@@ -230,7 +230,13 @@ local function highlight()
 	  append = line:sub(cnum, cnum)
 	  if list and string.find(" ", append, 1, true) ~= nil then
 	    syntax_id = syntax_id_whitespace
-	    if append == " " then append = listchars.space or append end
+	    if append == " " then
+	      if line:find("^ +$", cnum) ~= nil then
+		append = listchars.trail or listchars.space or append
+	      else
+		append = listchars.space or append
+	      end
+	    end
 	  else
 	    syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
 	  end
