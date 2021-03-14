@@ -263,7 +263,9 @@ local function fix_runtime_path()
     new = original .."pager"
     runtimepath = replace_prefix(runtimepath, original, new)
   end
-  runtimepath = os.getenv("RUNTIME") .. "," .. table.concat(runtimepath, ",")
+  runtimepath = table.concat(runtimepath, ",")
+  nvim.nvim_set_option("packpath", runtimepath)
+  runtimepath = os.getenv("RUNTIME") .. "," .. runtimepath
   nvim.nvim_set_option("runtimepath", runtimepath)
   new = new .. '/rplugin.vim'
   nvim.nvim_command("let $NVIM_RPLUGIN_MANIFEST = '" .. new .. "'")
