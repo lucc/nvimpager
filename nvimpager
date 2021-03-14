@@ -110,7 +110,7 @@ fi
 args1=(
   -R
   ${rc:+-u "$rc"}
-  --cmd 'set rtp+=$RUNTIME | lua nvimpager = require("nvimpager")'
+  --cmd 'set rtp+=$RUNTIME | set packpath= | lua nvimpager = require("nvimpager")'
 )
 # these come after all user supplied -c and --cmd arguments
 args2=(
