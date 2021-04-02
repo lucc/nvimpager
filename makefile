@@ -3,7 +3,7 @@ PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
 DATE = $(shell git log -1 --pretty="%cs")
-MARKDOWN_PROCESSOR = pandoc
+MANPAGE_PROCESSOR = pandoc
 BUSTED = busted
 
 BENCHMARK_OPTS = --warmup 2 --min-runs 100
@@ -21,10 +21,10 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
-ifeq ($(MARKDOWN_PROCESSOR),lowdown)
+ifeq ($(MANPAGE_PROCESSOR),lowdown)
 nvimpager.1: nvimpager.md
 	lowdown -Tman -m "date: $(DATE)" -m "source: $(VERSION)" -s -o $@ $<
-else ifeq ($(MARKDOWN_PROCESSOR),scdoc)
+else ifeq ($(MANPAGE_PROCESSOR),scdoc)
 nvimpager.1: nvimpager.1.scdoc
 	scdoc < $< > $@
 else # the default is pandoc
