@@ -24,6 +24,9 @@ install: nvimpager.configured nvimpager.1
 ifeq ($(MARKDOWN_PROCESSOR),lowdown)
 nvimpager.1: nvimpager.md
 	lowdown -Tman -m "date: $(DATE)" -m "source: $(VERSION)" -s -o $@ $<
+else ifeq ($(MARKDOWN_PROCESSOR),scdoc)
+nvimpager.1: nvimpager.1.scdoc
+	scdoc < $< > $@
 else # the default is pandoc
 metadata.yaml:
 	echo "---" > $@
