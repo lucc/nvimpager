@@ -67,7 +67,7 @@ You can select between `pandoc` and `lowdown` to generate the man page with the
 
 ## Development
 
-Nvimpager is developed on [Github][nvimpager] where you are very much invited
+Nvimpager is developed on [GitHub][nvimpager] where you are very much invited
 to [post][issues] bug reports, feature or pull requests!  The test can be run
 with `make test`.  They are also run on travis: [![Build Status]][travis]
 
