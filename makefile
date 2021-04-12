@@ -2,7 +2,7 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
-DATE = $(shell git log -1 --pretty="%cs")
+DATE = $(shell git log -1 --no-show-signature --pretty="%cs")
 MARKDOWN_PROCESSOR = pandoc
 BUSTED = busted
 
