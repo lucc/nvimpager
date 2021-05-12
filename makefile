@@ -2,8 +2,7 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
-DATE = $(shell git log -1 --pretty="%cs")
-MANPAGE_PROCESSOR = pandoc
+SOURCE_DATE_EPOCH = $(shell git log -1 --pretty="%ct")
 BUSTED = busted
 
 BENCHMARK_OPTS = --warmup 2 --min-runs 100
@@ -21,21 +20,8 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
-ifeq ($(MANPAGE_PROCESSOR),lowdown)
 nvimpager.1: nvimpager.md
-	lowdown -Tman -m "date: $(DATE)" -m "source: $(VERSION)" -s -o $@ $<
-else ifeq ($(MANPAGE_PROCESSOR),scdoc)
-nvimpager.1: nvimpager.1.scdoc
-	scdoc < $< > $@
-else # the default is pandoc
-metadata.yaml:
-	echo "---" > $@
-	echo "footer: Version $(VERSION)" >> $@
-	echo "date: $(DATE)" >> $@
-	echo "..." >> $@
-nvimpager.1: nvimpager.md metadata.yaml
-	pandoc --standalone --to man --output $@ $^
-endif
+	echo 'nvimpager(1) "nvimpager $(VERSION)"' | cat - $< | scdoc > $@
 
 test:
 	@$(BUSTED) test
@@ -58,5 +44,5 @@ benchmark:
 	  './nvimpager -p test/fixtures/makefile -c quit'
 
 clean:
-	$(RM) nvimpager.configured nvimpager.1 metadata.yaml luacov.*
+	$(RM) nvimpager.configured nvimpager.1 luacov.*
 .PHONY: benchmark clean install test
