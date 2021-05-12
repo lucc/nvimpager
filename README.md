@@ -50,7 +50,7 @@ install it manually, read on.
 * [neovim] ≥ v0.4.0
 * [bash]
 * [busted] (for running the tests)
-* [pandoc] or [lowdown] (to build the man page)
+* [scdoc] (to build the man page)
 
 ### Installation instructions
 
@@ -61,9 +61,6 @@ variables:
 ```sh
 make PREFIX=$HOME/.local install
 ```
-
-You can select between `pandoc` and `lowdown` to generate the man page with the
-`MARKDOWN_PROCESSOR` variable
 
 ## Development
 
@@ -103,7 +100,6 @@ The project is licensed under a BSD-2-clause license.  See the
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: https://www.gnu.org/software/bash/bash.html
 [busted]: https://olivinelabs.com/busted/
-[pandoc]: https://pandoc.org/
-[lowdown]: https://kristaps.bsd.lv/lowdown/
+[scdoc]: https://git.sr.ht/~sircmpwn/scdoc
 [Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
 [travis]: https://travis-ci.org/lucc/nvimpager
