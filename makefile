@@ -21,7 +21,7 @@ install: nvimpager.configured nvimpager.1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
 nvimpager.1: nvimpager.md
-	echo 'nvimpager(1) "nvimpager $(VERSION)"' | cat - $< | scdoc > $@
+	sed '1cnvimpager(1) "nvimpager $(VERSION)"' $< | scdoc > $@
 
 test:
 	@$(BUSTED) test
