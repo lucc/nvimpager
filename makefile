@@ -2,7 +2,6 @@ DESTDIR ?=
 PREFIX ?= /usr/local
 RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
-SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct")
 BUSTED = busted
 
 BENCHMARK_OPTS = --warmup 2 --min-runs 100
@@ -20,6 +19,7 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
+nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct")
 nvimpager.1: nvimpager.md
 	sed '1cnvimpager(1) "nvimpager $(VERSION)"' $< | scdoc > $@
 
