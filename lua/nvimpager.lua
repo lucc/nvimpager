@@ -308,7 +308,8 @@ local function detect_man_page_in_current_buffer()
     -- FIXME This only works for man pages in languages where "NAME" is used
     -- as the headline.  Some (not all!) German man pages use "BBEZEICHNUNG"
     -- instead.
-    if line == 'NAME' or line == 'N\bNA\bAM\bME\bE' then
+    if line == 'NAME' or line == 'N\bNA\bAM\bME\bE' or line == "Name"
+      or line == 'N\bNa\bam\bme\be' then
       return true
     end
   end
