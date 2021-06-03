@@ -1,8 +1,6 @@
 language: minimal
 dist: focal
 
-env:
-  BUSTED: busted
 matrix:
   include:
     - os: linux
@@ -11,11 +9,13 @@ matrix:
           - lua-busted
           - neovim
           - scdoc
+      env: BUSTED=busted
     - os: linux
       addons:
         apt:
           source: {sourceline: 'ppa:neovim-ppa/unstable'}
           packages: *apt_packages
+      env: BUSTED=busted UNSTABLE=true
     - os: osx
       osx_image: xcode10.3
       addons:
@@ -28,8 +28,7 @@ matrix:
       env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
   allow_failures:
     - os: linux
-      env: NVIM_VERSION=unstable
-
+      env: BUSTED=busted UNSTABLE=true
 
 before_install: |
   set -e
