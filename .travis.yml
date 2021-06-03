@@ -19,8 +19,10 @@ addons:
     - neovim
     - scdoc
   homebrew:
-    - neovim
-    - scdoc
+    update: true
+    packages:
+      - neovim
+      - scdoc
 
 before_install: |
   set -e
