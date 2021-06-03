@@ -7,19 +7,15 @@ matrix:
   include:
     - os: linux
       addons:
-        apt:
+        apt: &apt_packages
           - lua-busted
           - neovim
           - scdoc
     - os: linux
       addons:
         apt:
-          source:
-            sourceline: 'ppa:neovim-ppa/unstable'
-          packages:
-            - lua-busted
-            - neovim
-            - scdoc
+          source: {sourceline: 'ppa:neovim-ppa/unstable'}
+          packages: *apt_packages
     - os: osx
       osx_image: xcode10.3
       addons:
