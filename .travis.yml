@@ -9,13 +9,19 @@ matrix:
           - lua-busted
           - neovim
           - scdoc
-      env: BUSTED=busted
     - os: linux
       addons:
         apt:
           source: {sourceline: 'ppa:neovim-ppa/unstable'}
           packages: *apt_packages
-      env: BUSTED=busted UNSTABLE=true
+      env: UNSTABLE=true
+    - os: freebsd
+      addons:
+        pkg:
+          - neovim
+          - scdoc
+          - lua51-luarocks
+      env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
     - os: osx
       osx_image: xcode10.3
       addons:
@@ -28,14 +34,25 @@ matrix:
       env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
   allow_failures:
     - os: linux
-      env: BUSTED=busted UNSTABLE=true
+      env: UNSTABLE=true
 
 before_install: |
-  set -e
-  if [[ "$TRAVIS_OS_NAME" = osx ]]; then
+  if [[ "$TRAVIS_OS_NAME" = freebsd ]]; then
+    luarocks51 --local install busted
+  elif [[ "$TRAVIS_OS_NAME" = osx ]]; then
     luarocks --local install busted
   fi
 
-install: make install PREFIX=$HOME/.local
+install: |
+  if [[ "$TRAVIS_OS_NAME" = freebsd ]]; then
+    gmake install PREFIX=$HOME/.local
+  else
+    make install PREFIX=$HOME/.local
+  fi
 
-script: make test BUSTED="$BUSTED"
+script: |
+  if [[ "$TRAVIS_OS_NAME" = freebsd ]]; then
+    gmake test BUSTED="$BUSTED"
+  else
+    make test BUSTED="${BUSTED:-busted}"
+  fi
