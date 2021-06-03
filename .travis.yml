@@ -1,5 +1,6 @@
 language: minimal
 dist: focal
+
 matrix:
   include:
     - os: linux
@@ -11,22 +12,31 @@ matrix:
   allow_failures:
     - os: linux
       env: NVIM_VERSION=unstable
+
+addons:
+  apt:
+    - lua-busted
+    - neovim
+    - scdoc
+
 before_install: |
   set -e
   if [[ "$TRAVIS_OS_NAME" = osx ]]; then
     brew update
     brew install neovim scdoc luarocks
-  else
+    luarocks --local install busted
+  elif [[ "$TRAVIS_OS_NAME" = linux && "$NVIM_VERSION" = unstable ]]; then
     sudo add-apt-repository -y ppa:neovim-ppa/$NVIM_VERSION
     sudo apt-get update
-    sudo apt-get install -y --no-install-recommends neovim scdoc luarocks
+    sudo apt-get install -y --no-install-recommends neovim
   fi
-  luarocks --local install busted
+
 install: make install PREFIX=$HOME/.local
+
 script: |
   if [[ "$TRAVIS_OS_NAME" = osx ]]; then
     BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
   else
-    BUSTED=$HOME/.luarocks/bin/busted
+    BUSTED=busted
   fi
   make test BUSTED="$BUSTED"
