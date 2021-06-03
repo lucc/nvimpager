@@ -1,17 +1,17 @@
 language: minimal
 dist: focal
 
+env:
+  BUSTED: busted
 matrix:
   include:
     - os: linux
-      env: NVIM_VERSION=stable
       addons:
         apt:
           - lua-busted
           - neovim
           - scdoc
     - os: linux
-      env: NVIM_VERSION=unstable
       addons:
         apt:
           source:
@@ -29,6 +29,7 @@ matrix:
             - neovim
             - scdoc
             - luarocks
+      env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
   allow_failures:
     - os: linux
       env: NVIM_VERSION=unstable
@@ -42,10 +43,4 @@ before_install: |
 
 install: make install PREFIX=$HOME/.local
 
-script: |
-  if [[ "$TRAVIS_OS_NAME" = osx ]]; then
-    BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
-  else
-    BUSTED=busted
-  fi
-  make test BUSTED="$BUSTED"
+script: make test BUSTED="$BUSTED"
