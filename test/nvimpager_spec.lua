@@ -266,6 +266,21 @@ describe("cat mode", function()
     it("are replaced at conceallevel=1", function() test_replace(1) end)
     it("are highlighted at conceallevel=0", function() test_replace(0) end)
   end)
+
+  describe("listchars", function()
+    it("handle spaces, trailing spaces and eol with termguicolors", function()
+      local output = run("./nvimpager -c test/fixtures/listchars1.txt " ..
+			 "--cmd 'se tgc list lcs+=space:_,eol:$'")
+      local expected = read("test/fixtures/listchars1.txt.24bit")
+      assert.equal(expected, output)
+    end)
+    it("handle spaces, trailing spaces and eol with 256 colors", function()
+      local output = run("./nvimpager -c test/fixtures/listchars1.txt " ..
+			 "--cmd 'se list lcs+=space:_,eol:$'")
+      local expected = read("test/fixtures/listchars1.txt.8bit")
+      assert.equal(expected, output)
+    end)
+  end)
 end)
 
 describe("pager mode", function()
