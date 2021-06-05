@@ -211,13 +211,16 @@ local function highlight()
   local linecount = nvim.nvim_buf_line_count(0)
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
+    local skip_next_char = false
     for cnum = 1, line:len() do
       local conceal_info = nvim.nvim_call_function('synconcealed',
 	{lnum, cnum})
       local conceal = conceal_info[1] == 1
       local replace = conceal_info[2]
       local conceal_id = conceal_info[3]
-      if conceal and last_conceal_id == conceal_id then -- luacheck: ignore
+      if skip_next_char then
+	skip_next_char = false
+      elseif conceal and last_conceal_id == conceal_id then -- luacheck: ignore
 	-- skip this char
       else
 	local syntax_id, append
@@ -228,7 +231,7 @@ local function highlight()
 	  last_conceal_id = conceal_id
 	else
 	  append = line:sub(cnum, cnum)
-	  if list and string.find(" ", append, 1, true) ~= nil then
+	  if list and string.find(" \194", append, 1, true) ~= nil then
 	    syntax_id = syntax_id_whitespace
 	    if append == " " then
 	      if line:find("^ +$", cnum) ~= nil then
@@ -236,6 +239,12 @@ local function highlight()
 	      else
 		append = listchars.space or append
 	      end
+	    elseif append == "\194" and line:sub(cnum + 1, cnum + 1) == "\160" then
+	      -- Utf8 non breaking space is "\194\160", neovim represents all
+	      -- files as utf8 internally, regardless of the actual encoding.
+	      -- See :help 'encoding'.
+	      append = listchars.nbsp or "\194\160"
+	      skip_next_char = true
 	    end
 	  else
 	    syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
