@@ -10,11 +10,11 @@ matrix:
           - neovim
           - scdoc
     - os: linux
+      env: UNSTABLE=true
       addons:
         apt:
           source: {sourceline: 'ppa:neovim-ppa/unstable'}
           packages: *apt_packages
-      env: UNSTABLE=true
     - os: freebsd
       addons:
         pkg:
@@ -23,15 +23,15 @@ matrix:
           - lua51-luarocks
       env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
     - os: osx
-      osx_image: xcode10.3
+      # Older versions have trouble with homebrew.  When the osx builds start
+      # to fail again or take to long try updating this first.
+      osx_image: xcode12.5
+      env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
       addons:
         homebrew:
-          update: true
-          packages:
-            - neovim
-            - scdoc
-            - luarocks
-      env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
+          - neovim
+          - scdoc
+          - luarocks
   allow_failures:
     - os: linux
       env: UNSTABLE=true
