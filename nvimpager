@@ -49,7 +49,7 @@ while getopts achpv flag; do
     h) usage; description; exit;;
     p) mode=pager;;
     v)
-      version=$(git -C "$RUNTIME" describe 2>/dev/null) || version=v0.9
+      version=$(git -C "$RUNTIME" describe 2>/dev/null) || version=v0.10
       echo "$name $version"
       exit
       ;;
