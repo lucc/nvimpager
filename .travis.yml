@@ -1,19 +1,24 @@
 language: minimal
 dist: focal
 
+addons:
+  apt: &apt_packages
+    - lua-busted
+    - neovim
+    - scdoc
+  homebrew:
+    - neovim
+    - scdoc
+    - luarocks
+
 matrix:
   include:
     - os: linux
-      addons:
-        apt: &apt_packages
-          - lua-busted
-          - neovim
-          - scdoc
     - os: linux
       env: UNSTABLE=true
       addons:
         apt:
-          source: {sourceline: 'ppa:neovim-ppa/unstable'}
+          source: { sourceline: 'ppa:neovim-ppa/unstable' }
           packages: *apt_packages
     - os: freebsd
       addons:
@@ -27,11 +32,6 @@ matrix:
       # to fail again or take to long try updating this first.
       osx_image: xcode12.5
       env: BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
-      addons:
-        homebrew:
-          - neovim
-          - scdoc
-          - luarocks
   allow_failures:
     - os: linux
       env: UNSTABLE=true
