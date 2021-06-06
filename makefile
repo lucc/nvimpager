@@ -19,13 +19,9 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
-metadata.yaml:
-	echo "---" > $@
-	echo "footer: Version $(VERSION)" >> $@
-	git log -1 --format=format:'date: %aI' 2>/dev/null | cut -f 1 -d T >> $@
-	echo "..." >> $@
-nvimpager.1: nvimpager.md metadata.yaml
-	pandoc --standalone --to man --output $@ $^
+nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct")
+nvimpager.1: nvimpager.md
+	sed '1cnvimpager(1) "nvimpager $(VERSION)"' $< | scdoc > $@
 
 test:
 	@$(BUSTED) test
@@ -48,5 +44,5 @@ benchmark:
 	  './nvimpager -p test/fixtures/makefile -c quit'
 
 clean:
-	$(RM) nvimpager.configured nvimpager.1 metadata.yaml luacov.*
+	$(RM) nvimpager.configured nvimpager.1 luacov.*
 .PHONY: benchmark clean install test
