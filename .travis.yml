@@ -37,22 +37,19 @@ matrix:
       env: UNSTABLE=true
 
 before_install: |
-  if [[ "$TRAVIS_OS_NAME" = freebsd ]]; then
-    luarocks51 --local install busted
-  elif [[ "$TRAVIS_OS_NAME" = osx ]]; then
-    luarocks --local install busted
-  fi
+  case "$TRAVIS_OS_NAME" in
+    freebsd) luarocks51 --local install busted;;
+    osx)     luarocks   --local install busted;;
+  esac
 
 install: |
-  if [[ "$TRAVIS_OS_NAME" = freebsd ]]; then
-    gmake install PREFIX=$HOME/.local
-  else
-    make install PREFIX=$HOME/.local
-  fi
+  case "$TRAVIS_OS_NAME" in
+    freebsd) gmake install PREFIX=$HOME/.local;;
+    *)       make  install PREFIX=$HOME/.local;;
+  esac
 
 script: |
-  if [[ "$TRAVIS_OS_NAME" = freebsd ]]; then
-    gmake test BUSTED="$BUSTED"
-  else
-    make test BUSTED="${BUSTED:-busted}"
-  fi
+  case "$TRAVIS_OS_NAME" in
+    freebsd) gmake test BUSTED="$BUSTED";;
+    *)       make  test BUSTED="${BUSTED:-busted}";;
+  esac
