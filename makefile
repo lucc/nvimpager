@@ -19,7 +19,7 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
-nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct")
+nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || date +%s)
 nvimpager.1: nvimpager.md
 	sed '1cnvimpager(1) "nvimpager $(VERSION)"' $< | scdoc > $@
 
