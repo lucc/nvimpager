@@ -4,8 +4,6 @@ RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
 BUSTED = busted
 
-BENCHMARK_OPTS = --warmup 2 --min-runs 100
-
 %.configured: %
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
@@ -19,7 +17,7 @@ install: nvimpager.configured nvimpager.1
 	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
-nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || date +%s)
+nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || echo 1623129416)
 nvimpager.1: nvimpager.md
 	sed '1cnvimpager(1) "nvimpager $(VERSION)"' $< | scdoc > $@
 
@@ -30,19 +28,18 @@ luacov.stats.out: nvimpager lua/nvimpager.lua test/nvimpager_spec.lua
 luacov.report.out: luacov.stats.out
 	luacov lua/nvimpager.lua
 
-benchmark:
-	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
-	@hyperfine $(BENCHMARK_OPTS) \
-	  './nvimpager -c makefile' \
-	  './nvimpager -c <makefile' \
-	  './nvimpager -c test/fixtures/makefile' \
-	  './nvimpager -c <test/fixtures/makefile' \
-	  './nvimpager -c test/fixtures/conceal.tex' \
-	  './nvimpager -c test/fixtures/conceal.tex.ansi' \
-	  './nvimpager -p -- -c quit' \
-	  './nvimpager -p -- makefile -c quit' \
-	  './nvimpager -p test/fixtures/makefile -c quit'
+TYPE = minor
+version:
+	[ $(TYPE) = major ] || [ $(TYPE) = minor ] || [ $(TYPE) = patch ]
+	sed -i 's/version=.*version=/version=/' nvimpager
+	awk -i inplace -F '[v.]' -v type=$(TYPE)\
+	  -e 'type == "major" && /version=/ { print $$1 "version=v" $$3+1 ".0" }' \
+	  -e 'type == "minor" && /version=/ { print $$1 "version=v" $$3 "." $$4+1 }' \
+	  -e 'type == "patch" && /version=/ { print $$1 "version=v" $$3 "." $$4 "." $$5+1 }' \
+	  -e '/version=/ { next }' \
+	  -e '{ print $$0 }' nvimpager
+	sed -i "/SOURCE_DATE_EPOCH/s/[0-9]\{10,\}/$(shell date +%s)/" $(MAKEFILE_LIST)
 
 clean:
 	$(RM) nvimpager.configured nvimpager.1 luacov.*
-.PHONY: benchmark clean install test
+.PHONY: clean install test version
