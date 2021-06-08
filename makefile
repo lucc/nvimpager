@@ -4,8 +4,6 @@ RUNTIME = $(PREFIX)/share/nvimpager/runtime
 VERSION = $(lastword $(shell ./nvimpager -v))
 BUSTED = busted
 
-BENCHMARK_OPTS = --warmup 2 --min-runs 100
-
 %.configured: %
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
@@ -30,19 +28,7 @@ luacov.stats.out: nvimpager lua/nvimpager.lua test/nvimpager_spec.lua
 luacov.report.out: luacov.stats.out
 	luacov lua/nvimpager.lua
 
-benchmark:
-	@echo Starting benchmark for $$(./nvimpager -v) \($$(git rev-parse --abbrev-ref HEAD)\)
-	@hyperfine $(BENCHMARK_OPTS) \
-	  './nvimpager -c makefile' \
-	  './nvimpager -c <makefile' \
-	  './nvimpager -c test/fixtures/makefile' \
-	  './nvimpager -c <test/fixtures/makefile' \
-	  './nvimpager -c test/fixtures/conceal.tex' \
-	  './nvimpager -c test/fixtures/conceal.tex.ansi' \
-	  './nvimpager -p -- -c quit' \
-	  './nvimpager -p -- makefile -c quit' \
-	  './nvimpager -p test/fixtures/makefile -c quit'
 
 clean:
 	$(RM) nvimpager.configured nvimpager.1 luacov.*
-.PHONY: benchmark clean install test
+.PHONY: clean install test
