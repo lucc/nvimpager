@@ -28,9 +28,16 @@ luacov.stats.out: nvimpager lua/nvimpager.lua test/nvimpager_spec.lua
 luacov.report.out: luacov.stats.out
 	luacov lua/nvimpager.lua
 
+TYPE = minor
 version:
+	[ $(TYPE) = major ] || [ $(TYPE) = minor ] || [ $(TYPE) = patch ]
 	sed -i 's/version=.*version=/version=/' nvimpager
-	awk -i inplace -F '[v.]' '/version=/ { print $$1 "version=v" $$3 "." $$4+1; next } { print $$0 }' nvimpager
+	awk -i inplace -F '[v.]' -v type=$(TYPE)\
+	  -e 'type == "major" && /version=/ { print $$1 "version=v" $$3+1 ".0" }' \
+	  -e 'type == "minor" && /version=/ { print $$1 "version=v" $$3 "." $$4+1 }' \
+	  -e 'type == "patch" && /version=/ { print $$1 "version=v" $$3 "." $$4 "." $$5+1 }' \
+	  -e '/version=/ { next }' \
+	  -e '{ print $$0 }' nvimpager
 	sed -i "/SOURCE_DATE_EPOCH/s/[0-9]\{10,\}/$(shell date +%s)/" $(MAKEFILE_LIST)
 
 clean:
