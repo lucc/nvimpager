@@ -19,7 +19,7 @@ install: nvimpager.configured nvimpager.1
 
 nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || echo 1623129416)
 nvimpager.1: nvimpager.md
-	sed '1cnvimpager(1) "nvimpager $(VERSION)"' $< | scdoc > $@
+	sed '1s/$$/ "nvimpager $(VERSION)"/' $< | scdoc > $@
 
 test:
 	@$(BUSTED) test
