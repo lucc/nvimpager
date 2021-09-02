@@ -13,9 +13,9 @@ install: nvimpager.configured nvimpager.1
 	  $(DESTDIR)$(PREFIX)/share/man/man1 \
 	  $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
-	install lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
-	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
-	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
+	install -m 644 lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
+	install -m 644 nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
+	install -m 644 _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
 nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || echo 1623129416)
 nvimpager.1: nvimpager.md
