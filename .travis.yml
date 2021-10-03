@@ -48,6 +48,8 @@ install: |
     *)       make  install PREFIX=$HOME/.local;;
   esac
 
+before_script: nvim --version
+
 script: |
   case "$TRAVIS_OS_NAME" in
     freebsd) gmake test BUSTED="$BUSTED";;
