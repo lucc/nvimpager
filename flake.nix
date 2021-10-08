@@ -3,49 +3,47 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    neovim.url = "github:nix-community/neovim-nightly-overlay";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
-  let
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.x86_64-linux;
-  in {
-    overlay = final: prev:
-      let pkgs = nixpkgs.legacyPackages.${prev.system};
-      in rec {
-        nvimpager = pkgs.nvimpager.overrideAttrs (oa: {
-          version = "dev";
-          src = ./.;
-        });
-      };
+  outputs = { self, nixpkgs, flake-utils, neovim, ... }: {
+    overlay = final: prev: {
+      nvimpager = prev.nvimpager.overrideAttrs (oa: {
+        version = "dev";
+        src = ./.;
+      });
+    };
   }
   //
   flake-utils.lib.eachDefaultSystem (system:
-    let pkgs = import nixpkgs {
-      overlays = [ self.overlay ];
-      inherit system;
+  let
+    pkgs = import nixpkgs { overlays = [ self.overlay ]; inherit system; };
+    nightly = import nixpkgs { overlays = [ neovim.overlay self.overlay ]; inherit system; };
+  in rec {
+    packages = {
+      nvimpager = pkgs.nvimpager;
+      nvimpager-with-nightly-neovim = nightly.nvimpager;
     };
-    in rec {
-      packages = { inherit (pkgs.nvimpager); };
-      defaultPackage = pkgs.nvimpager;
-      apps.nvimpager = flake-utils.lib.mkApp { drv = pkgs.nvimpager; name = "nvimpager"; };
-      defaultApp = apps.nvimpager;
-      devShell = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          neovim
-          ncurses # for tput
-          procps # for nvim_get_proc()
-
-          lua51Packages.busted
-          lua51Packages.luacov
-          git
-          scdoc
-          tmux
-          hyperfine
-        ];
-        #TERM = "xterm";
-        shellHook = "export LUA_PATH=./?.lua\${LUA_PATH:+';'}$LUA_PATH";
-      };
-    }
+    defaultPackage = pkgs.nvimpager;
+    apps.nvimpager = flake-utils.lib.mkApp { drv = pkgs.nvimpager; name = "nvimpager"; };
+    defaultApp = apps.nvimpager;
+    devShell = pkgs.mkShell {
+      inputsFrom = [ defaultPackage ];
+      packages = with pkgs; [
+        lua51Packages.luacov
+        git
+        tmux
+        hyperfine
+      ];
+      shellHook = ''
+        # to find nvimpager lua code in the current dir
+        export LUA_PATH=./?.lua''${LUA_PATH:+\;}$LUA_PATH
+        # fix for my terminal in a pure shell
+        if [ "$TERM" = xterm-termite ]; then
+          export TERM=xterm
+        fi
+      '';
+    };
+  }
   );
 }
