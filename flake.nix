@@ -17,18 +17,10 @@
   //
   flake-utils.lib.eachDefaultSystem (system:
   let
-    pkgs = import nixpkgs { overlays = [ self.overlay ]; inherit system; };
+    stable = import nixpkgs { overlays = [ self.overlay ]; inherit system; };
     nightly = import nixpkgs { overlays = [ neovim.overlay self.overlay ]; inherit system; };
-  in rec {
-    packages = {
-      nvimpager = pkgs.nvimpager;
-      nvimpager-with-nightly-neovim = nightly.nvimpager;
-    };
-    defaultPackage = pkgs.nvimpager;
-    apps.nvimpager = flake-utils.lib.mkApp { drv = pkgs.nvimpager; name = "nvimpager"; };
-    defaultApp = apps.nvimpager;
-    devShell = pkgs.mkShell {
-      inputsFrom = [ defaultPackage ];
+    mkShell = pkgs: pkgs.mkShell {
+      inputsFrom = [ pkgs.nvimpager ];
       packages = with pkgs; [
         lua51Packages.luacov
         git
@@ -42,7 +34,20 @@
         if [ "$TERM" = xterm-termite ]; then
           export TERM=xterm
         fi
-      '';
+        '';
+      };
+  in rec {
+    packages = {
+      nvimpager = stable.nvimpager;
+      nvimpager-with-nightly-neovim = nightly.nvimpager;
+    };
+    defaultPackage = stable.nvimpager;
+    apps.nvimpager = flake-utils.lib.mkApp { drv = stable.nvimpager; name = "nvimpager"; };
+    defaultApp = apps.nvimpager;
+    devShell = devShells.stable;
+    devShells = {
+      stable = mkShell stable;
+      nightly = mkShell nightly;
     };
   }
   );
