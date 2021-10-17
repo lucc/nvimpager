@@ -54,13 +54,16 @@ install it manually, read on.
 
 ### Installation instructions
 
-Use the makefile to install the script and its dependencies.  It supports the
-usual `PREFIX` (defaults to `/usr/local`) and `DESTDIR` (defaults to empty)
+Use the makefile to configure and install the script.  It supports the usual
+`PREFIX` (defaults to `/usr/local`) and `DESTDIR` (defaults to empty)
 variables:
 
 ```sh
 make PREFIX=$HOME/.local install
 ```
+
+Additionally the variable `BUSTED` can be used to specify the executable for
+the test suite.
 
 ## Development
 
@@ -101,5 +104,5 @@ The project is licensed under a BSD-2-clause license.  See the
 [bash]: https://www.gnu.org/software/bash/bash.html
 [busted]: https://olivinelabs.com/busted/
 [scdoc]: https://git.sr.ht/~sircmpwn/scdoc
-[Build Status]: https://travis-ci.org/lucc/nvimpager.svg?branch=develop
-[travis]: https://travis-ci.org/lucc/nvimpager
+[Build Status]: https://travis-ci.com/lucc/nvimpager.svg?branch=develop
+[travis]: https://travis-ci.com/github/lucc/nvimpager

@@ -390,18 +390,20 @@ end
 -- Detect possible filetypes for the current buffer by looking at the pstree
 -- or ansi escape sequences or manpage sequences in the current buffer.
 local function detect_filetype()
-  if not doc then
-    if detect_man_page_in_current_buffer() then
-      nvim.nvim_buf_set_option(0, 'filetype', 'man')
-    end
-  else
-    if doc == 'git' then
-      -- Use nvim's syntax highlighting for git buffers instead of git's
-      -- internal highlighting.
-      strip_ansi_escape_sequences_from_current_buffer()
-    elseif doc == 'pydoc' or doc == 'perldoc' or doc == 'ri' then
-      doc = 'man'
-    end
+  if not doc and detect_man_page_in_current_buffer() then doc = 'man' end
+  if doc == 'git' then
+    -- Use nvim's syntax highlighting for git buffers instead of git's
+    -- internal highlighting.
+    strip_ansi_escape_sequences_from_current_buffer()
+  end
+  if doc == 'man' then
+    nvim.nvim_buf_set_option(0, 'readonly', false)
+    nvim.nvim_command("Man!")
+    nvim.nvim_buf_set_option(0, 'readonly', true)
+  elseif doc == 'pydoc' or doc == 'perldoc' or doc == 'ri' then
+    doc = 'man' -- only set the syntax, not the full :Man plugin
+  end
+  if doc ~= nil then
     nvim.nvim_buf_set_option(0, 'filetype', doc)
   end
 end

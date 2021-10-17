@@ -13,13 +13,17 @@ install: nvimpager.configured nvimpager.1
 	  $(DESTDIR)$(PREFIX)/share/man/man1 \
 	  $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
-	install lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
-	install nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
-	install _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
+	install -m 644 lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
+	install -m 644 nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
+	install -m 644 _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
+uninstall:
+	$(RM) $(PREFIX)/bin/nvimpager $(RUNTIME)/lua/nvimpager.lua \
+	  $(PREFIX)/share/man/man1/nvimpager.1 \
+	  $(PREFIX)/share/zsh/site-functions/_nvimpager
 
-nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || echo 1623129416)
+nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || echo 1634475954)
 nvimpager.1: nvimpager.md
-	sed '1cnvimpager(1) "nvimpager $(VERSION)"' $< | scdoc > $@
+	sed '1s/$$/ "nvimpager $(VERSION)"/' $< | scdoc > $@
 
 test:
 	@$(BUSTED) test
@@ -42,4 +46,4 @@ version:
 
 clean:
 	$(RM) nvimpager.configured nvimpager.1 luacov.*
-.PHONY: clean install test version
+.PHONY: clean install test uninstall version
