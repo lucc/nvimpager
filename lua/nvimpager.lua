@@ -15,6 +15,12 @@
 local nvim = vim.api -- luacheck: ignore
 local vim = vim      -- luacheck: ignore
 
+-- names that will be exported from this module
+local nvimpager = {
+  -- user facing options
+  maps = true,  -- if the default mappings should be defined
+}
+
 -- A mapping of ansi color numbers to neovim color names
 local colors = {
   [0] = "black",     [8] = "darkgray",
@@ -227,6 +233,7 @@ local function highlight()
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
     local outline = ''
     local skip_next_char = false
+    local syntax_id
     for cnum = 1, line:len() do
       local conceal_info = nvim.nvim_call_function('synconcealed',
 	{lnum, cnum})
@@ -238,7 +245,7 @@ local function highlight()
       elseif conceal and last_conceal_id == conceal_id then -- luacheck: ignore
 	-- skip this char
       else
-	local syntax_id, append
+	local append
 	if conceal then
 	  syntax_id = syntax_id_conceal
 	  if replace == '' and conceallevel == 1 then replace = ' ' end
@@ -289,7 +296,7 @@ end
 
 -- Call the highlight function to write the highlighted version of all buffers
 -- to stdout and quit nvim.
-local function cat_mode()
+function nvimpager.cat_mode()
   init_cat_mode()
   highlight()
   -- We can not use nvim_list_bufs() as a file might appear on the command
@@ -642,7 +649,7 @@ local function ansi2highlight()
   state:clear()
   namespace = nvim.nvim_create_namespace("")
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
-    local start, end_, spec = nil, nil, nil
+    local start, end_, spec
     local col = 1
     repeat
       start, end_, spec = line:find(pattern, col)
@@ -676,7 +683,7 @@ end
 
 -- Setup function for the VimEnter autocmd.
 -- This function will be called for each buffer once
-local function pager_mode()
+function nvimpager.pager_mode()
   if check_escape_sequences() then
     -- Try to highlight ansi escape sequences.
     ansi2highlight()
@@ -691,7 +698,7 @@ local function pager_mode()
 end
 
 -- Setup function to be called from --cmd.
-local function stage1()
+function nvimpager.stage1()
   fix_runtime_path()
   -- Don't remember file names and positions
   nvim.nvim_set_option('shada', '')
@@ -720,7 +727,7 @@ end
 -- --headless and hence do not have a user interface.  This also means that
 -- this function can only be called with -c or later as the user interface
 -- would not be available in --cmd.
-local function stage2()
+function nvimpager.stage2()
   detect_filetype()
   local mode, events
   if #nvim.nvim_list_uis() == 0 then
@@ -738,28 +745,19 @@ local function stage2()
     'autocmd NvimPager '..events..' * nested lua nvimpager.'..mode..'_mode()')
 end
 
-local nvimpager = {
-  -- user facing options
-  maps = true,  -- if the default mappings should be defined
-  -- exported functions
-  cat_mode = cat_mode,
-  pager_mode = pager_mode,
-  stage1 = stage1,
-  stage2 = stage2,
-  -- functions only exported for tests
-  _testable = {
-    color2escape_24bit = color2escape_24bit,
-    color2escape_8bit = color2escape_8bit,
-    detect_parent_process = detect_parent_process,
-    group2ansi = group2ansi,
-    hexformat_rgb_numbers = hexformat_rgb_numbers,
-    init_cat_mode = init_cat_mode,
-    replace_prefix = replace_prefix,
-    split_predifined_terminal_color = split_predifined_terminal_color,
-    split_rgb_number = split_rgb_number,
-    state = state,
-    tokenize = tokenize,
-  }
+-- functions only exported for tests
+nvimpager._testable = {
+  color2escape_24bit = color2escape_24bit,
+  color2escape_8bit = color2escape_8bit,
+  detect_parent_process = detect_parent_process,
+  group2ansi = group2ansi,
+  hexformat_rgb_numbers = hexformat_rgb_numbers,
+  init_cat_mode = init_cat_mode,
+  replace_prefix = replace_prefix,
+  split_predifined_terminal_color = split_predifined_terminal_color,
+  split_rgb_number = split_rgb_number,
+  state = state,
+  tokenize = tokenize,
 }
 
 return nvimpager
