@@ -325,14 +325,14 @@ describe("backend:", function()
       set runtimepath+=.
       lua require("nvimpager").stage1()' ]]..
     [[--cmd '
-      let rtp = nvim_list_runtime_paths()
-      echo index(rtp, $RUNTIME) == -1
-      echo index(rtp, stdpath("config")) != -1
-      echo index(rtp, stdpath("data")."/site") != -1
-      echo ""
+      let rtp = split(&rtp, ",")
+      call assert_equal(0, index(rtp, $RUNTIME), "$RUNTIME should be in &rtp")
+      call assert_equal(-1, index(rtp, stdpath("config")), "default config path should not be in &rtp")
+      call assert_equal(-1, index(rtp, stdpath("data")."/site"), "default site path should not be in &rtp")
+      echo join(v:errors, "\n") . "\n"
       quit' 2>&1]]
     local output = run(cmd)
-    assert.equal('0\r\n0\r\n0\r\n', output)
+    assert.equal('\r\n', output)
   end)
 
   it("plugin manifest doesn't contain nvim's value", function()
