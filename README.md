@@ -104,5 +104,5 @@ The project is licensed under a BSD-2-clause license.  See the
 [bash]: https://www.gnu.org/software/bash/bash.html
 [busted]: https://olivinelabs.com/busted/
 [scdoc]: https://git.sr.ht/~sircmpwn/scdoc
-[Build Status]: https://travis-ci.com/lucc/nvimpager.svg?branch=develop
+[Build Status]: https://travis-ci.com/lucc/nvimpager.svg?branch=main
 [travis]: https://travis-ci.com/github/lucc/nvimpager
