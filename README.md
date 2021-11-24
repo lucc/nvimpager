@@ -69,7 +69,7 @@ the test suite.
 
 Nvimpager is developed on [GitHub][nvimpager] where you are very much invited
 to [post][issues] bug reports, feature or pull requests!  The test can be run
-with `make test`.  They are also run on travis: [![Build Status]][travis]
+with `make test`.  They are also run on GitHub: [![Build Status]][ghactions]
 
 ### Known Bugs (and non features)
 
@@ -104,5 +104,5 @@ The project is licensed under a BSD-2-clause license.  See the
 [bash]: https://www.gnu.org/software/bash/bash.html
 [busted]: https://olivinelabs.com/busted/
 [scdoc]: https://git.sr.ht/~sircmpwn/scdoc
-[Build Status]: https://travis-ci.com/lucc/nvimpager.svg?branch=main
-[travis]: https://travis-ci.com/github/lucc/nvimpager
+[Build Status]: https://github.com/lucc/nvimpager/actions/workflows/blank.yml/badge.svg
+[ghactions]: https://github.com/lucc/nvimpager/actions
