@@ -124,4 +124,4 @@ if [[ $mode = cat || \
 then
   args1+=(--headless)
 fi
-$nvim "${args1[@]}" "${files[@]}" "$@" "${args2[@]}" </dev/tty
+$nvim "${args1[@]}" "${files[@]}" "$@" "${args2[@]}"
