@@ -33,6 +33,6 @@ jobs:
         brew install neovim scdoc luarocks
         luarocks --local install busted
     - name: Run the test suite
-      run: script -ec "make test BUSTED=$HOME/.luarocks/bin/busted"
+      run: script typescript make test BUSTED=$HOME/.luarocks/bin/busted
       env:
         TERM: dumb
