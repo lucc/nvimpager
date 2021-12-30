@@ -22,3 +22,17 @@ jobs:
       run: script -ec "make test"
       env:
         TERM: dumb
+
+  macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: |
+        brew update
+        brew install neovim scdoc luarocks
+        luarocks --local install busted
+    - name: Run the test suite
+      run: script -ec "make test BUSTED=$HOME/.luarocks/bin/busted"
+      env:
+        TERM: dumb
