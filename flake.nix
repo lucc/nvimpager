@@ -4,6 +4,9 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     neovim.url = "github:nix-community/neovim-nightly-overlay";
+    neovim.inputs.nixpkgs.follows = "nixpkgs";
+#    neovim.inputs.neovim-flake.inputs.nixpkgs.follows = "nixpkgs";
+#    neovim.inputs.neovim-flake.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = { self, nixpkgs, flake-utils, neovim, ... }: {
