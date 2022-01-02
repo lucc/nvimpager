@@ -14,6 +14,8 @@
       nvimpager = prev.nvimpager.overrideAttrs (oa: {
         version = "dev";
         src = ./.;
+        preBuild = "version=$(bash ./nvimpager -v | sed 's/.* //')";
+        buildFlags = oa.buildFlags ++ [ "VERSION=\${version}-dev" ];
       });
     };
   }
