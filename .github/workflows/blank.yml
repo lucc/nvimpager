@@ -36,3 +36,15 @@ jobs:
       run: script typescript make test BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
       env:
         TERM: dumb
+
+  nix:
+    runs-on: ubuntu-latest
+    container:
+      image: nixos/nix
+      options: -t
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run the test suite
+      run: script -ec "nix develop --check"
+      env:
+        TERM: dumb
