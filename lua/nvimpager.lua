@@ -400,11 +400,14 @@ local function detect_filetype()
     -- internal highlighting.
     strip_ansi_escape_sequences_from_current_buffer()
   end
-  if doc == 'man' then
+  -- python uses the same "highlighting" technique with backspace as roff.
+  -- This means we have to load the full :Man plugin for python as well and
+  -- not just set the filetype to man.
+  if doc == 'man' or doc == 'pydoc' then
     nvim.nvim_buf_set_option(0, 'readonly', false)
     nvim.nvim_command("Man!")
     nvim.nvim_buf_set_option(0, 'readonly', true)
-  elseif doc == 'pydoc' or doc == 'perldoc' or doc == 'ri' then
+  elseif doc == 'perldoc' or doc == 'ri' then
     doc = 'man' -- only set the syntax, not the full :Man plugin
   end
   if doc ~= nil then
