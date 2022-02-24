@@ -407,6 +407,8 @@ local function detect_filetype()
     nvim.nvim_buf_set_option(0, 'readonly', false)
     nvim.nvim_command("Man!")
     nvim.nvim_buf_set_option(0, 'readonly', true)
+    -- do not set the file type again later on
+    doc = nil
   elseif doc == 'perldoc' or doc == 'ri' then
     doc = 'man' -- only set the syntax, not the full :Man plugin
   end
