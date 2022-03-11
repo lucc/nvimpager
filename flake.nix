@@ -35,10 +35,8 @@
       shellHook = ''
         # to find nvimpager lua code in the current dir
         export LUA_PATH=./?.lua''${LUA_PATH:+\;}$LUA_PATH
-        # fix for my terminal in a pure shell
-        if [ "$TERM" = xterm-termite ]; then
-          export TERM=xterm
-        fi
+        # fix for different terminals in a pure shell
+        export TERM=xterm
         '';
       };
   in rec {
