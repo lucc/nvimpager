@@ -39,10 +39,9 @@ jobs:
 
   nix:
     runs-on: ubuntu-latest
-    container:
-      image: nixos/nix
-      options: -t
     steps:
+    - name: Install Nix
+      uses: cachix/install-nix-action@v16
     - uses: actions/checkout@v2
     - name: Run the test suite
       run: script -ec "nix develop --check"
