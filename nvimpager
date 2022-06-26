@@ -13,7 +13,7 @@ export TMPFILE
 name=nvimpager
 mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
-nvim=${NVIM:-nvim}
+nvim=${NVIMPAGER_NVIM:-nvim}
 
 usage () {
   echo "Usage: ${0##*/} [-acp] [--] [nvim options and files]"

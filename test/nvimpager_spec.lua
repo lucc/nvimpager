@@ -110,7 +110,7 @@ describe("auto mode", function()
       set -e
       set -u
       shopt -s expand_aliases
-      NVIM=:
+      NVIMPAGER_NVIM=:
       alias exec=:
       alias trap=:
       source ]] .. command .. "\nset"

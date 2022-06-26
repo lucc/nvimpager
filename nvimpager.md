@@ -68,8 +68,8 @@ site directories and the rplugin file.
 
 ## Environment variables
 
-The environment variable *$NVIM* can be used to specify an nvim executable to
-use.  If unset it defaults to *nvim*.
+The environment variable *$NVIMPAGER_NVIM* can be used to specify an nvim
+executable to use.  If unset it defaults to *nvim*.
 
 ## Configuration variables
 
