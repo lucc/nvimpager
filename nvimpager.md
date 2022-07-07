@@ -87,6 +87,11 @@ The following fields (options) exist:
 :  bool
 :  true
 :  if some default less like maps should be defined inside pager mode
+|  git_colors
+:  bool
+:  false
+:  use git command highlighting instead of nvim syntax highlighting,
+   set this to true if you use an external diff
 
 So to disable all mappings defined by nvimpager the user can put
 

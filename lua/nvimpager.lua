@@ -18,7 +18,8 @@ local vim = vim      -- luacheck: ignore
 -- names that will be exported from this module
 local nvimpager = {
   -- user facing options
-  maps = true,  -- if the default mappings should be defined
+  maps = true,          -- if the default mappings should be defined
+  git_colors = false,   -- if the highlighting from the git should be used
 }
 
 -- A mapping of ansi color numbers to neovim color names
@@ -396,9 +397,14 @@ end
 local function detect_filetype()
   if not doc and detect_man_page_in_current_buffer() then doc = 'man' end
   if doc == 'git' then
-    -- Use nvim's syntax highlighting for git buffers instead of git's
-    -- internal highlighting.
-    strip_ansi_escape_sequences_from_current_buffer()
+    if nvimpager.git_colors then
+      -- Use the highlighting from the git commands.
+      doc = nil
+    else
+      -- Use nvim's syntax highlighting for git buffers instead of git's
+      -- internal highlighting.
+      strip_ansi_escape_sequences_from_current_buffer()
+    end
   end
   -- python uses the same "highlighting" technique with backspace as roff.
   -- This means we have to load the full :Man plugin for python as well and
