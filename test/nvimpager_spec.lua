@@ -159,6 +159,13 @@ describe("cat mode", function()
     assert.equal(expected, output)
   end)
 
+  it("handles color schemes with a non trivial Normal group", function()
+    local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
+		       "--cmd 'hi Normal ctermfg=Red'")
+    local expected = read("test/fixtures/conceal.tex.red")
+    assert.equal(expected, output)
+  end)
+
   it("highlights all files", function()
     local output = run("./nvimpager -c test/fixtures/makefile " ..
                                       "test/fixtures/help.txt ")
