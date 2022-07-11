@@ -3,10 +3,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    neovim.url = "github:nix-community/neovim-nightly-overlay";
+    neovim.url = "github:neovim/neovim?dir=contrib";
     neovim.inputs.nixpkgs.follows = "nixpkgs";
-#    neovim.inputs.neovim-flake.inputs.nixpkgs.follows = "nixpkgs";
-#    neovim.inputs.neovim-flake.inputs.flake-utils.follows = "flake-utils";
+    neovim.inputs.flake-utils.follows = "flake-utils";
   };
 
   outputs = { self, nixpkgs, flake-utils, neovim, ... }: {
@@ -45,7 +44,7 @@
       nvimpager-with-nightly-neovim = nightly.nvimpager;
     };
     defaultPackage = stable.nvimpager;
-    apps.nvimpager = flake-utils.lib.mkApp { drv = stable.nvimpager; name = "nvimpager"; };
+    apps.nvimpager = flake-utils.lib.mkApp { drv = stable.nvimpager; };
     defaultApp = apps.nvimpager;
     devShell = devShells.stable;
     devShells = {
