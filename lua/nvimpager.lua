@@ -157,16 +157,16 @@ end
 
 -- Initialize some module level variables for cat mode.
 local function init_cat_mode()
-  -- Initialize the ansi group to color cache with the "Normal" hl group.
-  cache[0] = group2ansi(nvim.nvim_call_function('hlID', {'Normal'}))
   -- Get the value of &termguicolors from neovim.
   colors_24_bit = nvim.nvim_get_option('termguicolors')
-  -- Select the correct coloe escaping function.
+  -- Select the correct color escaping function.
   if colors_24_bit then
     color2escape = color2escape_24bit
   else
     color2escape = color2escape_8bit
   end
+  -- Initialize the ansi group to color cache with the "Normal" hl group.
+  cache[0] = group2ansi(nvim.nvim_call_function('hlID', {'Normal'}))
 end
 
 -- Check if the begining of the current buffer contains ansi escape sequences.
