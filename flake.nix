@@ -18,8 +18,10 @@
       });
     };
   }
-  //
-  flake-utils.lib.eachDefaultSystem (system:
+  // (let
+    filter = builtins.filter (s: !nixpkgs.lib.strings.hasSuffix "-darwin" s);
+    inherit (flake-utils.lib) eachSystem defaultSystems;
+  in eachSystem (filter defaultSystems) (system:
   let
     stable = import nixpkgs { overlays = [ self.overlay ]; inherit system; };
     nightly = import nixpkgs { overlays = [ neovim.overlay self.overlay ]; inherit system; };
@@ -51,6 +53,5 @@
       stable = mkShell stable;
       nightly = mkShell nightly;
     };
-  }
-  );
+  }));
 }
