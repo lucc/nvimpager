@@ -708,13 +708,14 @@ function nvimpager.stage1()
   -- prevent messages when opening files (especially for the cat version)
   nvim.nvim_set_option('shortmess', nvim.nvim_get_option('shortmess')..'F')
   -- Define autocmd group for nvimpager.
-  nvim.nvim_command('augroup NvimPager')
-  nvim.nvim_command('  autocmd!')
+  local group = nvim.nvim_create_augroup('NvimPager', {})
   local tmp = os.getenv('TMPFILE')
   if tmp and tmp ~= "" then
-    nvim.nvim_command('autocmd VimEnter * ++once call delete($TMPFILE)')
+    nvim.nvim_create_autocmd("VimEnter", {pattern = "*", once = true,
+      group = group, callback = function()
+	os.remove(tmp)
+      end})
   end
-  nvim.nvim_command('augroup END')
   doc = detect_parent_process()
   if doc == 'git' then
     -- We disable modelines for this buffer as they could disturb the git
@@ -736,20 +737,20 @@ end
 -- would not be available in --cmd.
 function nvimpager.stage2()
   detect_filetype()
-  local mode, events
+  local callback, events
   if #nvim.nvim_list_uis() == 0 then
-    mode, events = 'cat', 'VimEnter'
+    callback, events = nvimpager.cat_mode, 'VimEnter'
   else
     if nvimpager.maps then
       set_maps()
     end
-    mode, events = 'pager', 'VimEnter,BufWinEnter'
+    callback, events = nvimpager.pager_mode, {'VimEnter', 'BufWinEnter'}
   end
+  local group = nvim.nvim_create_augroup('NvimPager', {clear = false})
   -- The "nested" in these autocomands enables nested executions of
-  -- autocomands inside the *_mode() functions.  See :h autocmd-nested, for
-  -- compatibility with nvim < 0.4 we use "nested" and not "++nested".
-  nvim.nvim_command(
-    'autocmd NvimPager '..events..' * nested lua nvimpager.'..mode..'_mode()')
+  -- autocomands inside the *_mode() functions.  See :h autocmd-nested.
+  nvim.nvim_create_autocmd(events, {pattern = '*', callback = callback,
+    nested = true, group = group})
 end
 
 -- functions only exported for tests
