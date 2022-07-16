@@ -713,6 +713,7 @@ function nvimpager.stage1()
   if tmp and tmp ~= "" then
     nvim.nvim_create_autocmd("VimEnter", {pattern = "*", once = true,
       group = group, callback = function()
+	nvim.nvim_buf_set_option(0, "buftype", "nofile")
 	os.remove(tmp)
       end})
   end
