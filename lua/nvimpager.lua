@@ -180,22 +180,6 @@ local function check_escape_sequences()
   return false
 end
 
--- Savely get the listchars option on different nvim versions
---
--- From release 0.4.3 to 0.4.4 the listchars option was changed from window
--- local to global-local.  This affects the calls to either
--- nvim_win_get_option or nvim_get_option so that there is no save way to call
--- just one in all versions.
---
--- returns: string -- the listchars value
-local function get_listchars()
-  -- this works for newer versions of neovim
-  local status, data = pcall(nvim.nvim_get_option, 'listchars')
-  if status then return data end
-  -- this works for old neovim versions
-  return nvim.nvim_win_get_option(0, 'listchars')
-end
-
 -- turn a listchars string into a table
 local function parse_listchars(listchars)
   local t = {}
@@ -223,7 +207,7 @@ local function highlight()
   local syntax_id_whitespace = nvim.nvim_call_function('hlID', {'Whitespace'})
   local syntax_id_non_text = nvim.nvim_call_function('hlID', {'NonText'})
   local list = nvim.nvim_win_get_option(0, "list")
-  local listchars = list and parse_listchars(get_listchars()) or {}
+  local listchars = list and parse_listchars(vim.o.listchars) or {}
   local last_syntax_id = -1
   local last_conceal_id = -1
   local linecount = nvim.nvim_buf_line_count(0)
