@@ -1,0 +1,10 @@
+[1;33m.github/workflows/blank.yml[0m -- text
+ 8 [2;37m    runs-on: ubuntu-latest[0m             8 [2;37m    runs-on: ubuntu-latest[0m
+ 9 [2;37m    strategy:[0m                          9 [2;37m    strategy:[0m
+10 [2;37m      matrix:[0m                         10 [2;37m      matrix:[0m
+11 [2;37m        ppa-version:[0m                  11 [2;37m        ppa-version:[0m
+12 [1;91m          - [0m[31mstable[0m                    12 [1;92m          # this is currently neovim 0.6.1 and does not work/takes forever[0m
+..                                       13 [1;92m          #- [0m[32mstable[0m
+13 [2;37m          - unstable[0m                  14 [2;37m          - unstable[0m
+14 [2;37m    steps:[0m                            15 [2;37m    steps:[0m
+

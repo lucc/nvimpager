@@ -738,6 +738,13 @@ describe("parent detection", function()
     assert.equal(expected, output)
   end)
 
+  it("can pass though git colors", function()
+    local output = run("test/fixtures/bin/git ./nvimpager -c " ..
+		       "test/fixtures/difftastic --cmd 'lua nvimpager.git_colors=true'")
+    local expected = read("test/fixtures/difftastic")
+    assert.equal(expected, output)
+  end)
+
   it("handles man #osx_pending", function()
     local output = run("test/fixtures/bin/man ./nvimpager -c " ..
 		       "test/fixtures/man.cat")
