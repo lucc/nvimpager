@@ -126,6 +126,23 @@ describe("cat mode", function()
     assert.equal(read("test/fixtures/makefile.ansi"), output)
   end)
 
+  describe("can change the default foreground color", function()
+    for termguicolors, extension in pairs({termguicolors = "red24", notermguicolors = "red"}) do
+      for _, command in pairs({"--cmd", "-c"}) do
+	for stdin, redirect in pairs({[false] = "", [true] = "<"}) do
+	  it("with "..command..", setting "..termguicolors..(stdin and " input via stdin" or ""), function()
+	    local script = "./nvimpager -c -- " .. command ..
+	      " 'highlight Normal ctermfg=red guifg=red | set " ..
+	      termguicolors .. "' " .. redirect .. "test/fixtures/plain.txt"
+	    local output = run(script)
+	    local expected = read("test/fixtures/plain." .. extension)
+	    assert.equal(expected, output)
+	  end)
+	end
+      end
+    end
+  end)
+
   describe("with modeline", function()
     it("highlights files even after mode line files", function()
       local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
