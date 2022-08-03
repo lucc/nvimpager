@@ -80,15 +80,11 @@ with `make test`.  They are also run on GitHub: [![Build Status]][ghactions]
 ### TODO and ideas list
 
 * see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) and
-  [neovim#8246](https://github.com/neovim/neovim/issues/8246) are resolved and
+  [neovim#18375](https://github.com/neovim/neovim/pull/18375) are resolved and
   maybe move more code (logic) from bash to lua (bash's `[[ -t ... ]]` can be
   replaced by `has('ttyin')`, `has('ttyout')`)
 * proper lazy pipe reading while paging (like less) to improve startup time and
   also memory usage for large input on pipes (maybe `stdioopen()` can be used?)
-* properly kill the nvim process when the bash script is killed, alternatively
-  ...
-* move temp file handling (removal) to nvim/lua (in a VimLeave autocommand) and
-  exec nvim
 
 ## License
 
