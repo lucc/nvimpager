@@ -317,8 +317,7 @@ local function fix_runtime_path()
   nvim.nvim_set_option("packpath", runtimepath)
   runtimepath = os.getenv("RUNTIME") .. "," .. runtimepath
   nvim.nvim_set_option("runtimepath", runtimepath)
-  new = new .. '/rplugin.vim'
-  nvim.nvim_command("let $NVIM_RPLUGIN_MANIFEST = '" .. new .. "'")
+  vim.env.NVIM_RPLUGIN_MANIFEST = new .. '/rplugin.vim'
 end
 
 -- Parse the command of the calling process to detect some common
