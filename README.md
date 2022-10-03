@@ -71,13 +71,13 @@ Nvimpager is developed on [GitHub][nvimpager] where you are very much invited
 to [post][issues] bug reports, feature or pull requests!  The test can be run
 with `make test`.  They are also run on GitHub: [![Build Status]][ghactions]
 
-### Known Bugs (and non features)
+### Limitations
 
 * if reading from stdin, nvimpager (like nvim) waits for EOF until it starts up
 * large files are slowing down neovim on startup (less does a better, i.e.
   faster and more memory efficient job at paging large files)
 
-### TODO and ideas list
+### Ideas
 
 * see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) and
   [neovim#18375](https://github.com/neovim/neovim/pull/18375) are resolved and
