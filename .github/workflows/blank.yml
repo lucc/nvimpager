@@ -9,8 +9,7 @@ jobs:
     strategy:
       matrix:
         ppa-version:
-          # this is currently neovim 0.6.1 and does not work/takes forever
-          #- stable
+          - stable
           - unstable
     steps:
     - uses: actions/checkout@v2
