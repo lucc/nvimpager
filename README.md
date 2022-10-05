@@ -32,8 +32,8 @@ respectively.
 Nvimpager comes with a small set of command line options but you can also use
 all of neovim's command line options.  Use `nvimpager -h` to see the [help
 text][options].  The configuration is separated from the users config for
-neovim.  The main config file is `~/.config/nvimpager/init.vim`.  See [the
-manpage][configuration] for further explanation.
+neovim.  The main config file is `~/.config/nvimpager/init.vim` (or `.lua`).
+See [the manpage][configuration] for further explanation.
 
 ## Installation
 

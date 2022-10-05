@@ -12,7 +12,7 @@ export TMPFILE
 
 name=nvimpager
 mode=auto
-rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
+rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.lua
 nvim=${NVIMPAGER_NVIM:-nvim}
 
 usage () {
@@ -71,7 +71,12 @@ if [[ ! -t 1 && $mode = auto ]]; then
   exec cat "$@"
 fi
 
-if [[ ! -r $rc ]]; then
+if [[ -r $rc && -r ${rc%lua}vim ]] ; then
+  echo Conflicting configs: "$rc" "${rc%lua}vim"
+  exit 2
+elif [[ ! -r $rc && -r ${rc%lua}vim ]]; then
+  rc=${rc%lua}vim
+elif [[ ! -r $rc ]]; then
   rc=NORC
 fi
 

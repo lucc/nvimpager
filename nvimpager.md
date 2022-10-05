@@ -52,9 +52,11 @@ The following options are interpreted by nvimpager itself:
 Like neovim itself nvimpager will honour *$XDG_CONFIG_HOME* and
 *$XDG_DATA_HOME*, which default to *~/.config* and *~/.local* respectively.
 The main config directory is *$XDG_CONFIG_HOME/nvimpager* and the main user
-config file is *$XDG_CONFIG_HOME/nvimpager/init.vim*. The site directory is
-*$XDG_DATA_HOME/.local/share/nvimpager/site*. The manifest for remote plugins
-is read from (and written to) *$XDG_DATA_HOME/nvimpager/rplugin.vim*.
+config file is *$XDG_CONFIG_HOME/nvimpager/init.lua* or
+*$XDG_CONFIG_HOME/nvimpager/init.vim*.  It is an error if both files are
+present.  The site directory is *$XDG_DATA_HOME/.local/share/nvimpager/site*.
+The manifest for remote plugins is read from (and written to)
+*$XDG_DATA_HOME/nvimpager/rplugin.vim*.
 
 The rest of the *&runtimepath* is configured like for neovim. The *-u* option
 of *nvim*(1) itself can be used to change the main config file from the command
@@ -74,7 +76,7 @@ executable to use.  If unset it defaults to *nvim*.
 ## Configuration variables
 
 The script exposes a lua table called *nvimpager* to *--cmd*/*-c* options and
-the *init.vim* file. It can be modified to change some options that are
+the init file. It can be modified to change some options that are
 specific to nvimpager.
 
 The following fields (options) exist:
