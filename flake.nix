@@ -38,6 +38,8 @@
         export LUA_PATH=./?.lua''${LUA_PATH:+\;}$LUA_PATH
         # fix for different terminals in a pure shell
         export TERM=xterm
+        # print the neovim version we are using
+        nvim --version | head -n 1
         '';
       };
   in rec {
