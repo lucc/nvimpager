@@ -53,3 +53,7 @@ jobs:
       run: script -ec "nix develop --check"
       env:
         TERM: dumb
+    - name: Run the test suite with nightly neovim
+      run: script -ec "nix develop --check '.#nightly'"
+      env:
+        TERM: dumb
