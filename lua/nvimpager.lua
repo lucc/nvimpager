@@ -659,22 +659,21 @@ local function ansi2highlight()
   end
 end
 
-local follow = {}
-follow.timer = nil
-follow.active = false
-function follow.toggle(self)
-  if self.timer ~= nil then
-    vim.fn.timer_pause(self.timer, self.active)
-    self.active = not self.active
+local follow_timer = nil
+local follow_active = false
+function nvimpager.toggle_follow()
+  if follow_timer ~= nil then
+    vim.fn.timer_pause(follow_timer, follow_active)
+    follow_active = not follow_active
   else
-    self.timer = vim.fn.timer_start(
+    follow_timer = vim.fn.timer_start(
       nvimpager.follow_intervall,
       function()
 	nvim.nvim_command("silent checktime")
 	nvim.nvim_command("silent $")
       end,
       { ["repeat"] = -1 })
-    self.active = true
+    follow_active = true
   end
 end
 
@@ -778,7 +777,6 @@ nvimpager._testable = {
   split_rgb_number = split_rgb_number,
   state = state,
   tokenize = tokenize,
-  toggle_follow = function() follow:toggle() end,
 }
 
 return nvimpager
