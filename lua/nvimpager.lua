@@ -681,8 +681,8 @@ end
 -- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
   local function map(mode, lhs, rhs)
-    nvim.nvim_set_keymap(mode, lhs, rhs, {noremap = true})
-    nvim.nvim_buf_set_keymap(0, mode, lhs, rhs, {noremap = true})
+    vim.keymap.set(mode, lhs, rhs)
+    vim.keymap.set(mode, lhs, rhs, { buffer = true })
   end
   map('n', 'q', '<CMD>quitall!<CR>')
   map('v', 'q', '<CMD>quitall!<CR>')
