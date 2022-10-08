@@ -692,6 +692,7 @@ local function set_maps()
   map('n', '<Down>', '<C-E>')
   map('n', 'k', '<C-Y>')
   map('n', 'j', '<C-E>')
+  map('n', 'F', nvimpager.toggle_follow)
 end
 
 -- Setup function for the VimEnter autocmd.
