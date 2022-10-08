@@ -83,23 +83,57 @@ The following fields (options) exist:
 :- *type*
 :- *default*
 :< *explanation*
-|  maps
+|  follow
 :  bool
-:  true
-:  if some default less like maps should be defined inside pager mode
+:  false
+:  start in follow mode, i.e. continuously load changes to the opened file and
+   scroll to the bottom (like *less +F* or *tail -f*)
+|  follow_intervall
+:  number
+:  500
+:  how often in ms the underlying file should be checked in follow mode
 |  git_colors
 :  bool
 :  false
 :  use git command highlighting instead of nvim syntax highlighting,
    set this to true if you use an external diff
+|  maps
+:  bool
+:  true
+:  if some default less like maps should be defined inside pager mode
 
-So to disable all mappings defined by nvimpager the user can put
+So to start nvimpager and follow changes to the opened file the user can put
+
+```
+lua nvimpager.follow = true
+```
+
+in the init file (or on the command line).
+
+## Default key mappings
+
+Nvimpager defines some mappings to make it feel more like a pager than an
+editor.  These mappings are inspired by *less*(1) which are very close to the
+defaults in neovim.  These mappings can be deactivated altogether by putting
 
 ```
 lua nvimpager.maps = false
 ```
 
 in the init file (or on the command line).
+
+The following mappings are defined by default:
+
+- *q* is mapped to quit nvimpager in normal and visual mode
+- *<Space>* and *<S-Space>* move down or up a page respectively
+- *g* goes to the top of the file
+- *<Down>* and *j* scroll the window down one line
+- *<Up>* and *k* scroll the window up one line
+- *F* toggles "follow mode" where nvimpager continuously loads changes to the
+  underlying file and scrolls to the bottom.  This is usefull for watching log
+  files.  It is modeled after the *F* command in *less*(1) or the *-f* option
+  of *tail*(1)
+
 
 # EXAMPLES
 
@@ -123,6 +157,27 @@ export PAGER=nvimpager
 man nvimpager
 git diff
 ```
+
+Options for *nvim*(1) can be specified if they are separated from the options
+for nvimpager itself.  Either by separating them with *--* or by putting the
+nvim options after at least one non option argument:
+
+```
+nvimpager -p -- -c 'echo "option for nvim"' file
+nvimpager -p file -u custom_init.vim
+```
+
+Start nvimpager in "follow mode" to watch a growing log file:
+
+```
+nvimpager log_file -c 'lua nvimpager.follow = true'
+```
+
+# LIMITATIONS
+
+If reading from stdin, nvimpager (like *nvim*(1)) waits for EOF until it starts
+up.  This means that it can not be used to continuously watch output from a
+long running command even in follow mode.
 
 # SEE ALSO
 
