@@ -22,7 +22,7 @@ local nvimpager = {
   git_colors = false,   -- if the highlighting from the git should be used
   -- follow the end of the file when it changes (like tail -f or less +F)
   follow = false,
-  follow_intervall = 500, -- intervall to check the underlying file in ms
+  follow_interval = 500, -- intervall to check the underlying file in ms
 }
 
 -- A mapping of ansi color numbers to neovim color names
@@ -666,7 +666,7 @@ function nvimpager.toggle_follow()
     nvimpager.follow = not nvimpager.follow
   else
     follow_timer = vim.fn.timer_start(
-      nvimpager.follow_intervall,
+      nvimpager.follow_interval,
       function()
 	nvim.nvim_command("silent checktime")
 	nvim.nvim_command("silent $")

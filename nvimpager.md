@@ -88,7 +88,7 @@ The following fields (options) exist:
 :  false
 :  start in follow mode, i.e. continuously load changes to the opened file and
    scroll to the bottom (like *less +F* or *tail -f*)
-|  follow_intervall
+|  follow_interval
 :  number
 :  500
 :  how often in ms the underlying file should be checked in follow mode
