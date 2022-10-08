@@ -660,11 +660,10 @@ local function ansi2highlight()
 end
 
 local follow_timer = nil
-local follow_active = false
 function nvimpager.toggle_follow()
   if follow_timer ~= nil then
-    vim.fn.timer_pause(follow_timer, follow_active)
-    follow_active = not follow_active
+    vim.fn.timer_pause(follow_timer, nvimpager.follow)
+    nvimpager.follow = not nvimpager.follow
   else
     follow_timer = vim.fn.timer_start(
       nvimpager.follow_intervall,
@@ -673,7 +672,7 @@ function nvimpager.toggle_follow()
 	nvim.nvim_command("silent $")
       end,
       { ["repeat"] = -1 })
-    follow_active = true
+    nvimpager.follow = true
   end
 end
 
@@ -709,6 +708,12 @@ function nvimpager.pager_mode()
   end
   nvim.nvim_buf_set_option(0, 'modifiable', false)
   nvim.nvim_buf_set_option(0, 'modified', false)
+  -- Check if the user requested follow mode on startup
+  if nvimpager.follow then
+    -- turn follow mode of so that we can use the init logic in toggle_follow
+    nvimpager.follow = false
+    nvimpager.toggle_follow()
+  end
 end
 
 -- Setup function to be called from --cmd.
