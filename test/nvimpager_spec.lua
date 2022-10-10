@@ -693,3 +693,52 @@ describe("parent detection", function()
     assert.equal(expected, output)
   end)
 end)
+
+describe("init files", function()
+  it("can be specified with -u", function()
+    local init = os.tmpname()
+    finally(function() os.remove(init) end)
+    helpers.write(init, "let g:myvar = 42")
+    local output = run("./nvimpager -c -- -u " .. init ..
+      [[ -c 'lua io.write(vim.g.myvar, "\n")' -c qa]])
+    assert.equal("42\n", output)
+  end)
+
+  local function tempdir()
+    local dir = run("mktemp -d"):sub(1, -2)  -- remove the final newline
+    finally(function() run("rm -r " .. dir) end)
+    return dir
+  end
+
+  it("can be init.lua", function()
+    local dir = tempdir()
+    run("mkdir -p " .. dir .. "/nvimpager")
+    helpers.write(dir .. "/nvimpager/init.lua", "vim.g.myvar = 42")
+    local output = run("XDG_CONFIG_HOME=" .. dir ..
+      [[ ./nvimpager -c -- -c 'lua io.write(vim.g.myvar, "\n")' -c qa]])
+    assert.equal("42\n", output)
+  end)
+
+  it("can be init.vim", function()
+    local dir = tempdir()
+    run("mkdir -p " .. dir .. "/nvimpager")
+    helpers.write(dir .. "/nvimpager/init.vim", "let myvar = 42")
+    local output = run("XDG_CONFIG_HOME=" .. dir ..
+      [[ ./nvimpager -c -- -c 'lua io.write(vim.g.myvar, "\n")' -c qa]])
+    assert.equal("42\n", output)
+  end)
+
+  it("can not coexist (.lua and .vim)", function()
+    local dir = tempdir()
+    local conf = dir .. "/nvimpager"
+    run("mkdir -p " .. conf)
+    helpers.write(conf .. "/init.lua", "vim.g.myvar = 41")
+    helpers.write(conf .. "/init.vim", "let myvar = 43")
+    local output = run("XDG_CONFIG_HOME=" .. dir ..
+      [[ ./nvimpager -c -- -c 'lua io.write(vim.g.myvar, "\n")' -c qa;
+      test $? -eq 2]])
+    local expected = "Conflicting configs: " .. conf .. "/init.lua " ..
+      conf .. "/init.vim\n"
+    assert.equal(expected, output)
+  end)
+end)

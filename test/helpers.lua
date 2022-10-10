@@ -32,7 +32,7 @@ local function run(command)
   command = string.format("XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s %s; echo $?",
     confdir, datadir, command)
   local proc = io.popen(command)
-  local output = proc:read('*all')
+  local output = proc:read('*a')
   local status = {proc:close()}
   -- This is *not* the return value of the command.
   assert.equal(true, status[1])
@@ -58,8 +58,21 @@ end
 -- returns: string -- the contents of the file
 local function read(filename)
   local file = io.open(filename)
-  local contents = file:read('*all')
+  local contents = file:read('*a')
   return contents
+end
+
+-- Write contents to a file.
+--
+-- filename: string -- the name of the file to write
+-- contents: string -- the contents to write to the file
+-- returns: nil
+local function write(filename, contents)
+  local handle = io.open(filename, "w")
+  if handle == nil then assert.not_nil(handle, "could not open file") end
+  handle:write(contents)
+  handle:flush()
+  handle:close()
 end
 
 -- Freshly require the nvimpager module, optinally with mocks
@@ -104,4 +117,5 @@ return {
   load_nvimpager = load_nvimpager,
   read = read,
   run = run,
+  write = write,
 }
