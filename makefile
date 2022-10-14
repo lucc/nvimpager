@@ -45,13 +45,17 @@ version:
 	  -e '/version=/ { next }' \
 	  -e '{ print $$0 }' nvimpager
 	sed -i "/SOURCE_DATE_EPOCH/s/[0-9]\{10,\}/$(shell date +%s)/" $(MAKEFILE_LIST)
-	git add nvimpager makefile
 	(./nvimpager -v | sed 's/^nvimpager/Version/'; \
 	  printf '%s\n' '' 'Major changes:' 'Breaking changes:' 'Changes:'; \
 	  git log $(shell git tag --list --sort=version:refname 'v*' | tail -n 1)..HEAD) \
 	| sed -E '/^(commit|Merge:|Author:)/d; /^Date/{N;N; s/.*\n.*\n   /-/;}' \
-	| git commit --edit --file -
-	git tag v$$(./nvimpager -v | sed 's/.* //')
+	| git commit --edit --file - nvimpager makefile
+	git tag --message="$$(git show --no-patch --format=format:%s%n%n%b)" \
+	  "v$$(./nvimpager -v | sed 's/.* //')"
+	version=$$(./nvimpager -v | sed 's/^nvimpager //'); \
+	  git checkout HEAD~1 -- nvimpager; \
+	  sed -i 's/version=[0-9.]*$$/version='"$$version/" nvimpager
+	git commit -m 'Switch back to development version number' nvimpager
 
 clean:
 	$(RM) nvimpager.configured nvimpager.1 luacov.*
