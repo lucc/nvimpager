@@ -10,12 +10,21 @@
 
   outputs = { self, nixpkgs, flake-utils, neovim, ... }: {
     overlay = final: prev: {
-      nvimpager = prev.nvimpager.overrideAttrs (oa: {
-        version = "dev";
-        src = ./.;
-        preBuild = "version=$(bash ./nvimpager -v | sed 's/.* //')";
-        buildFlags = oa.buildFlags ++ [ "VERSION=\${version}-dev" ];
-      });
+      nvimpager =
+        let
+          inherit (builtins) head match readFile;
+          version = head (match ".*version=([0-9.]*)\n.*" (readFile ./nvimpager))
+            + "-dev-${toString self.sourceInfo.lastModifiedDate}";
+        in prev.nvimpager.overrideAttrs (oa: {
+          inherit version;
+          src = ./.;
+          buildFlags = oa.buildFlags ++ [ "VERSION=${version}" ];
+          checkPhase = ''
+            runHook preCheck
+            script -ec "busted --lpath './?.lua' --filter-out 'handles man' test"
+            runHook postCheck
+          '';
+        });
     };
   }
   // (let
