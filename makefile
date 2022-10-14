@@ -35,14 +35,23 @@ luacov.report.out: luacov.stats.out
 TYPE = minor
 version:
 	[ $(TYPE) = major ] || [ $(TYPE) = minor ] || [ $(TYPE) = patch ]
+	git switch main
+	git diff --quiet HEAD
 	sed -i 's/version=.*version=/version=/' nvimpager
-	awk -i inplace -F '[v.]' -v type=$(TYPE)\
-	  -e 'type == "major" && /version=/ { print $$1 "version=v" $$3+1 ".0" }' \
-	  -e 'type == "minor" && /version=/ { print $$1 "version=v" $$3 "." $$4+1 }' \
-	  -e 'type == "patch" && /version=/ { print $$1 "version=v" $$3 "." $$4 "." $$5+1 }' \
+	awk -i inplace -F '[=.]' -v type=$(TYPE)\
+	  -e 'type == "major" && /version=/ { print $$1"="$$2+1 ".0.0" }' \
+	  -e 'type == "minor" && /version=/ { print $$1"="$$2 "." $$3+1 ".0" }' \
+	  -e 'type == "patch" && /version=/ { print $$1"="$$2 "." $$3 "." $$4+1 }' \
 	  -e '/version=/ { next }' \
 	  -e '{ print $$0 }' nvimpager
 	sed -i "/SOURCE_DATE_EPOCH/s/[0-9]\{10,\}/$(shell date +%s)/" $(MAKEFILE_LIST)
+	git add nvimpager makefile
+	(./nvimpager -v | sed 's/^nvimpager/Version/'; \
+	  printf '%s\n' '' 'Major changes:' 'Breaking changes:' 'Changes:'; \
+	  git log $(shell git tag --list --sort=version:refname 'v*' | tail -n 1)..HEAD) \
+	| sed -E '/^(commit|Merge:|Author:)/d; /^Date/{N;N; s/.*\n.*\n   /-/;}' \
+	| git commit --edit --file -
+	git tag v$$(./nvimpager -v | sed 's/.* //')
 
 clean:
 	$(RM) nvimpager.configured nvimpager.1 luacov.*
