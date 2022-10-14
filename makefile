@@ -37,11 +37,10 @@ version:
 	[ $(TYPE) = major ] || [ $(TYPE) = minor ] || [ $(TYPE) = patch ]
 	git switch main
 	git diff --quiet HEAD
-	sed -i 's/version=.*version=/version=/' nvimpager
 	awk -i inplace -F '[=.]' -v type=$(TYPE)\
-	  -e 'type == "major" && /version=/ { print $$1"="$$2+1 ".0.0" }' \
-	  -e 'type == "minor" && /version=/ { print $$1"="$$2 "." $$3+1 ".0" }' \
-	  -e 'type == "patch" && /version=/ { print $$1"="$$2 "." $$3 "." $$4+1 }' \
+	  -e 'type == "major" && /version=/ { print $$1"="$$2"="$$3+1 ".0.0" }' \
+	  -e 'type == "minor" && /version=/ { print $$1"="$$2"="$$3 "." $$4+1 ".0" }' \
+	  -e 'type == "patch" && /version=/ { print $$1"="$$2"="$$3 "." $$4 "." $$5+1 }' \
 	  -e '/version=/ { next }' \
 	  -e '{ print $$0 }' nvimpager
 	sed -i "/SOURCE_DATE_EPOCH/s/[0-9]\{10,\}/$(shell date +%s)/" $(MAKEFILE_LIST)
@@ -52,10 +51,6 @@ version:
 	| git commit --edit --file - nvimpager makefile
 	git tag --message="$$(git show --no-patch --format=format:%s%n%n%b)" \
 	  "v$$(./nvimpager -v | sed 's/.* //')"
-	version=$$(./nvimpager -v | sed 's/^nvimpager //'); \
-	  git checkout HEAD~1 -- nvimpager; \
-	  sed -i 's/version=[0-9.]*$$/version='"$$version/" nvimpager
-	git commit -m 'Switch back to development version number' nvimpager
 
 clean:
 	$(RM) nvimpager.configured nvimpager.1 luacov.*
