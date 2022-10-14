@@ -21,7 +21,7 @@ uninstall:
 	  $(PREFIX)/share/man/man1/nvimpager.1 \
 	  $(PREFIX)/share/zsh/site-functions/_nvimpager
 
-nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || echo 1636921311)
+nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty="%ct" 2>/dev/null || echo 1665751677)
 nvimpager.1: nvimpager.md
 	sed '1s/$$/ "nvimpager $(VERSION)"/' $< | scdoc > $@
 
