@@ -8,16 +8,19 @@ BUSTED = busted
 	sed 's#^RUNTIME=.*$$#RUNTIME='"'$(RUNTIME)'"'#;s#version=.*$$#version=$(VERSION)#' < $< > $@
 	chmod +x $@
 
-install: nvimpager.configured nvimpager.1
+install-no-man: nvimpager.configured
 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/lua \
-	  $(DESTDIR)$(PREFIX)/share/man/man1 \
 	  $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
 	install -m 644 lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
-	install -m 644 nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 	install -m 644 _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
+
+install: install-no-man nvimpager.1
+	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man1
+	install -m 644 nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
+
 uninstall:
-	$(RM) $(PREFIX)/bin/nvimpager $(RUNTIME)/lua/nvimpager.lua \
+	$(RM) -f $(PREFIX)/bin/nvimpager $(RUNTIME)/lua/nvimpager.lua \
 	  $(PREFIX)/share/man/man1/nvimpager.1 \
 	  $(PREFIX)/share/zsh/site-functions/_nvimpager
 
