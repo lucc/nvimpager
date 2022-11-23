@@ -51,9 +51,7 @@ get_config () {
     config_opt="$1"
     config_value="$2"
 
-    vimrc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
-
-    if grep -E "lua\s+nvimpager.$config_opt\s+=\s+$config_value" < "$vimrc" | grep -qv '^\s*"'; then
+    if grep -E "lua\s+nvimpager.$config_opt\s+=\s+$config_value" < "$rc" | grep -qv '^\s*"'; then
         return 0
     else
         return 1
@@ -88,6 +86,15 @@ if [[ $# -eq 0 && -t 0 ]]; then
   exit 2
 fi
 
+if [[ -r $rc && -r ${rc%lua}vim ]] ; then
+  echo Conflicting configs: "$rc" "${rc%lua}vim"
+  exit 2
+elif [[ ! -r $rc && -r ${rc%lua}vim ]]; then
+  rc=${rc%lua}vim
+elif [[ ! -r $rc ]]; then
+  rc=NORC
+fi
+
 # Set mode from configuration file
 if [[ $set_mode = false ]]; then
     if get_config force_pager_mode true; then
@@ -102,15 +109,6 @@ fi
 # If we are not on a tty just "be" cat.
 if [[ ! -t 1 && $mode = auto ]]; then
   exec cat "$@"
-fi
-
-if [[ -r $rc && -r ${rc%lua}vim ]] ; then
-  echo Conflicting configs: "$rc" "${rc%lua}vim"
-  exit 2
-elif [[ ! -r $rc && -r ${rc%lua}vim ]]; then
-  rc=${rc%lua}vim
-elif [[ ! -r $rc ]]; then
-  rc=NORC
 fi
 
 # Collect all file arguments until the first non file into $files.  If one non
