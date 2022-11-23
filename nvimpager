@@ -14,6 +14,7 @@ name=nvimpager
 mode=auto
 rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.lua
 nvim=${NVIMPAGER_NVIM:-nvim}
+set_mode=false
 
 usage () {
   echo "Usage: ${0##*/} [-acp] [--] [nvim options and files]"
@@ -44,12 +45,33 @@ description () {
 	EOF
 }
 
+# Reads a configuration option from the rc file and returns true if it is
+# found and equals the specified value
+get_config () {
+    config_opt="$1"
+    config_value="$2"
+
+    vimrc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.vim
+
+    if grep -E "lua\s+nvimpager.$config_opt\s+=\s+$config_value" < "$vimrc" | grep -qv '^\s*"'; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 while getopts achpv flag; do
   case $flag in
-    a) mode=auto;;
-    c) mode=cat;;
+    a)
+        set_mode=true
+        mode=auto;;
+    c)
+        set_mode=true
+        mode=cat;;
     h) usage; description; exit;;
-    p) mode=pager;;
+    p)
+        set_mode=true
+        mode=pager;;
     v)
       version=$(git -C "$RUNTIME" describe 2>/dev/null) || version=0.11.0
       echo "$name ${version#v}"
@@ -64,6 +86,17 @@ shift $((OPTIND - 1))
 if [[ $# -eq 0 && -t 0 ]]; then
   usage
   exit 2
+fi
+
+# Set mode from configuration file
+if [[ $set_mode = false ]]; then
+    if get_config force_pager_mode true; then
+        echo "setting mode to pager"
+        mode=pager
+    elif get_config force_cat_mode true; then
+        echo "setting mode to cat"
+        mode=cat
+    fi
 fi
 
 # If we are not on a tty just "be" cat.
