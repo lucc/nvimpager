@@ -347,21 +347,37 @@ local function detect_parent_process()
   return nil
 end
 
+--- Check if a string uses poor man's bold or underline tricks
+---
+--- Return true if all characters are followed by backspace and themself again
+--- or if all characters are preceeded by underscore and backspace.  Spaces
+--- are ignored.
+---
+--- @param line string
+local function detect_man_page_helper(line)
+  local index = 1
+  while index <= #line do
+    local cur = line:sub(index, index)
+    local next = line:sub(index+1, index+1)
+    local third = line:sub(index+2, index+2)
+    if (cur == third and next == '\b')
+      or (cur == '_' and next == '\b' and third ~= nil) then
+      index = index + 3  -- continue after the overwriting character
+    elseif cur == " " then
+      index = index + 1
+    else
+      return false
+    end
+  end
+  return true
+end
+
 -- Search the begining of the current buffer to detect if it contains a man
 -- page.
 local function detect_man_page_in_current_buffer()
   -- Only check the first twelve lines (for speed).
   for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 12, false)) do
-    -- Check if the line contains the string "NAME" or "NAME" with every
-    -- character overwritten by itself.
-    -- An earlier version of this code did also check if there are whitespace
-    -- characters at the end of the line.  I could not find a man pager where
-    -- this was the case.
-    -- FIXME This only works for man pages in languages where "NAME" is used
-    -- as the headline.  Some (not all!) German man pages use "BEZEICHNUNG"
-    -- instead.
-    if line == 'NAME' or line == 'N\bNA\bAM\bME\bE' or line == "Name"
-      or line == 'N\bNa\bam\bme\be' then
+    if detect_man_page_helper(line) then
       return true
     end
   end
@@ -778,6 +794,7 @@ end
 nvimpager._testable = {
   color2escape_24bit = color2escape_24bit,
   color2escape_8bit = color2escape_8bit,
+  detect_man_page_helper = detect_man_page_helper,
   detect_parent_process = detect_parent_process,
   group2ansi = group2ansi,
   hexformat_rgb_numbers = hexformat_rgb_numbers,

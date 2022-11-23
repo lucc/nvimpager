@@ -648,6 +648,29 @@ describe("lua functions", function()
       end)
     end)
   end)
+
+  describe("detect_man_page_helper", function()
+    it("detects lines with each char overwritten by itself", function()
+      local line = "N\bNA\bAM\bME\bE"
+      assert.truthy(nvimpager._testable.detect_man_page_helper(line))
+    end)
+    it("works with leading whitespace", function()
+      local line = "    N\bNA\bAM\bME\bE"
+      assert.truthy(nvimpager._testable.detect_man_page_helper(line))
+    end)
+    it("works for non captial letters", function()
+      local line = "N\bNa\bam\bme\be"
+      assert.truthy(nvimpager._testable.detect_man_page_helper(line))
+    end)
+    it("fails if some chars are not overwritten", function()
+      local line = "N\bNA\bAM\bME"
+      assert.falsy(nvimpager._testable.detect_man_page_helper(line))
+    end)
+    it("detects lines with underscores overwritten by anything", function()
+      local line = "_\bI_\bn_\bi_\bt_\bi_\ba_\bl_\bi_\bz_\ba_\bt_\bi_\bo_\bn"
+      assert.truthy(nvimpager._testable.detect_man_page_helper(line))
+    end)
+  end)
 end)
 
 describe("parent detection", function()
