@@ -98,7 +98,7 @@ The project is licensed under a BSD-2-clause license.  See the
 [neovim]: https://github.com/neovim/neovim
 [vimpager]: https://github.com/rkitover/vimpager
 [bash]: https://www.gnu.org/software/bash/bash.html
-[busted]: https://olivinelabs.com/busted/
+[busted]: https://lunarmodules.github.io/busted/
 [scdoc]: https://git.sr.ht/~sircmpwn/scdoc
 [Build Status]: https://github.com/lucc/nvimpager/actions/workflows/blank.yml/badge.svg
 [ghactions]: https://github.com/lucc/nvimpager/actions
