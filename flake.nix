@@ -9,7 +9,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, neovim, ... }: {
-    overlay = final: prev: {
+    overlays.default = final: prev: {
       nvimpager =
         let
           inherit (builtins) head match readFile;
@@ -32,8 +32,8 @@
     inherit (flake-utils.lib) eachSystem defaultSystems;
   in eachSystem (filter defaultSystems) (system:
   let
-    stable = import nixpkgs { overlays = [ self.overlay ]; inherit system; };
-    nightly = import nixpkgs { overlays = [ neovim.overlay self.overlay ]; inherit system; };
+    stable = import nixpkgs { overlays = [ self.overlays.default ]; inherit system; };
+    nightly = import nixpkgs { overlays = [ neovim.overlay self.overlays.default ]; inherit system; };
     mkShell = pkgs: pkgs.mkShell {
       inputsFrom = [ pkgs.nvimpager ];
       packages = with pkgs; [
@@ -51,18 +51,11 @@
         nvim --version | head -n 1
         '';
       };
-  in rec {
-    packages = {
-      nvimpager = stable.nvimpager;
-      nvimpager-with-nightly-neovim = nightly.nvimpager;
-    };
-    defaultPackage = stable.nvimpager;
-    apps.nvimpager = flake-utils.lib.mkApp { drv = stable.nvimpager; };
-    defaultApp = apps.nvimpager;
-    devShell = devShells.stable;
-    devShells = {
-      stable = mkShell stable;
-      nightly = mkShell nightly;
-    };
+  in {
+    apps.default = flake-utils.lib.mkApp { drv = stable.nvimpager; };
+    devShells.default = mkShell stable;
+    devShells.nightly = mkShell nightly;
+    packages.default = stable.nvimpager;
+    packages.nightly = nightly.nvimpager;
   }));
 }
