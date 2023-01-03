@@ -670,6 +670,9 @@ describe("lua functions", function()
       local line = "_\bI_\bn_\bi_\bt_\bi_\ba_\bl_\bi_\bz_\ba_\bt_\bi_\bo_\bn"
       assert.truthy(nvimpager._testable.detect_man_page_helper(line))
     end)
+    it("does not accept an empty line", function()
+      assert.falsy(nvimpager._testable.detect_man_page_helper(""))
+    end)
   end)
 end)
 

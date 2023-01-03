@@ -355,6 +355,7 @@ end
 ---
 --- @param line string
 local function detect_man_page_helper(line)
+  if line == "" then return false end
   local index = 1
   while index <= #line do
     local cur = line:sub(index, index)
