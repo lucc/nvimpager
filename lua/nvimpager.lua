@@ -174,6 +174,8 @@ local function init_cat_mode()
 end
 
 -- Check if the begining of the current buffer contains ansi escape sequences.
+--
+-- For performance only the first 100 lines are checked.
 local function check_escape_sequences()
   local filetype = nvim.nvim_buf_get_option(0, 'filetype')
   if filetype == '' or filetype == 'text' then
@@ -655,6 +657,8 @@ end
 local function ansi2highlight()
   nvim.nvim_command(
     "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-9;]*m'")
+  nvim.nvim_command(
+    "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-2]\\?K'")
   nvim.nvim_command("highlight NvimPagerConceal gui=NONE guisp=NONE " ..
 		    "guifg=background guibg=background")
   nvim.nvim_win_set_option(0, "conceallevel", 3)
