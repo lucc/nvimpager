@@ -651,7 +651,7 @@ end
 -- highlights to the buffer instead.
 local function ansi2highlight()
   nvim.nvim_command(
-    "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-9;]*m'")
+    "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-9;]*\\(m\\|K[0-2]\\?\\)'")
   nvim.nvim_command("highlight NvimPagerConceal gui=NONE guisp=NONE " ..
 		    "guifg=background guibg=background")
   nvim.nvim_win_set_option(0, "conceallevel", 3)
