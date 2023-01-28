@@ -625,6 +625,9 @@ local function add_highlight(groupname, line, from, to)
   nvim.nvim_buf_add_highlight(0, namespace, groupname, line_0, from_0, to_0)
 end
 
+-- Apply a highlight to a range in the current buffer
+--
+-- The highlight attributes are generated from the current state (self).
 function state.render(self, from_line, from_column, to_line, to_column)
   if from_line == to_line and from_column == to_column then
     return
