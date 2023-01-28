@@ -9,10 +9,10 @@ BUSTED = busted
 	chmod +x $@
 
 install-no-man: nvimpager.configured
-	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/lua \
+	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(RUNTIME)/lua/nvimpager \
 	  $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 	install nvimpager.configured $(DESTDIR)$(PREFIX)/bin/nvimpager
-	install -m 644 lua/nvimpager.lua $(DESTDIR)$(RUNTIME)/lua
+	install -m 644 lua/nvimpager/*.lua $(DESTDIR)$(RUNTIME)/lua/nvimpager
 	install -m 644 _nvimpager $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 
 install: install-no-man nvimpager.1
@@ -20,7 +20,7 @@ install: install-no-man nvimpager.1
 	install -m 644 nvimpager.1 $(DESTDIR)$(PREFIX)/share/man/man1
 
 uninstall:
-	$(RM) -f $(PREFIX)/bin/nvimpager $(RUNTIME)/lua/nvimpager.lua \
+	$(RM) -r $(PREFIX)/bin/nvimpager $(RUNTIME)/lua/nvimpager \
 	  $(PREFIX)/share/man/man1/nvimpager.1 \
 	  $(PREFIX)/share/zsh/site-functions/_nvimpager
 
@@ -30,10 +30,10 @@ nvimpager.1: nvimpager.md
 
 test:
 	@$(BUSTED) test
-luacov.stats.out: nvimpager lua/nvimpager.lua test/nvimpager_spec.lua
+luacov.stats.out: nvimpager lua/nvimpager/*.lua test/nvimpager_spec.lua
 	@$(BUSTED) --coverage test
 luacov.report.out: luacov.stats.out
-	luacov lua/nvimpager.lua
+	luacov lua/nvimpager/init.lua
 
 TYPE = minor
 version: OLD_VERSION = $(patsubst v%,%,$(lastword $(shell git tag --list --sort=version:refname 'v*')))

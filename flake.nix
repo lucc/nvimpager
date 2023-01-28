@@ -35,7 +35,7 @@
         buildFlags = oa.buildFlags ++ [ "VERSION=${version}" ];
         checkPhase = ''
           runHook preCheck
-          script -ec "busted --output TAP --lpath './?.lua' --filter-out 'handles man' test"
+          script -ec "busted --output TAP --lpath './?.lua' --lpath './?/init.lua' --filter-out 'handles man' test"
           runHook postCheck
         '';
       });
