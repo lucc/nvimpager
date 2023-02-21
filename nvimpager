@@ -71,7 +71,7 @@ if [[ ! -t 1 && $mode = auto ]]; then
   exec cat "$@"
 fi
 
-if [[ -r $rc && -r ${rc%lua}vim ]] ; then
+if [[ -r $rc && -r ${rc%lua}vim ]]; then
   echo Conflicting configs: "$rc" "${rc%lua}vim"
   exit 2
 elif [[ ! -r $rc && -r ${rc%lua}vim ]]; then
@@ -116,7 +116,7 @@ fi
 # these come before all user supplied -c and --cmd arguments
 args1=(
   -R
-  ${rc:+-u "$rc"}
+  -u "$rc"
   --cmd 'set rtp+=$RUNTIME | lua nvimpager = require("nvimpager")'
 )
 # these come after all user supplied -c and --cmd arguments
