@@ -25,8 +25,8 @@
         export TERM=xterm
         # print the neovim version we are using
         nvim --version | head -n 1
-        '';
-      };
+      '';
+    };
   in ({
     overlays.default = final: prev: {
       nvimpager = prev.nvimpager.overrideAttrs (oa: {
