@@ -372,8 +372,9 @@ describe("lua functions", function()
   end)
 
   describe("hexformat_rgb_numbers", function()
+    local ansi2highlight = require("nvimpager/ansi2highlight")
     local function test(r, g, b, expected)
-      local actual = nvimpager._testable.hexformat_rgb_numbers(r, g, b)
+      local actual = ansi2highlight.hexformat_rgb_numbers(r, g, b)
       assert.equal(expected, actual)
     end
     it("small numbers", function() test(1, 2, 3, '#010203') end)
@@ -383,8 +384,9 @@ describe("lua functions", function()
   end)
 
   describe("split_predifined_terminal_color", function()
+    local ansi2highlight = require("nvimpager/ansi2highlight")
     local function test(col, exp_r, exp_g, exp_b)
-      local r, g, b = nvimpager._testable.split_predifined_terminal_color(col)
+      local r, g, b = ansi2highlight.split_predifined_terminal_color(col)
       assert.equal(exp_r, r)
       assert.equal(exp_g, g)
       assert.equal(exp_b, b)
@@ -421,9 +423,10 @@ describe("lua functions", function()
   end)
 
   describe("tokenize", function()
+    local ansi2highlight = require("nvimpager/ansi2highlight")
     local function test(input, expected)
       local result = {}
-      for token, c1, c2, c3 in nvimpager._testable.tokenize(input) do
+      for token, c1, c2, c3 in ansi2highlight.tokenize(input) do
 	table.insert(result, {token, c1, c2, c3})
       end
       assert.same(expected, result)
@@ -477,7 +480,8 @@ describe("lua functions", function()
 
   describe("ansi parser", function()
     local state
-    setup(function() state = nvimpager._testable.state end)
+    local ansi2highlight = require("nvimpager/ansi2highlight")
+    setup(function() state = ansi2highlight.state end)
     before_each(function() state:clear() end)
 
     it("clears all attributes on 0", function()

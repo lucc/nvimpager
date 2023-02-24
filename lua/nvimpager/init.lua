@@ -511,13 +511,9 @@ nvimpager._testable = {
   detect_man_page_helper = detect_man_page_helper,
   detect_parent_process = detect_parent_process,
   group2ansi = group2ansi,
-  hexformat_rgb_numbers = ansi2highlight.hexformat_rgb_numbers,
   init_cat_mode = init_cat_mode,
   replace_prefix = replace_prefix,
-  split_predifined_terminal_color = ansi2highlight.split_predifined_terminal_color,
   split_rgb_number = split_rgb_number,
-  state = ansi2highlight.state,
-  tokenize = ansi2highlight.tokenize,
 }
 
 return nvimpager
