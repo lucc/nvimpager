@@ -500,7 +500,7 @@ local state = {
   column = 1,
 }
 
-function state.clear(self)
+function state:clear()
   self.foreground = ""
   self.background = ""
   self.ctermfg = ""
@@ -508,7 +508,7 @@ function state.clear(self)
   for _, k in pairs(attributes) do self[k] = false end
 end
 
-function state.state2highlight_group_name(self)
+function state:state2highlight_group_name()
   if self.conceal then return "NvimPagerConceal" end
   local name = "NvimPagerFG_" .. self.foreground:gsub("#", "") ..
 	       "_BG_" .. self.background:gsub("#", "")
@@ -520,7 +520,7 @@ function state.state2highlight_group_name(self)
   return name
 end
 
-function state.parse(self, string)
+function state:parse(string)
   for token, c1, c2, c3 in tokenize(string) do
     -- First we check for 256 colors and 24 bit color sequences.
     if c3 ~= nil then
@@ -570,7 +570,7 @@ function state.parse(self, string)
   end
 end
 
-function state.parse8bit(self, fgbg, color)
+function state:parse8bit(fgbg, color)
   local colornr = tonumber(color)
   if colornr >= 0 and colornr <= 7 then
     color = colors[colornr]
@@ -585,7 +585,7 @@ function state.parse8bit(self, fgbg, color)
   self[fgbg] = ""..color
 end
 
-function state.compute_highlight_command(self, groupname)
+function state:compute_highlight_command(groupname)
   local args = ""
   if self.foreground ~= "" then
     args = args.." guifg="..self.foreground
@@ -630,7 +630,7 @@ end
 -- Apply a highlight to a range in the current buffer
 --
 -- The highlight attributes are generated from the current state (self).
-function state.render(self, from_line, from_column, to_line, to_column)
+function state:render(from_line, from_column, to_line, to_column)
   if from_line == to_line and from_column == to_column then
     return
   end
