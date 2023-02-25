@@ -16,246 +16,18 @@ local nvim = vim.api -- luacheck: ignore
 local vim = vim      -- luacheck: ignore
 
 local ansi2highlight = require("nvimpager/ansi2highlight")
+local cat = require("nvimpager/cat")
+local util = require("nvimpager/util")
+local pager = require("nvimpager/pager")
 
 -- names that will be exported from this module
-local nvimpager = {
-  -- user facing options
-  maps = true,          -- if the default mappings should be defined
-  git_colors = false,   -- if the highlighting from the git should be used
-  -- follow the end of the file when it changes (like tail -f or less +F)
-  follow = false,
-  follow_interval = 500, -- intervall to check the underlying file in ms
-}
+local nvimpager = require("nvimpager/options")
 
 -- These variables will be initialized during the first call to cat_mode() or
 -- pager_mode().
 --
--- A cache to map syntax groups to ansi escape sequences in cat mode or
--- remember defined syntax groups in the ansi rendering functions.
-local cache = {}
--- A local copy of the termguicolors option, used for color output in cat
--- mode.
-local colors_24_bit
-local color2escape
 -- This variable holds the name of the detected parent process for pager mode.
 local doc
--- A neovim highlight namespace to group together all highlights added to
--- buffers by this module.
-local namespace
-
--- Split a 24 bit color number into the three red, green and blue values
-local function split_rgb_number(color_number)
-  -- The lua implementation of these bit shift operations is taken from
-  -- http://nova-fusion.com/2011/03/21/simulate-bitwise-shift-operators-in-lua
-  local r = math.floor(color_number / 2 ^ 16)
-  local g = math.floor(math.floor(color_number / 2 ^ 8) % 2 ^ 8)
-  local b = math.floor(color_number % 2 ^ 8)
-  return r, g, b
-end
-
--- Compute the escape sequences for a 24 bit color number.
-local function color2escape_24bit(color_number, foreground)
-  local red, green, blue = split_rgb_number(color_number)
-  local escape
-  if foreground then
-    escape = '38;2;'
-  else
-    escape = '48;2;'
-  end
-  return escape .. red .. ';' .. green .. ';' .. blue
-end
-
--- Compute the escape sequences for a 8 bit color number.
-local function color2escape_8bit(color_number, foreground)
-  local prefix
-  if color_number < 8 then
-    if foreground then
-      prefix = '3'
-    else
-      prefix = '4'
-    end
-  elseif color_number < 16 then
-    color_number = color_number - 8
-    if foreground then
-      prefix = '9'
-    else
-      prefix = '10'
-    end
-  elseif foreground then
-    prefix = '38;5;'
-  else
-    prefix = '48;5;'
-  end
-  return prefix .. color_number
-end
-
--- Compute a ansi escape sequences to render a syntax group on the terminal.
-local function group2ansi(groupid)
-  if cache[groupid] then
-    return cache[groupid]
-  end
-  local info = nvim.nvim_get_hl_by_id(groupid, colors_24_bit)
-  if info.reverse then
-    info.foreground, info.background = info.background, info.foreground
-  end
-  -- Reset all attributes before setting new ones.  The vimscript version did
-  -- use sevel explicit reset codes: 22, 24, 25, 27 and 28.  If no foreground
-  -- or background color was defined for a syntax item they were reset with
-  -- 39 or 49.
-  local escape = '\27[0'
-
-  if info.bold then escape = escape .. ';1' end
-  if info.italic then escape = escape .. ';3' end
-  if info.underline then escape = escape .. ';4' end
-
-  if info.foreground then
-    escape = escape .. ';' .. color2escape(info.foreground, true)
-  end
-  if info.background then
-    escape = escape .. ';' .. color2escape(info.background, false)
-  end
-
-  escape = escape .. 'm'
-  cache[groupid] = escape
-  return escape
-end
-
--- Initialize some module level variables for cat mode.
-local function init_cat_mode()
-  -- Get the value of &termguicolors from neovim.
-  colors_24_bit = nvim.nvim_get_option('termguicolors')
-  -- Select the correct coloe escaping function.
-  if colors_24_bit then
-    color2escape = color2escape_24bit
-  else
-    color2escape = color2escape_8bit
-  end
-  -- Initialize the ansi group to color cache with the "Normal" hl group.
-  cache[0] = group2ansi(nvim.nvim_call_function('hlID', {'Normal'}))
-end
-
--- Check if the begining of the current buffer contains ansi escape sequences.
---
--- For performance only the first 100 lines are checked.
-local function check_escape_sequences()
-  local filetype = nvim.nvim_buf_get_option(0, 'filetype')
-  if filetype == '' or filetype == 'text' then
-    for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 100, false)) do
-      if line:find('\27%[[;?]*[0-9.;]*[A-Za-z]') ~= nil then return true end
-    end
-  end
-  return false
-end
-
--- turn a listchars string into a table
-local function parse_listchars(listchars)
-  local t = {}
-  for item in vim.gsplit(listchars, ",", true) do
-    local kv = vim.split(item, ":", true)
-    t[kv[1]] = kv[2]
-  end
-  return t
-end
-
--- Iterate through the current buffer and print it to stdout with terminal
--- color codes for highlighting.
-local function highlight()
-  -- Detect an empty buffer.
-  if nvim.nvim_buf_get_offset(0, 0) == -1 then
-    return
-  elseif check_escape_sequences() then
-    for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
-      io.write(line, '\n')
-    end
-    return
-  end
-  local conceallevel = nvim.nvim_win_get_option(0, 'conceallevel')
-  local syntax_id_conceal = nvim.nvim_call_function('hlID', {'Conceal'})
-  local syntax_id_whitespace = nvim.nvim_call_function('hlID', {'Whitespace'})
-  local syntax_id_non_text = nvim.nvim_call_function('hlID', {'NonText'})
-  local list = nvim.nvim_win_get_option(0, "list")
-  local listchars = list and parse_listchars(vim.o.listchars) or {}
-  local last_syntax_id = -1
-  local last_conceal_id = -1
-  local linecount = nvim.nvim_buf_line_count(0)
-  for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
-    local outline = ''
-    local skip_next_char = false
-    local syntax_id
-    for cnum = 1, line:len() do
-      local conceal_info = nvim.nvim_call_function('synconcealed',
-	{lnum, cnum})
-      local conceal = conceal_info[1] == 1
-      local replace = conceal_info[2]
-      local conceal_id = conceal_info[3]
-      if skip_next_char then
-	skip_next_char = false
-      elseif conceal and last_conceal_id == conceal_id then -- luacheck: ignore
-	-- skip this char
-      else
-	local append
-	if conceal then
-	  syntax_id = syntax_id_conceal
-	  if replace == '' and conceallevel == 1 then replace = ' ' end
-	  append = replace
-	  last_conceal_id = conceal_id
-	else
-	  append = line:sub(cnum, cnum)
-	  if list and string.find(" \194", append, 1, true) ~= nil then
-	    syntax_id = syntax_id_whitespace
-	    if append == " " then
-	      if line:find("^ +$", cnum) ~= nil then
-		append = listchars.trail or listchars.space or append
-	      else
-		append = listchars.space or append
-	      end
-	    elseif append == "\194" and line:sub(cnum + 1, cnum + 1) == "\160" then
-	      -- Utf8 non breaking space is "\194\160", neovim represents all
-	      -- files as utf8 internally, regardless of the actual encoding.
-	      -- See :help 'encoding'.
-	      append = listchars.nbsp or "\194\160"
-	      skip_next_char = true
-	    end
-	  else
-	    syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
-	  end
-	end
-	if syntax_id ~= last_syntax_id then
-	  outline = outline .. group2ansi(syntax_id)
-	  last_syntax_id = syntax_id
-	end
-	outline = outline .. append
-      end
-    end
-    -- append a eol listchar if &list is set
-    if list and listchars.eol ~= nil then
-      syntax_id = syntax_id_non_text
-      if syntax_id ~= last_syntax_id then
-	outline = outline .. group2ansi(syntax_id)
-	last_syntax_id = syntax_id
-      end
-      outline = outline .. listchars.eol
-    end
-    -- Write the whole line and a newline char.  If this was the last line
-    -- also reset the terminal attributes.
-    io.write(outline, lnum == linecount and cache[0] or '', '\n')
-  end
-end
-
--- Call the highlight function to write the highlighted version of all buffers
--- to stdout and quit nvim.
-function nvimpager.cat_mode()
-  init_cat_mode()
-  highlight()
-  -- We can not use nvim_list_bufs() as a file might appear on the command
-  -- line twice.  In this case we want to behave like cat(1) and display the
-  -- file twice.
-  for _ = 2, nvim.nvim_call_function('argc', {}) do
-    nvim.nvim_command('next')
-    highlight()
-  end
-  nvim.nvim_command('quitall!')
-end
 
 -- Replace a string prefix in all items in a list
 local function replace_prefix(table, old_prefix, new_prefix)
@@ -389,69 +161,6 @@ local function detect_filetype()
   end
 end
 
-local follow_timer = nil
-function nvimpager.toggle_follow()
-  if follow_timer ~= nil then
-    vim.fn.timer_pause(follow_timer, nvimpager.follow)
-    nvimpager.follow = not nvimpager.follow
-  else
-    follow_timer = vim.fn.timer_start(
-      nvimpager.follow_interval,
-      function()
-	nvim.nvim_command("silent checktime")
-	nvim.nvim_command("silent $")
-      end,
-      { ["repeat"] = -1 })
-    nvimpager.follow = true
-  end
-end
-
--- Set up mappings to make nvim behave a little more like a pager.
-local function set_maps()
-  local function map(lhs, rhs, mode)
-    -- we are using buffer local maps because we want to overwrite the buffer
-    -- local maps from the man plugin (and maybe others)
-    vim.keymap.set(mode or 'n', lhs, rhs, { buffer = true })
-  end
-  map('q', '<CMD>quitall!<CR>')
-  map('q', '<CMD>quitall!<CR>', 'v')
-  map('<Space>', '<PageDown>')
-  map('<S-Space>', '<PageUp>')
-  map('g', 'gg')
-  map('<Up>', '<C-Y>')
-  map('<Down>', '<C-E>')
-  map('k', '<C-Y>')
-  map('j', '<C-E>')
-  map('F', nvimpager.toggle_follow)
-end
-
--- Setup function for the VimEnter autocmd.
--- This function will be called for each buffer once
-function nvimpager.pager_mode()
-  if check_escape_sequences() then
-    -- Try to highlight ansi escape sequences.
-    ansi2highlight.run()
-    -- Lines with concealed ansi esc sequences seem shorter than they are (by
-    -- character count) so it looks like they wrap to early and the concealing
-    -- of escape sequences only works for the first &synmaxcol chars.
-    nvim.nvim_buf_set_option(0, "synmaxcol", 0) -- unlimited
-    nvim.nvim_win_set_option(0, "wrap", false)
-  end
-  nvim.nvim_buf_set_option(0, 'modifiable', false)
-  nvim.nvim_buf_set_option(0, 'modified', false)
-  if nvimpager.maps then
-    -- if this is done in VimEnter it will override any settings in the user
-    -- config, if we do it globally we are not overwriting the mappings from
-    -- the man plugin
-    set_maps()
-  end
-  -- Check if the user requested follow mode on startup
-  if nvimpager.follow then
-    -- turn follow mode of so that we can use the init logic in toggle_follow
-    nvimpager.follow = false
-    nvimpager.toggle_follow()
-  end
-end
 
 -- Setup function to be called from --cmd.
 function nvimpager.stage1()
@@ -493,9 +202,9 @@ function nvimpager.stage2()
   detect_filetype()
   local callback, events
   if #nvim.nvim_list_uis() == 0 then
-    callback, events = nvimpager.cat_mode, 'VimEnter'
+    callback, events = cat.cat_mode, 'VimEnter'
   else
-    callback, events = nvimpager.pager_mode, {'VimEnter', 'BufWinEnter'}
+    callback, events = pager.pager_mode, {'VimEnter', 'BufWinEnter'}
   end
   local group = nvim.nvim_create_augroup('NvimPager', {clear = false})
   -- The "nested" in these autocomands enables nested executions of
@@ -506,14 +215,9 @@ end
 
 -- functions only exported for tests
 nvimpager._testable = {
-  color2escape_24bit = color2escape_24bit,
-  color2escape_8bit = color2escape_8bit,
   detect_man_page_helper = detect_man_page_helper,
   detect_parent_process = detect_parent_process,
-  group2ansi = group2ansi,
-  init_cat_mode = init_cat_mode,
   replace_prefix = replace_prefix,
-  split_rgb_number = split_rgb_number,
 }
 
 return nvimpager

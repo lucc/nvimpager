@@ -75,11 +75,11 @@ local function write(filename, contents)
   handle:close()
 end
 
--- Freshly require the nvimpager module, optinally with mocks
+-- Freshly require a nvimpager module, optinally with mocks
 --
 -- api: table|nil -- a mock for the neovim api table (:help lua-api)
 -- return: table -- the nvimpager module
-local function load_nvimpager(api)
+local function load_nvimpager(module, api)
   -- Create a local mock of the vim module that is provided by neovim.
   local default_api = {
     nvim_get_hl_by_id = function() return {} end,
@@ -98,8 +98,8 @@ local function load_nvimpager(api)
   -- Register the api mock in the globals.
   _G.vim = vim
   -- Reload the nvimpager script
-  package.loaded["lua/nvimpager"] = nil
-  return require("lua/nvimpager")
+  package.loaded["lua/nvimpager/"..module] = nil
+  return require("lua/nvimpager/"..module)
 end
 
 -- generator for random strings

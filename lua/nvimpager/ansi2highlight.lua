@@ -1,3 +1,7 @@
+-- A neovim highlight namespace to group together all highlights added to
+-- buffers by this module.
+local namespace
+
 -- A cache to remember which syntax groups have already been defined.
 local cache = {}
 
