@@ -12,7 +12,7 @@ jobs:
           - stable
           - unstable
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: install dependencies
       run: |
         sudo add-apt-repository -y ppa:neovim-ppa/${{ matrix.ppa-version }}
@@ -26,7 +26,7 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: install dependencies
       run: |
         brew update
@@ -41,8 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Install Nix
-      uses: cachix/install-nix-action@v16
-    - uses: actions/checkout@v2
+      uses: cachix/install-nix-action@v20
+    - uses: actions/checkout@v3
     - name: Run the test suite
       run: script -ec "nix develop --check"
       env:
