@@ -62,8 +62,15 @@ variables:
 make PREFIX=$HOME/.local install
 ```
 
+The target `install-no-man` can be used to install nvimpager without the man
+page.
+
 Additionally the variable `BUSTED` can be used to specify the executable for
-the test suite.
+the test suite:
+
+```sh
+make test BUSTED="/path/to/busted --some-args"
+```
 
 ## Development
 
@@ -78,9 +85,8 @@ with `make test`.  They are also run on GitHub: [![Build Status]][ghactions]
   faster and more memory efficient job at paging large files)
 
 ### Ideas
-
-* see how [neovim#7428](https://github.com/neovim/neovim/issues/7438) and
-  [neovim#18375](https://github.com/neovim/neovim/pull/18375) are resolved and
+* see how [neovim#6871](https://github.com/neovim/neovim/issues/6871) and
+  [neovim#7428](https://github.com/neovim/neovim/issues/7438) are resolved and
   maybe move more code (logic) from bash to lua (bash's `[[ -t ... ]]` can be
   replaced by `has('ttyin')`, `has('ttyout')`)
 * proper lazy pipe reading while paging (like less) to improve startup time and
