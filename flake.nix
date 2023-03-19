@@ -15,13 +15,15 @@
     version = head (match ".*version=([0-9.]*)\n.*" (readFile ./nvimpager))
               + "-dev-${toString self.sourceInfo.lastModifiedDate}";
     withoutDarwin = filter (s: !nixpkgs.lib.strings.hasSuffix "-darwin" s);
-    localLuaPath = "'lua/?.lua;lua/?/init.lua;./?.lua;./?/init.lua'";
+    join = nixpkgs.lib.strings.concatStringsSep ";";
+    join' = nixpkgs.lib.strings.concatMapStringsSep " " (p: "--lpath '${p}'");
+    localLuaPath = [ "lua/?.lua" "lua/?/init.lua" "./?.lua" "./?/init.lua" ];
     mkShell = pkgs: pkgs.mkShell {
       inputsFrom = [ pkgs.nvimpager ];
       packages = with pkgs; [ lua51Packages.luacov git tmux hyperfine ];
       shellHook = ''
         # to find nvimpager lua code in the current dir
-        export LUA_PATH=${localLuaPath}''${LUA_PATH:+;}$LUA_PATH
+        export LUA_PATH="${join localLuaPath}"''${LUA_PATH:+;}$LUA_PATH
         # fix for different terminals in a pure shell
         export TERM=xterm
         # print the neovim version we are using
@@ -36,7 +38,7 @@
         buildFlags = oa.buildFlags ++ [ "VERSION=${version}" ];
         checkPhase = ''
           runHook preCheck
-          script -ec "busted --output TAP --lpath './?.lua' --lpath './?/init.lua' --filter-out 'handles man' test"
+          script -ec "busted --output TAP ${join' localLuaPath} --filter-out 'handles man' test"
           runHook postCheck
         '';
       });
