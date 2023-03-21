@@ -1,3 +1,7 @@
+-- Neovim defines this object but luacheck doesn't know it.  So we define a
+-- shortcut and tell luacheck to ignore it.
+local nvim = vim.api -- luacheck: ignore
+
 -- A neovim highlight namespace to group together all highlights added to
 -- buffers by this module.
 local namespace

@@ -5,6 +5,7 @@ local nvim = vim.api -- luacheck: ignore
 
 local nvimpager = require("nvimpager/options")
 local util = require("nvimpager/util")
+local ansi2highlight = require("nvimpager/ansi2highlight")
 
 local follow_timer = nil
 local function toggle_follow()
