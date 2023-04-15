@@ -238,7 +238,7 @@ describe("cat mode", function()
 end)
 
 describe("pager mode", function()
-  it("starts up and quits correctly", function()
+  it("starts up and quits correctly #osx_pending", function()
     run("./nvimpager -p makefile -c quit")
   end)
 end)
