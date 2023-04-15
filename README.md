@@ -47,7 +47,7 @@ install it manually, read on.
 
 ### Dependencies
 
-* [neovim] ≥ v0.7.2
+* [neovim] ≥ v0.9.0
 * [bash]
 * [busted] (for running the tests)
 * [scdoc] (to build the man page)

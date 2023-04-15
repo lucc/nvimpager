@@ -9,10 +9,9 @@ TMPFILE=
 export RUNTIME
 export PARENT
 export TMPFILE
+export NVIM_APPNAME=nvimpager
 
-name=nvimpager
 mode=auto
-rc=${XDG_CONFIG_HOME:-~/.config}/nvimpager/init.lua
 nvim=${NVIMPAGER_NVIM:-nvim}
 
 usage () {
@@ -23,7 +22,7 @@ usage () {
 description () {
   cat <<-EOF
 
-	$name provides a simple pager based on neovim.
+	$NVIM_APPNAME provides a simple pager based on neovim.
 	Options:
 	  -h		this help
 	  -v		version output
@@ -52,7 +51,7 @@ while getopts achpv flag; do
     p) mode=pager;;
     v)
       version=$(git -C "$RUNTIME" describe 2>/dev/null) || version=0.11.0
-      echo "$name ${version#v}"
+      echo "$NVIM_APPNAME ${version#v}"
       exit
       ;;
     *) usage >&2; exit 2;;
@@ -69,15 +68,6 @@ fi
 # If we are not on a tty just "be" cat.
 if [[ ! -t 1 && $mode = auto ]]; then
   exec cat "$@"
-fi
-
-if [[ -r $rc && -r ${rc%lua}vim ]]; then
-  echo Conflicting configs: "$rc" "${rc%lua}vim"
-  exit 2
-elif [[ ! -r $rc && -r ${rc%lua}vim ]]; then
-  rc=${rc%lua}vim
-elif [[ ! -r $rc ]]; then
-  rc=NORC
 fi
 
 # Collect all file arguments until the first non file into $files.  If one non
@@ -116,7 +106,6 @@ fi
 # these come before all user supplied -c and --cmd arguments
 args1=(
   -R
-  -u "$rc"
   --cmd 'set rtp+=$RUNTIME | lua nvimpager = require("nvimpager")'
 )
 # these come after all user supplied -c and --cmd arguments

@@ -257,33 +257,6 @@ describe("cat-exec mode", function()
   end)
 end)
 
-describe("backend:", function()
-  it("runtimepath doesn't include nvim's user dirs", function()
-    local cmd = [[RUNTIME=special-test-value nvim --clean --headless ]]..
-    -- We have to end the --cmd after the lua command as it will eat the next
-    -- lines otherwise.
-    [[--cmd '
-      set runtimepath+=.
-      lua require("nvimpager").stage1()' ]]..
-    [[--cmd '
-      let rtp = split(&rtp, ",")
-      call assert_equal(0, index(rtp, $RUNTIME), "$RUNTIME should be in &rtp")
-      call assert_equal(-1, index(rtp, stdpath("config")), "default config path should not be in &rtp")
-      call assert_equal(-1, index(rtp, stdpath("data")."/site"), "default site path should not be in &rtp")
-      echo join(v:errors, "\n") . "\n"
-      quit' 2>&1]]
-    local output = run(cmd)
-    assert.equal('\r\n', output)
-  end)
-
-  it("plugin manifest doesn't contain nvim's value", function()
-    -- Nvim writes this message to stderr so we have to redirect this.
-    local output = run("./nvimpager -c -- README.md " ..
-                       "-c 'echo $NVIM_RPLUGIN_MANIFEST' -c quit 2>&1")
-    assert.equal(helpers.datadir..'/nvimpager/rplugin.vim', output)
-  end)
-end)
-
 describe("lua functions", function()
   local nvimpager
 
@@ -759,19 +732,5 @@ describe("init files", function()
     local output = run("XDG_CONFIG_HOME=" .. dir ..
       [[ ./nvimpager -c -- -c 'lua io.write(vim.g.myvar, "\n")' -c qa]])
     assert.equal("42\n", output)
-  end)
-
-  it("can not coexist (.lua and .vim)", function()
-    local dir = tempdir()
-    local conf = dir .. "/nvimpager"
-    run("mkdir -p " .. conf)
-    helpers.write(conf .. "/init.lua", "vim.g.myvar = 41")
-    helpers.write(conf .. "/init.vim", "let myvar = 43")
-    local output = run("XDG_CONFIG_HOME=" .. dir ..
-      [[ ./nvimpager -c -- -c 'lua io.write(vim.g.myvar, "\n")' -c qa;
-      test $? -eq 2]])
-    local expected = "Conflicting configs: " .. conf .. "/init.lua " ..
-      conf .. "/init.vim\n"
-    assert.equal(expected, output)
   end)
 end)

@@ -39,25 +39,6 @@ local function replace_prefix(table, old_prefix, new_prefix)
   return table
 end
 
--- Fix the runtimepath.  All user nvim folders are replaced by corresponding
--- nvimpager folders.
-local function fix_runtime_path()
-  local runtimepath = nvim.nvim_list_runtime_paths()
-  -- Remove the custom nvimpager entry that was added on the command line.
-  runtimepath[#runtimepath] = nil
-  local new
-  for _, name in ipairs({"config", "data"}) do
-    local original = nvim.nvim_call_function("stdpath", {name})
-    new = original .."pager"
-    runtimepath = replace_prefix(runtimepath, original, new)
-  end
-  runtimepath = table.concat(runtimepath, ",")
-  nvim.nvim_set_option("packpath", runtimepath)
-  runtimepath = os.getenv("RUNTIME") .. "," .. runtimepath
-  nvim.nvim_set_option("runtimepath", runtimepath)
-  vim.env.NVIM_RPLUGIN_MANIFEST = new .. '/rplugin.vim'
-end
-
 -- Parse the command of the calling process to detect some common
 -- documentation programs (man, pydoc, perldoc, git, ...).  $PARENT was
 -- exported by the calling bash script and points to the calling program.
@@ -164,7 +145,6 @@ end
 
 -- Setup function to be called from --cmd.
 function nvimpager.stage1()
-  fix_runtime_path()
   -- Don't remember file names and positions
   nvim.nvim_set_option('shada', '')
   -- prevent messages when opening files (especially for the cat version)
