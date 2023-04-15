@@ -28,10 +28,15 @@ nvimpager.1: SOURCE_DATE_EPOCH = $(shell git log -1 --no-show-signature --pretty
 nvimpager.1: nvimpager.md
 	sed '1s/$$/ "nvimpager $(VERSION)"/' $< | scdoc > $@
 
+# The patterns prefixed with "lua" are used to require our nvimpager code from
+# the tests with the same module names that neovim would find them.
+# The patterns without prefix are to find the helper modules in the test
+# directory.
+CUSTOM_LUA_PATH = lua/?.lua;lua/?/init.lua;?.lua;?/init.lua
 test:
-	@$(BUSTED) test
+	@$(BUSTED) --lpath '$(CUSTOM_LUA_PATH)' test
 luacov.stats.out: nvimpager lua/nvimpager/*.lua test/nvimpager_spec.lua
-	@$(BUSTED) --coverage test
+	@$(BUSTED) --lpath '$(CUSTOM_LUA_PATH)' --coverage test
 luacov.report.out: luacov.stats.out
 	luacov lua/nvimpager/init.lua
 
