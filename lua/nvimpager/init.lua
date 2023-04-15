@@ -15,9 +15,7 @@
 local nvim = vim.api -- luacheck: ignore
 local vim = vim      -- luacheck: ignore
 
-local ansi2highlight = require("nvimpager/ansi2highlight")
 local cat = require("nvimpager/cat")
-local util = require("nvimpager/util")
 local pager = require("nvimpager/pager")
 
 -- names that will be exported from this module
