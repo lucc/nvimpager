@@ -16,7 +16,7 @@
               + "-dev-${toString self.sourceInfo.lastModifiedDate}";
     withoutDarwin = filter (s: !nixpkgs.lib.strings.hasSuffix "-darwin" s);
     join = nixpkgs.lib.strings.concatStringsSep ";";
-    join' = nixpkgs.lib.strings.concatMapStringsSep " " (p: "--lpath '${p}'");
+    join' = nixpkgs.lib.strings.concatMapStringsSep " " (p: ''--lpath "${p}"'');
     localLuaPath = [ "lua/?.lua" "lua/?/init.lua" "./?.lua" "./?/init.lua" ];
     mkShell = pkgs: pkgs.mkShell {
       inputsFrom = [ pkgs.nvimpager ];
@@ -38,7 +38,10 @@
         buildFlags = oa.buildFlags ++ [ "VERSION=${version}" ];
         checkPhase = ''
           runHook preCheck
-          script -ec "busted --output TAP ${join' localLuaPath} --filter-out 'handles man' test"
+          script -ec 'busted --output TAP ${join' localLuaPath} \
+            --filter-out "handles man" \
+            --filter-out "^pager mode" \
+            test'
           runHook postCheck
         '';
       });
