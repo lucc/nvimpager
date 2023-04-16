@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         ppa-version:
-          - stable
+          # the ppa is currently on 0.7.2 but we need >=0.9
+          #- stable
           - unstable
     steps:
     - uses: actions/checkout@v3
