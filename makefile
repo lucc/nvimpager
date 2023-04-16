@@ -32,11 +32,12 @@ nvimpager.1: nvimpager.md
 # the tests with the same module names that neovim would find them.
 # The patterns without prefix are to find the helper modules in the test
 # directory.
-CUSTOM_LUA_PATH = lua/?.lua;lua/?/init.lua;?.lua;?/init.lua
+LPATH = --lpath "lua/?.lua" --lpath "lua/?/init.lua" \
+	--lpath     "?.lua" --lpath     "?/init.lua"
 test:
-	@$(BUSTED) --lpath '$(CUSTOM_LUA_PATH)' test
+	@$(BUSTED) $(LPATH) test
 luacov.stats.out: nvimpager lua/nvimpager/*.lua test/nvimpager_spec.lua
-	@$(BUSTED) --lpath '$(CUSTOM_LUA_PATH)' --coverage test
+	@$(BUSTED) $(LPATH) --coverage test
 luacov.report.out: luacov.stats.out
 	luacov lua/nvimpager/init.lua
 
