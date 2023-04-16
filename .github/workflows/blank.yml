@@ -45,16 +45,10 @@ jobs:
       uses: cachix/install-nix-action@v20
     - uses: actions/checkout@v3
     - name: Run the test suite
-      run: script -ec "nix develop --check"
-      env:
-        TERM: dumb
+      run: nix build --print-build-logs
     - name: Update the fake inputs
       run: nix flake update
     - name: Run the test suite again
-      run: script -ec "nix develop --check"
-      env:
-        TERM: dumb
+      run: nix build --print-build-logs
     - name: Run the test suite with nightly neovim
-      run: script -ec "nix develop --check '.#nightly'"
-      env:
-        TERM: dumb
+      run: nix build  --print-build-logs '.#nightly'
