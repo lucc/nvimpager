@@ -70,6 +70,11 @@ jobs:
     steps:
     - name: Install Nix
       uses: cachix/install-nix-action@v20
+
+    - uses: cachix/cachix-action@v12
+      with:
+        name: nix-community
+
     - uses: actions/checkout@v3
     - name: Run the test suite
       run: nix build --print-build-logs
