@@ -15,16 +15,6 @@
     version = head (match ".*version=([0-9.]*)\n.*" (readFile ./nvimpager))
               + "-dev-${toString self.sourceInfo.lastModifiedDate}";
     withoutDarwin = filter (s: !nixpkgs.lib.strings.hasSuffix "-darwin" s);
-    mkShell = pkgs: pkgs.mkShell {
-      inputsFrom = [ pkgs.nvimpager ];
-      packages = with pkgs; [ lua51Packages.luacov git tmux hyperfine ];
-      shellHook = ''
-        # fix for different terminals in a pure shell
-        export TERM=xterm
-        # print the neovim version we are using
-        nvim --version | head -n 1
-      '';
-    };
   in ({
     overlays.default = final: prev: {
       nvimpager = prev.nvimpager.overrideAttrs (oa: {
@@ -44,8 +34,6 @@
     nightly = import nixpkgs { overlays = [ neovim.overlay self.overlays.default ]; inherit system; };
   in {
     apps.default = flake-utils.lib.mkApp { drv = stable.nvimpager; };
-    devShells.default = mkShell stable;
-    devShells.nightly = mkShell nightly;
     packages.default = stable.nvimpager;
     packages.nightly = nightly.nvimpager;
   })));
