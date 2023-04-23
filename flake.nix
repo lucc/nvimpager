@@ -23,7 +23,7 @@
         buildFlags = oa.buildFlags ++ [ "VERSION=${version}" ];
         checkPhase = ''
           runHook preCheck
-          make test BUSTED='busted --output TAP --filter-out "handles man"'
+          make test BUSTED='busted --output TAP --exclude-tags=nix'
           runHook postCheck
         '';
       });

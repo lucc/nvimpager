@@ -175,7 +175,7 @@ describe("cat mode", function()
       assert.equal(expected, output)
     end)
 
-    it("ignores mode lines in git log diffs #osx_pending", function()
+    it("ignores mode lines in git log diffs #mac", function()
       local output = run("test/fixtures/bin/git ./nvimpager -c " ..
 			 "test/fixtures/git-log 2>&1")
       local expected = read("test/fixtures/git-log.ansi")
@@ -238,7 +238,7 @@ describe("cat mode", function()
 end)
 
 describe("pager mode", function()
-  it("starts up and quits correctly #osx_pending", function()
+  it("starts up and quits correctly #mac #appimage #ppa", function()
     run("./nvimpager -p makefile -c quit")
   end)
 end)
@@ -666,13 +666,13 @@ describe("parent detection", function()
     return run("test/fixtures/bin/"..name.." "..command)
   end
 
-  it("detects git correctly #osx_pending", function()
+  it("detects git correctly #mac #appimage", function()
     local output = lua_with_parent(
       "git", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("git", output)
   end)
 
-  it("detects man correctly #osx_pending", function()
+  it("detects man correctly #mac #appimage", function()
     local output = lua_with_parent(
       "man", "print(require('nvimpager')._testable.detect_parent_process())")
     assert.equal("man", output)
@@ -692,7 +692,7 @@ describe("parent detection", function()
     assert.equal(expected, output)
   end)
 
-  it("handles man #osx_pending", function()
+  it("handles man #mac #nix", function()
     local output = run("test/fixtures/bin/man ./nvimpager -c " ..
 		       "test/fixtures/man.cat")
     local expected = read("test/fixtures/man.ansi")
