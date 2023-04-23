@@ -405,4 +405,65 @@ describe("lua functions", function()
       assert.falsy(nvimpager._testable.detect_man_page_helper(""))
     end)
   end)
+
+  describe("check_escape_sequences", function()
+    local function filetype_text() return "" end
+    local function filetype_something() return "something" end
+    it("only checks files with filetype 'text'", function()
+      local check_escape_sequences = load_nvimpager(
+	"util", {nvim_buf_get_option = filetype_something}
+      ).check_escape_sequences
+      assert.is_false(check_escape_sequences())
+    end)
+    it("finds ansi escape sequences", function()
+      local function get_lines()
+	return {"line 1", "escape \27[31mthis is red\27[m"}
+      end
+      local check_escape_sequences = load_nvimpager(
+	"util", {nvim_buf_get_option = filetype_text,
+		 nvim_buf_get_lines = get_lines}
+      ).check_escape_sequences
+      assert.is_true(check_escape_sequences())
+    end)
+  end)
+
+  describe("detect_parent_process", function()
+    _G.os.getenv = function() return 42 end
+    local function load_with(name)
+      local fut = load_nvimpager(
+	"init", {nvim_get_proc = function() return { name = name } end}
+      )._testable.detect_parent_process
+      return fut
+    end
+    it("detects man", function()
+      local detect_parent_process = load_with("man")
+      assert.equal("man", detect_parent_process())
+    end)
+    it("detects pydoc", function()
+      local detect_parent_process = load_with("pydoc")
+      assert.equal("pydoc", detect_parent_process())
+      detect_parent_process = load_with("python27")
+      assert.equal("pydoc", detect_parent_process())
+      detect_parent_process = load_with("python3.11")
+      assert.equal("pydoc", detect_parent_process())
+    end)
+    it("detects ruby", function()
+      local detect_parent_process = load_with("ruby")
+      assert.equal("ri", detect_parent_process())
+    end)
+    it("detects perl", function()
+      local detect_parent_process = load_with("perldoc")
+      assert.equal("perldoc", detect_parent_process())
+      detect_parent_process = load_with("perl")
+      assert.equal("perldoc", detect_parent_process())
+    end)
+    it("detects git", function()
+      local detect_parent_process = load_with("git")
+      assert.equal("git", detect_parent_process())
+    end)
+    it("returns nil for unknown parents", function()
+      local detect_parent_process = load_with("unknown")
+      assert.is_nil(detect_parent_process())
+    end)
+  end)
 end)
