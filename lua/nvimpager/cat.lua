@@ -62,16 +62,6 @@ local function color2escape_8bit(color_number, foreground)
   return prefix .. color_number
 end
 
--- turn a listchars string into a table
-local function parse_listchars(listchars)
-  local t = {}
-  for item in vim.gsplit(listchars, ",", true) do
-    local kv = vim.split(item, ":", true)
-    t[kv[1]] = kv[2]
-  end
-  return t
-end
-
 -- Compute a ansi escape sequences to render a syntax group on the terminal.
 local function group2ansi(groupid)
   if cache[groupid] then
@@ -120,7 +110,7 @@ local function highlight()
   local syntax_id_whitespace = nvim.nvim_call_function('hlID', {'Whitespace'})
   local syntax_id_non_text = nvim.nvim_call_function('hlID', {'NonText'})
   local list = nvim.nvim_win_get_option(0, "list")
-  local listchars = list and parse_listchars(vim.o.listchars) or {}
+  local listchars = list and vim.opt.listchars:get() or {}
   local last_syntax_id = -1
   local last_conceal_id = -1
   local linecount = nvim.nvim_buf_line_count(0)
