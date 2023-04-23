@@ -37,9 +37,9 @@ LPATH = --lpath "lua/?.lua" --lpath "lua/?/init.lua" \
 test:
 	@$(BUSTED) $(LPATH) test
 luacov.stats.out: nvimpager lua/nvimpager/*.lua test/nvimpager_spec.lua
-	@$(BUSTED) $(LPATH) --coverage test
+	@$(BUSTED) $(LPATH) --coverage test/unit_spec.lua
 luacov.report.out: luacov.stats.out
-	luacov lua/nvimpager/init.lua
+	luacov lua/nvimpager
 
 TYPE = minor
 version: OLD_VERSION = $(patsubst v%,%,$(lastword $(shell git tag --list --sort=version:refname 'v*')))
