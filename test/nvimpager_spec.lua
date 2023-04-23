@@ -465,7 +465,7 @@ describe("lua functions", function()
       state.background = "bar"
       state.strikethrough = true
       state:parse("0")
-      for key, val in pairs(state) do
+      for _, val in pairs(state) do
 	if type(val) == "string" then assert.equal("", val)
 	elseif type(val) == "boolean" then assert.is_false(val)
 	end

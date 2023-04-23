@@ -102,15 +102,6 @@ local function load_nvimpager(module, api)
   return require("lua/nvimpager/"..module)
 end
 
--- generator for random strings
-local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-local len = chars:len()
-local function random(count)
-  local i = math.random(len)
-  if count == nil or count <= 1 then return chars:sub(i, i) end
-  return chars:sub(i, i) .. random(count - 1)
-end
-
 return {
   confdir = confdir,
   datadir = datadir,

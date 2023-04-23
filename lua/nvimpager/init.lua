@@ -13,7 +13,6 @@
 -- Neovim defines this object but luacheck doesn't know it.  So we define a
 -- shortcut and tell luacheck to ignore it.
 local nvim = vim.api -- luacheck: ignore
-local vim = vim      -- luacheck: ignore
 
 local cat = require("nvimpager/cat")
 local pager = require("nvimpager/pager")
