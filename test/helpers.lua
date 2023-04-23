@@ -77,6 +77,7 @@ end
 
 -- Freshly require a nvimpager module, optinally with mocks
 --
+-- module: string -- the module name under lua/nvimpager to require
 -- api: table|nil -- a mock for the neovim api table (:help lua-api)
 -- return: table -- the nvimpager module
 local function load_nvimpager(module, api)
