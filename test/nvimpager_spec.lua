@@ -2,11 +2,10 @@
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
-local describe, it, assert, mock, setup, before_each =
-      describe, it, assert, mock, setup, before_each  -- luacheck: ignore
+local describe, it, assert = describe, it, assert  -- luacheck: ignore
 
 local helpers = require("test/helpers")
-local run, read = helpers.run, helpers.read
+local run, read, write = helpers.run, helpers.read, helpers.write
 
 describe("auto mode", function()
   -- Auto mode only exists during the run of the bash script.  At the end of
@@ -32,9 +31,7 @@ describe("auto mode", function()
       alias trap=:
       source ]] .. command .. "\nset"
     local filename = os.tmpname()
-    local file = io.open(filename, "w")
-    file:write(script)
-    file:close()
+    write(filename, script)
     local output = run("bash " .. filename)
     os.remove(filename)
     return output

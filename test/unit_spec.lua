@@ -359,7 +359,6 @@ describe("lua functions", function()
       it("parses high colors (bg)", function()
 	state:parse8bit("background", "11")
 	assert.equal("lightyellow", state.background)
-
       end)
       it("parses color cube colors (fg)", function()
 	state:parse8bit("foreground", "17")

@@ -194,7 +194,7 @@ end
 
 -- Call the highlight function to write the highlighted version of all buffers
 -- to stdout and quit nvim.
-function cat_mode()
+local function cat_mode()
   init()
   highlight()
   -- We can not use nvim_list_bufs() as a file might appear on the command

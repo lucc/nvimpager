@@ -32,6 +32,7 @@ local function run(command)
   command = string.format("XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s %s; echo $?",
     confdir, datadir, command)
   local proc = io.popen(command)
+  if proc == nil then error("Could not open pipe to child process") end
   local output = proc:read('*a')
   local status = {proc:close()}
   -- This is *not* the return value of the command.
@@ -58,6 +59,7 @@ end
 -- returns: string -- the contents of the file
 local function read(filename)
   local file = io.open(filename)
+  if file == nil then error("Could not open file: " .. filename) end
   local contents = file:read('*a')
   return contents
 end
@@ -69,7 +71,7 @@ end
 -- returns: nil
 local function write(filename, contents)
   local handle = io.open(filename, "w")
-  if handle == nil then assert.not_nil(handle, "could not open file") end
+  if handle == nil then error("could not open file " .. filename) end
   handle:write(contents)
   handle:flush()
   handle:close()
