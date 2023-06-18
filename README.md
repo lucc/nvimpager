@@ -85,8 +85,7 @@ with `make test`.  They are also run on GitHub: [![Build Status]][ghactions]
   faster and more memory efficient job at paging large files)
 
 ### Ideas
-* see how [neovim#6871](https://github.com/neovim/neovim/issues/6871) and
-  [neovim#7428](https://github.com/neovim/neovim/issues/7438) are resolved and
+* see how [neovim#5035], [neovim#7438] and [neovim#23093] are resolved and
   maybe move more code (logic) from bash to lua (bash's `[[ -t ... ]]` can be
   replaced by `has('ttyin')`, `has('ttyout')`)
 * proper lazy pipe reading while paging (like less) to improve startup time and
@@ -108,3 +107,6 @@ The project is licensed under a BSD-2-clause license.  See the
 [scdoc]: https://git.sr.ht/~sircmpwn/scdoc
 [Build Status]: https://github.com/lucc/nvimpager/actions/workflows/test.yml/badge.svg
 [ghactions]: https://github.com/lucc/nvimpager/actions
+[neovim#5035]: https://github.com/neovim/neovim/issues/5035 (detach / reattach)
+[neovim#7438]: https://github.com/neovim/neovim/issues/7438 (dynamic --headless)
+[neovim#23093]: https://github.com/neovim/neovim/issues/23093 (detach current tui)
