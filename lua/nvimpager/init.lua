@@ -146,15 +146,15 @@ function nvimpager.stage1()
   nvim.nvim_set_option('shada', '')
   -- prevent messages when opening files (especially for the cat version)
   nvim.nvim_set_option('shortmess', nvim.nvim_get_option('shortmess')..'F')
-  -- Define autocmd group for nvimpager.
-  local group = nvim.nvim_create_augroup('NvimPager', {})
+  -- If the env variable TMPFILE was set by the shell script we load the
+  -- corresponding buffer and remove the underlying file.  This way we do not
+  -- leave the temp file behind when we get killed or exit.
   local tmp = os.getenv('TMPFILE')
   if tmp and tmp ~= "" then
-    nvim.nvim_create_autocmd("BufReadPost", {pattern = tmp, once = true,
-      group = group, callback = function()
-	nvim.nvim_buf_set_option(0, "buftype", "nofile")
-	os.remove(tmp)
-      end})
+    local buffer = vim.fn.bufnr("^"..tmp.."$")
+    vim.fn.bufload(buffer)
+    nvim.nvim_buf_set_option(buffer, "buftype", "nofile")
+    os.remove(tmp)
   end
   doc = detect_parent_process()
   if doc == 'git' then
