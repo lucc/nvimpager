@@ -150,7 +150,7 @@ function nvimpager.stage1()
   local group = nvim.nvim_create_augroup('NvimPager', {})
   local tmp = os.getenv('TMPFILE')
   if tmp and tmp ~= "" then
-    nvim.nvim_create_autocmd("VimEnter", {pattern = "*", once = true,
+    nvim.nvim_create_autocmd("BufReadPost", {pattern = tmp, once = true,
       group = group, callback = function()
 	nvim.nvim_buf_set_option(0, "buftype", "nofile")
 	os.remove(tmp)

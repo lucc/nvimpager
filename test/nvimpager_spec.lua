@@ -123,6 +123,12 @@ describe("cat mode", function()
     assert.equal(read("test/fixtures/makefile.ansi"), output)
   end)
 
+  it("can show stdin as the second file",  function()
+    local output = run("echo foo | ./nvimpager -c test/fixtures/makefile -")
+    local expected = read("test/fixtures/makefile.ansi") .. "\27[0mfoo\27[0m\n"
+    assert.equal(expected, output)
+  end)
+
   describe("can change the default foreground color", function()
     for termguicolors, extension in pairs({termguicolors = "red24", notermguicolors = "red"}) do
       for _, command in pairs({"--cmd", "-c"}) do
