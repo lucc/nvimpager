@@ -42,7 +42,12 @@ end
 local function detect_parent_process()
   local ppid = os.getenv('PARENT')
   if not ppid then return nil end
+  -- FIXME saving and resetting gcr after nvim_get_proc is a workaround for
+  -- https://github.com/neovim/neovim/issues/23122, reported in #84
+  local old_gcr = vim.o.gcr
+  vim.o.gcr = ''
   local proc = nvim.nvim_get_proc(tonumber(ppid))
+  vim.o.gcr =  old_gcr
   if proc == nil then return 'none' end
   local command = proc.name
   if command == 'man' then
