@@ -98,7 +98,10 @@ local function load_nvimpager(module, api)
       if api[key] == nil then api[key] = value end
     end
   end
-  local vim = { api = api }
+  local vim = {
+    api = api,
+    o = setmetatable({}, { __index = function() return "" end })
+  }
   -- Register the api mock in the globals.
   _G.vim = vim
   -- Reload the nvimpager script
