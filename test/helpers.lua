@@ -30,7 +30,7 @@ local function run(command)
   -- https://www.lua.org/manual/5.2/manual.html#pdf-os.execute
   -- https://stackoverflow.com/questions/7607384
   command = string.format(
-    "export XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s; %s; echo $?",
+    "export XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s; (%s) 2>&1; echo $?",
     confdir, datadir, command)
   local proc = io.popen(command)
   if proc == nil then error("Could not open pipe to child process") end
