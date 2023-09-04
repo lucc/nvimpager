@@ -426,43 +426,32 @@ describe("lua functions", function()
     end)
   end)
 
-  describe("detect_parent_process", function()
-    _G.os.getenv = function() return 42 end
+  describe("detect_process", function()
+    local test_data = {
+      man = "man",
+      pydoc = "pydoc",
+      python27 = "pydoc",
+      ["python3.11"] = "pydoc",
+      ruby = "ri",
+      perldoc = "perldoc",
+      perl = "perldoc",
+      git = "git",
+    }
     local function load_with(name)
       local fut = load_nvimpager(
 	"init", {nvim_get_proc = function() return { name = name } end}
-      )._testable.detect_parent_process
+      )._testable.detect_process
       return fut
     end
-    it("detects man", function()
-      local detect_parent_process = load_with("man")
-      assert.equal("man", detect_parent_process())
-    end)
-    it("detects pydoc", function()
-      local detect_parent_process = load_with("pydoc")
-      assert.equal("pydoc", detect_parent_process())
-      detect_parent_process = load_with("python27")
-      assert.equal("pydoc", detect_parent_process())
-      detect_parent_process = load_with("python3.11")
-      assert.equal("pydoc", detect_parent_process())
-    end)
-    it("detects ruby", function()
-      local detect_parent_process = load_with("ruby")
-      assert.equal("ri", detect_parent_process())
-    end)
-    it("detects perl", function()
-      local detect_parent_process = load_with("perldoc")
-      assert.equal("perldoc", detect_parent_process())
-      detect_parent_process = load_with("perl")
-      assert.equal("perldoc", detect_parent_process())
-    end)
-    it("detects git", function()
-      local detect_parent_process = load_with("git")
-      assert.equal("git", detect_parent_process())
-    end)
+    for command, expected in pairs(test_data) do
+      it("parses "..command.." as "..expected, function()
+	local detect_process = load_with(command)
+	assert.equal(expected, detect_process(42))
+      end)
+    end
     it("returns nil for unknown parents", function()
-      local detect_parent_process = load_with("unknown")
-      assert.is_nil(detect_parent_process())
+      local detect_process = load_with("unknown")
+      assert.is_nil(detect_process(42))
     end)
   end)
 end)

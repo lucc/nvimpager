@@ -36,17 +36,15 @@ local function replace_prefix(table, old_prefix, new_prefix)
   return table
 end
 
--- Parse the command of the calling process to detect some common
--- documentation programs (man, pydoc, perldoc, git, ...).  $PARENT was
--- exported by the calling bash script and points to the calling program.
-local function detect_parent_process()
-  local ppid = os.getenv('PARENT')
-  if not ppid then return nil end
+-- Parse the command of the given pid to detect some common
+-- documentation programs (man, pydoc, perldoc, git, ...).
+local function detect_process(pid)
+  if not pid then return nil end
   -- FIXME saving and resetting gcr after nvim_get_proc is a workaround for
   -- https://github.com/neovim/neovim/issues/23122, reported in #84
   local old_gcr = vim.o.gcr
   vim.o.gcr = ''
-  local proc = nvim.nvim_get_proc(tonumber(ppid))
+  local proc = nvim.nvim_get_proc(pid)
   vim.o.gcr =  old_gcr
   if proc == nil then return 'none' end
   local command = proc.name
@@ -63,6 +61,13 @@ local function detect_parent_process()
     return 'git'
   end
   return nil
+end
+
+-- Parse the command of the calling process
+-- $PARENT was exported by the calling bash script and points to the calling
+-- program.
+local function detect_parent_process()
+  return detect_process(tonumber(os.getenv('PARENT')))
 end
 
 --- Check if a string uses poor man's bold or underline tricks
@@ -199,6 +204,7 @@ end
 -- functions only exported for tests
 nvimpager._testable = {
   detect_man_page_helper = detect_man_page_helper,
+  detect_process = detect_process,
   detect_parent_process = detect_parent_process,
   replace_prefix = replace_prefix,
 }
