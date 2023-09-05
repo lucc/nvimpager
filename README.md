@@ -38,7 +38,7 @@ See [the manpage][configuration] for further explanation.
 ## Installation
 
 <a href="https://repology.org/metapackage/nvimpager/versions">
-    <img src="https://repology.org/badge/vertical-allrepos/nvimpager.svg"
+    <img src="https://repology.org/badge/vertical-allrepos/nvimpager.svg?exclude_unsupported=1"
 	 alt="Packaging status" align="right">
 </a>
 
