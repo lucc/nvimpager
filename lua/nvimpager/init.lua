@@ -78,6 +78,7 @@ end
 ---
 --- @param line string
 local function detect_man_page_helper(line)
+  line = line:gsub('%s+', '')
   if line == "" then return false end
   local index = 1
   while index <= #line do
@@ -87,8 +88,6 @@ local function detect_man_page_helper(line)
     if (cur == third and next == '\b')
       or (cur == '_' and next == '\b' and third ~= nil) then
       index = index + 3  -- continue after the overwriting character
-    elseif cur == " " then
-      index = index + 1
     else
       return false
     end
