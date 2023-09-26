@@ -93,11 +93,24 @@ local function group2ansi(groupid)
   return escape
 end
 
+-- Check if the current buffer is empty
+local function check_empty()
+  if nvim.nvim_buf_line_count(0) <= 1 and nvim.nvim_buf_get_offset(0, 0) <= 0 then
+    local handle = io.open(nvim.nvim_buf_get_name(0))
+    local eof = handle:read(0)
+    handle:close()
+    if eof == nil then
+      return true
+    end
+  end
+  return false
+end
+
 -- Iterate through the current buffer and print it to stdout with terminal
 -- color codes for highlighting.
 local function highlight()
   -- Detect an empty buffer.
-  if nvim.nvim_buf_get_offset(0, 0) == -1 then
+  if check_empty() then
     return
   elseif util.check_escape_sequences() then
     for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
