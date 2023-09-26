@@ -78,9 +78,10 @@ local function tokenize(input_string)
 
     -- first check for the special sequences "38;" "48;"
     local init = input:sub(position, position+2)
-    if init == "38;" or init == "48;" then
+    if init == "38;" or init == "48;" or init == "38:" or init == "48:" then
       -- Try to match an 8 bit or a 24 bit color sequence
-      local patterns = {"([34])8;5;(%d+);?", "([34])8;2;(%d+);(%d+);(%d+);?"}
+      local patterns = {"([34])8;5;(%d+);?", "([34])8;2;(%d+);(%d+);(%d+);?",
+			"([34])8:5:(%d+):?", "([34])8:2:(%d+):(%d+):(%d+):?"}
       for _, pattern in ipairs(patterns) do
 	local start, stop, token, c1, c2, c3 = input:find(pattern, position)
 	if start == position then
@@ -96,7 +97,7 @@ local function tokenize(input_string)
     -- semicolon or the end of the string, or the end of the input string
     -- directly.
     local oldpos = position
-    local next_pos = input:find(";", position)
+    local next_pos = input:find("[;:]", position)
     if next_pos == nil then
       -- no further semicolon was found, we reached the end of the input
       -- string, the next call to this function will return nil
