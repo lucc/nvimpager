@@ -22,7 +22,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -yqq --no-install-recommends neovim scdoc lua-busted
     - name: Run the test suite
-      run: script -ec "make test BUSTED='busted --exclude-tags=ppa'"
+      run: make test BUSTED='busted --exclude-tags=ppa'
       env:
         TERM: dumb
 
@@ -46,7 +46,7 @@ jobs:
         chmod +x nvim.appimage
         ./nvim.appimage --appimage-extract
     - name: Run the test suite
-      run: script -ec "make test BUSTED='busted --exclude-tags=appimage'"
+      run: make test BUSTED='busted --exclude-tags=appimage'
       env:
         TERM: dumb
         NVIMPAGER_NVIM: squashfs-root/usr/bin/nvim
@@ -61,7 +61,7 @@ jobs:
         brew install neovim scdoc luarocks
         luarocks --local install busted
     - name: Run the test suite
-      run: script typescript make test BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=mac"
+      run: make test BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=mac"
       env:
         TERM: dumb
 
