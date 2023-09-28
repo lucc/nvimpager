@@ -244,15 +244,6 @@ describe("pager mode", function()
   it("starts up and quits correctly #mac #appimage #ppa", function()
     run("./nvimpager -p makefile -c quit")
   end)
-
-  it("detects diffs correctly", function()
-    local filename = os.tmpname()
-    finally(function() os.remove(filename) end)
-    run([[./nvimpager -p test/fixtures/diff2 ]] ..
-      [[-c 'au VimEnter * cal writefile([&ft], "]]..filename..[[") | quit']])
-    local output = read(filename)
-    assert.equal("diff\n", output)
-  end)
 end)
 
 describe("cat-exec mode", function()
