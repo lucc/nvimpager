@@ -34,16 +34,16 @@ local function run_test_file(filename)
     -- Run the given test file in nvimpager and write all errors from the
     -- assert_* functions into outfile.
     helpers.run(
+      -- define an environment variable to hold the output file name
+      "OUTFILE='" .. outfile:gsub("'", [['\'']]) .. "' " ..
       -- run nvimpager in pager mode
       "./nvimpager -p -- " ..
-      -- source the lua test file from the current buffer
-      "-c 'source %' " ..
+      -- source the given lua test file
+      "-S " .. filename ..
       -- write all errors reported by assert_* functions to the output file
-      "-c 'call writefile(v:errors, \"" .. outfile .. "\")' " ..
+      " -c 'call writefile(v:errors, $OUTFILE)' " ..
       -- force quit nvimpager
-      "-c 'quitall!' " ..
-      -- open the given test file
-      filename
+      "-c 'quitall!'"
     )
   end)
 
