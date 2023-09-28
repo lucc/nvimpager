@@ -103,13 +103,9 @@ if [[ $TMPFILE ]]; then
 fi
 
 # these come before all user supplied -c and --cmd arguments
-args1=(
+args=(
   -R
-  --cmd 'set rtp+=$RUNTIME | lua nvimpager = require("nvimpager")'
-)
-# these come after all user supplied -c and --cmd arguments
-args2=(
-  --cmd 'lua nvimpager.stage1()'
+  --cmd 'set rtp+=$RUNTIME | lua nvimpager = require("nvimpager"); nvimpager.stage1()'
   -c 'lua nvimpager.stage2()'
 )
 # Switch to cat mode if all files combined are shorter than the terminal
@@ -117,6 +113,6 @@ args2=(
 if [[ $mode = cat || \
       $mode = auto && $(cat "${files[@]}" | wc -l) -le $(tput lines) ]]
 then
-  args1+=(--headless)
+  args+=(--headless)
 fi
-exec -a nvimpager $nvim "${args1[@]}" "${files[@]}" "$@" "${args2[@]}"
+exec -a nvimpager $nvim "${args[@]}" "${files[@]}" "$@"

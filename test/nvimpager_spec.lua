@@ -40,14 +40,14 @@ describe("auto mode", function()
   it("selects cat mode for small files", function()
     local output = bash('./nvimpager test/fixtures/makefile')
     -- $mode might still be auto so we check the generated command line.
-    local args = output:match("\nargs1[^\n]*\n")
+    local args = output:match("\nargs[^\n]*\n")
     assert.truthy(args:match('--headless'))
   end)
 
   it("auto mode selects pager mode for big inputs", function()
     local output = bash('./nvimpager ./README.md ./nvimpager')
     -- $mode might still be auto so we check the generated command line.
-    local args = output:match("\nargs1[^\n]*\n")
+    local args = output:match("\nargs[^\n]*\n")
     assert.is_nil(args:match('--headless'))
   end)
 end)
