@@ -53,6 +53,24 @@ describe("auto mode", function()
 end)
 
 describe("cat mode", function()
+  describe("without files", function()
+    it("displays a help text", function()
+      local output = run("./nvimpager -c; [ $? -eq 2 ]")
+      local expected = [[Usage: nvimpager [-acp] [--] [nvim options and files]
+       nvimpager -h
+       nvimpager -v]] .. "\n"
+      assert.equal(expected, output)
+    end)
+    it("does not break if forced to run", function()
+      local output = run("./nvimpager -c -- -c 'let foo = 1'")
+      assert.equal("", output)
+    end)
+    it("reads stdin", function()
+      local output = run("echo text on stdin | ./nvimpager -c")
+      assert.equal("\27[0mtext on stdin\27[0m\n", output)
+    end)
+  end)
+
   it("displays a small file with syntax highlighting to stdout", function()
     local output = run("./nvimpager -c test/fixtures/makefile")
     local expected = read("test/fixtures/makefile.ansi")

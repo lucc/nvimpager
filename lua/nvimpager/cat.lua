@@ -97,6 +97,9 @@ end
 local function check_empty()
   if nvim.nvim_buf_line_count(0) <= 1 and nvim.nvim_buf_get_offset(0, 0) <= 0 then
     local handle = io.open(nvim.nvim_buf_get_name(0))
+    if handle == nil then
+      return true
+    end
     local eof = handle:read(0)
     handle:close()
     if eof == nil then
