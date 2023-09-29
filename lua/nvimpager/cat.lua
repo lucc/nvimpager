@@ -67,7 +67,17 @@ local function group2ansi(groupid)
   if cache[groupid] then
     return cache[groupid]
   end
-  local info = nvim.nvim_get_hl_by_id(groupid, colors_24_bit)
+  local info = nvim.nvim_get_hl(0, {id = groupid})
+  while info.link do
+    info = nvim.nvim_get_hl(0, {name = info.link})
+  end
+  if colors_24_bit then
+    info.foreground = info.fg
+    info.background = info.bg
+  else
+    info.foreground = info.ctermfg
+    info.background = info.ctermbg
+  end
   if info.reverse then
     info.foreground, info.background = info.background, info.foreground
   end

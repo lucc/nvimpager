@@ -34,10 +34,10 @@ describe("lua functions", function()
   end)
 
   describe("group2ansi", function()
-    it("calls nvim_get_hl_by_id with and without termguicolors", function()
+    it("calls nvim_get_hl with and without termguicolors", function()
       for _, termguicolors in pairs({true, false}) do
 	local api = {
-	  nvim_get_hl_by_id = function() return {} end,
+	  nvim_get_hl = function() return {} end,
 	  nvim_get_option = function() return termguicolors end,
 	  nvim_call_function = function() return 0 end,
 	}
@@ -45,7 +45,7 @@ describe("lua functions", function()
 	local cat = load_nvimpager("cat", api)
 	cat.init()
 	local escape = cat.group2ansi(100)
-	assert.stub(m.nvim_get_hl_by_id).was.called_with(100, termguicolors)
+	assert.stub(m.nvim_get_hl).was.called_with(100, termguicolors)
 	assert.equal('\27[0m', escape)
       end
     end)

@@ -86,7 +86,7 @@ end
 local function load_nvimpager(module, api)
   -- Create a local mock of the vim module that is provided by neovim.
   local default_api = {
-    nvim_get_hl_by_id = function() return {} end,
+    nvim_get_hl = function() return {} end,
     -- These can return different types so we just default to nil.
     nvim_call_function = function() end,
     nvim_get_option = function() end,
