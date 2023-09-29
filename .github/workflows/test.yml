@@ -67,20 +67,26 @@ jobs:
 
   nix:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - default
+          - nightly
+        update:
+          - false
+          - true
+        exclude:
+          - package: nightly
+            update: false
     steps:
     - name: Install Nix
       uses: cachix/install-nix-action@v20
-
     - uses: cachix/cachix-action@v12
       with:
         name: nix-community
-
     - uses: actions/checkout@v3
-    - name: Run the test suite
-      run: nix build --print-build-logs
     - name: Update the fake inputs
       run: nix flake update
-    - name: Run the test suite again
-      run: nix build --print-build-logs
-    - name: Run the test suite with nightly neovim
-      run: nix build  --print-build-logs '.#nightly'
+      if: matrix.update
+    - name: Run the test suite with ${{ matrix.package }} neovim
+      run: nix build  --print-build-logs '.#${{ matrix.package }}'
