@@ -11,7 +11,8 @@ local helpers = require("test/helpers")
 -- The test case will start nvimpager in pager mode and source the given file.
 -- The messages from v:errors will be collected from within nvimpager and
 -- returned by this function (as a single string)
-local function run_test_file(filename)
+local function run_test_file(filename, extra_args)
+  extra_args = extra_args or ""
   -- create an output file to transport the errors from within neovim to
   -- busted (it is complicated to write to stdout or stderr from within neovim
   -- and catch that from the outside)
@@ -43,7 +44,8 @@ local function run_test_file(filename)
       -- write all errors reported by assert_* functions to the output file
       " -c 'call writefile(v:errors, $OUTFILE)' " ..
       -- force quit nvimpager
-      "-c 'quitall!'"
+      "-c 'quitall!' " ..
+      extra_args
     )
   end)
 
@@ -62,9 +64,9 @@ local function run_test_file(filename)
   end
 end
 
-local function test(title, filename)
+local function test(title, filename, extra_args)
   it(title, function()
-    assert.equal("", run_test_file(filename))
+    assert.equal("", run_test_file(filename, extra_args))
   end)
 end
 
