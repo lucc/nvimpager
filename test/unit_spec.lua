@@ -45,7 +45,7 @@ describe("lua functions", function()
 	local cat = load_nvimpager("cat", api)
 	cat.init()
 	local escape = cat.group2ansi(100)
-	assert.stub(m.nvim_get_hl).was.called_with(100, termguicolors)
+	assert.stub(m.nvim_get_hl).was.called_with(0, {id = 100, link = false})
 	assert.equal('\27[0m', escape)
       end
     end)
