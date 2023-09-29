@@ -87,6 +87,8 @@ describe("native", function()
   describe("pager mode", function()
     test("loads the nvimpager table", "test/first_test.lua")
     test("detects diffs correctly", "test/diff_test.lua")
+    test("maps can be deactivated", "test/no_map_test.lua",
+      "--cmd 'lua nvimpager.maps = false'")
   end)
 
 end)
