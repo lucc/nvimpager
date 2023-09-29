@@ -54,7 +54,9 @@ end)
 
 describe("cat mode", function()
   describe("without files", function()
-    it("displays a help text", function()
+    -- this test behaves differently in nix's build sandbox (could be fixed
+    -- with script(1)) and in the ci environment on github
+    it("displays a help text #nix #mac #ppa #appimage", function()
       local output = run("./nvimpager -c; [ $? -eq 2 ]")
       local expected = [[Usage: nvimpager [-acp] [--] [nvim options and files]
        nvimpager -h
