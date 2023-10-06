@@ -93,6 +93,8 @@ describe("native", function()
       test("8 basic colors", "test/8_colors_test.lua")
       test("256 colors", "test/256_colors_test.lua")
       test("24bit colors", "test/24bit_colors_test.lua")
+      test("24bit colors with colons and semicolons",
+	"test/24bit_colors_semicolon_colon_test.lua")
     end)
     test("renders terminal attributes", "test/terminal_attributes_test.lua")
   end)
