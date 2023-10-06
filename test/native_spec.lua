@@ -89,6 +89,11 @@ describe("native", function()
     test("detects diffs correctly", "test/diff_test.lua")
     test("maps can be deactivated", "test/no_map_test.lua",
       "--cmd 'lua nvimpager.maps = false'")
+    describe("renders colors", function()
+      test("8 basic colors", "test/8_colors_test.lua")
+      test("256 colors", "test/256_colors_test.lua")
+      test("24bit colors", "test/24bit_colors_test.lua")
+    end)
   end)
 
 end)
