@@ -21,7 +21,7 @@
         buildFlags = oa.buildFlags ++ [ "VERSION=${version}" ];
         checkPhase = ''
           runHook preCheck
-          script -ec "make test BUSTED='busted --output TAP --exclude-tags=nix'"
+          script -ec "make test BUSTED='busted --output TAP --tags=debug'"
           runHook postCheck
         '';
       });

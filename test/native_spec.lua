@@ -74,7 +74,7 @@ describe("native", function()
 
   -- tests for the custom test framework of this file
   describe("test framework", function()
-    it("reports assert_* failures from neovim", function()
+    it("reports assert_* failures from neovim #debug", function()
       local output = run_test_file("test/meta_test.lua")
       assert.not_nil(output:find("this is an error"))
     end)
