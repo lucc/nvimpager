@@ -13,3 +13,9 @@ end
 
 vim.cmd.edit("test/fixtures/ansi-escape-24bit-semicolon.txt")
 assert_bg_color(0, 25, 0x00a21f)
+
+vim.cmd.edit("test/fixtures/ansi-escape-24bit-colon-noclear.txt")
+assert_bg_color(0, 25, 0x00a21f)
+
+vim.cmd.edit("test/fixtures/ansi-escape-24bit-colon.txt")
+assert_bg_color(0, 25, 0x00a21f)

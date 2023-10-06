@@ -279,14 +279,14 @@ end
 -- highlights to the buffer instead.
 local function ansi2highlight()
   nvim.nvim_command(
-    "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-9;]*m'")
+    "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-9;:]*m'")
   nvim.nvim_command(
     "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-2]\\?K'")
   nvim.nvim_command("highlight NvimPagerConceal gui=NONE guisp=NONE " ..
 		    "guifg=background guibg=background")
   nvim.nvim_win_set_option(0, "conceallevel", 3)
   nvim.nvim_win_set_option(0, "concealcursor", "nv")
-  local pattern = "\27%[([0-9;]*)m"
+  local pattern = "\27%[([0-9;:]*)m"
   state:clear()
   namespace = nvim.nvim_create_namespace("")
   for lnum, line in ipairs(nvim.nvim_buf_get_lines(0, 0, -1, false)) do
