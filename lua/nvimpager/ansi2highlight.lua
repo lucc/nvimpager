@@ -303,8 +303,11 @@ local function ansi2highlight()
       end
     until start == nil
   end
-  -- render the rest since the last state change
-  state:render(state.line, state.column, nvim.nvim_buf_line_count(0))
+  -- Render the rest since the last state change, but only if it is not the
+  -- default group without attributes.
+  if state:state2highlight_group_name() ~= "NvimPagerFG__BG_" then
+    state:render(state.line, state.column, nvim.nvim_buf_line_count(0))
+  end
 end
 
 return {

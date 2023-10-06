@@ -11,5 +11,11 @@ local function assert_bg_color(line, column, background)
   end
 end
 
-vim.cmd.edit("test/fixtures/ansi-escape-24bit-semicolon-noclear.txt")
+vim.cmd.edit("test/fixtures/ansi-no-final-clear.txt")
 assert_bg_color(0, 25, 0x00a21f)
+
+vim.cmd.edit("test/fixtures/ansi-no-final-clear2.txt")
+assert_bg_color(0, 25, 0x00a21f)
+local pos = vim.inspect_pos(0, 0, 50)
+vim.fn.assert_equal(0, #pos.extmarks)
+vim.fn.assert_equal(0, #pos.syntax)
