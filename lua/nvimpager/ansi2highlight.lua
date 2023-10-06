@@ -303,6 +303,8 @@ local function ansi2highlight()
       end
     until start == nil
   end
+  -- render the rest since the last state change
+  state:render(state.line, state.column, nvim.nvim_buf_line_count(0))
 end
 
 return {

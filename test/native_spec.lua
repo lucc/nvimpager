@@ -97,6 +97,8 @@ describe("native", function()
 	"test/24bit_colors_semicolon_colon_test.lua")
     end)
     test("renders terminal attributes", "test/terminal_attributes_test.lua")
+    test("render ansi sequences with and without final reset code",
+      "test/final_reset_code_test.lua")
   end)
 
 end)
