@@ -13,6 +13,14 @@ local helpers = require("test/helpers")
 -- returned by this function (as a single string)
 local function run_test_file(filename, extra_args)
   extra_args = extra_args or ""
+
+  -- Check that the input file exists
+  local infile, err1 = io.open(filename)
+  if infile == nil then
+    error(err1)
+  end
+  infile:close()
+
   -- create an output file to transport the errors from within neovim to
   -- busted (it is complicated to write to stdout or stderr from within neovim
   -- and catch that from the outside)
@@ -22,18 +30,19 @@ local function run_test_file(filename, extra_args)
   -- We write a marker to the output file in order to detect if the
   -- nvimpager command below really writes to the file.  If it does write to
   -- the file our marker should be overwritten.
-  local handle, err1 = io.open(outfile, "w")
+  local handle, err2 = io.open(outfile, "w")
   if handle == nil then
-    error(err1)
+    error(err2)
   end
   handle:write("This should be overwritten")
   handle:close()
 
   -- run the actual test in protected mode in order to clean up the temp file
   -- if anything fails
-  local status, err2 = pcall(function()
+  local status, err3 = pcall(function()
     -- Run the given test file in nvimpager and write all errors from the
     -- assert_* functions into outfile.
+    --print(
     helpers.run(
       -- define an environment variable to hold the output file name
       "OUTFILE='" .. outfile:gsub("'", [['\'']]) .. "' " ..
@@ -46,6 +55,7 @@ local function run_test_file(filename, extra_args)
       -- force quit nvimpager
       "-c 'quitall!' " ..
       extra_args
+    --)
     )
   end)
 
@@ -60,13 +70,15 @@ local function run_test_file(filename, extra_args)
   if status then
     return output
   else
-    error(err2)
+    error(err3)
   end
 end
 
 local function test(title, filename, extra_args)
   it(title, function()
-    assert.equal("", run_test_file(filename, extra_args))
+    local result  = run_test_file(filename, extra_args)
+    print(result)
+    assert.equal("", result)
   end)
 end
 
@@ -78,7 +90,7 @@ describe("native", function()
       local output = run_test_file("test/meta_test.lua")
       assert.not_nil(output:find("this is an error"))
     end)
-    it("detects aborted test scripts", function()
+    it("detects aborted test scripts #debug", function()
       local output = run_test_file("test/abort_test.lua")
       assert.equal("This should be overwritten", output)
     end)

@@ -35,7 +35,7 @@ nvimpager.1: nvimpager.md
 LPATH = --lpath "lua/?.lua" --lpath "lua/?/init.lua" \
 	--lpath     "?.lua" --lpath     "?/init.lua"
 test:
-	@$(BUSTED) $(LPATH) test
+	$(BUSTED) $(LPATH) test
 luacov.stats.out: nvimpager lua/nvimpager/*.lua test/unit_spec.lua
 	@$(BUSTED) $(LPATH) --coverage test/unit_spec.lua
 luacov.report.out: luacov.stats.out

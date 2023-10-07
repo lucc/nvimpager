@@ -30,11 +30,25 @@ local function run(command)
   -- https://www.lua.org/manual/5.2/manual.html#pdf-os.execute
   -- https://stackoverflow.com/questions/7607384
   command = string.format(
-    "export XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s; (%s) 2>&1; echo $?",
+    "export XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s; (%s) 2>&1; x=$?; if [ $x -eq 0 ];then echo alles ok; else  echo Fehler passiert mit $x als code; fi; echo $x",
     confdir, datadir, command)
   local proc = io.popen(command)
   if proc == nil then error("Could not open pipe to child process") end
   local output = proc:read('*a')
+  local clean = output--:gsub("\27%[%?25h", "")   -- show the cursor
+		      --:gsub("\27%[%?25l", "")   -- hide the cursor
+		      --:gsub("\27%[%?1004h", "") -- enable focus reporting
+		      --:gsub("\27%[%?1004l", "") -- disable focus reporting
+		      --:gsub("\27%[%?1049h", "") -- enable alternative screen
+		      --:gsub("\27%[%?1049l", "") -- disable alternative screen
+		      --:gsub("\27%[%?2004l", "") -- enable bracketed paste
+		      --:gsub("\27%[%?2004h", "") -- disable bracketed paste
+
+
+
+  local printable = clean:gsub("%c", function(char) return "\n{" .. char:byte() .. "}" end)
+  print("PRINTING COMMAND OUTPUT IN HELPER FUNCTION\n"..printable)
+
   local status = {proc:close()}
   -- This is *not* the return value of the command.
   assert.equal(true, status[1])
@@ -43,12 +57,12 @@ local function run(command)
   -- assert.equal(0, status[3])
   -- For Lua 5.1 we have echoed the return status with the output.  First we
   -- assert the last two bytes, which is easy:
-  assert.equal("0\n", output:sub(-2), "command failed")
+  assert.equal("0\n", output:sub(-2), "command failed foo")
   -- When the original command did not produce any output this is it.
   if #output ~= 2 then
     -- Otherwise we can only hope that the command did not produce a digit as
     -- it's last character of output.
-    assert.is_nil(tonumber(output:sub(-3, -3)), "command failed")
+    assert.is_nil(tonumber(output:sub(-3, -3)), "command failed bar")
   end
   -- If the assert succeeded we can remove two bytes from the end.
   return output:sub(1, -3)
