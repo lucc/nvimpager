@@ -62,6 +62,41 @@ local function color2escape_8bit(color_number, foreground)
   return prefix .. color_number
 end
 
+-- Return syntax_id for the given position in the text for it to be
+-- converted to ANSI text highlighting by group2ansi() function. Interprets the
+-- data structrure returned by inspect_pos() which provides data for both
+-- treesitter and vim syntax highlighting. Note that if treesitter is active
+-- the syntax table will be empty thus functions like synID() will return 0.
+-- When treesitter syntax highlighting is not active, then the treesitter field
+-- will be empty (but still present), and syntax-related data will be in 'syntax'.
+local function get_syntax_id(lnum, cnum)
+  local syn_id = 0
+  local bufnr = nvim.nvim_get_current_buf()
+
+  local current_pos_data = vim.inspect_pos(bufnr, lnum-1, cnum-1)
+  -- treesitter data is available; this automatically means that syntax is empty
+  if next(current_pos_data.treesitter) ~= nil then
+    local ts_data = current_pos_data.treesitter
+    -- The data we need is usually in the last element
+    local ts_elem = ts_data[#ts_data]
+    -- Sometimes treesitter metadata capture type 'spell' is the last item,
+    -- but there's no hl data for us there. So take the item before that.
+    if string.find(ts_elem.capture, "spell") then
+      ts_elem = ts_data[#ts_data - 1]
+    end
+    syn_id = vim.fn.hlID(ts_elem.hl_group)
+  -- if no treesitter data is available, fallback to syntax data
+  elseif next(current_pos_data.syntax) ~= nil then
+    -- The data we need is usually in the last element
+    local syntax_data = current_pos_data.syntax[#current_pos_data.syntax]
+    syn_id = vim.fn.hlID(syntax_data.hl_group)
+  -- it could be that neither treesitter nor regular syntax data is available
+  else
+    syn_id = 0
+  end
+  return syn_id
+end
+
 -- Compute a ansi escape sequences to render a syntax group on the terminal.
 local function group2ansi(groupid)
   if cache[groupid] then
@@ -96,6 +131,16 @@ local function group2ansi(groupid)
   if info.bold then escape = escape .. ';1' end
   if info.italic then escape = escape .. ';3' end
   if info.underline then escape = escape .. ';4' end
+
+  -- Workaround hack warning: treesitter schemes set editor background in the
+  -- "Normal" hightlight group which is currently used for fallback when no
+  -- hl group info available for a given position. This causes spotty background
+  -- issues as we'll be rendering background only for the parts of the text we
+  -- don't have a hl group. The workaround is to exclude background color for
+  -- the default hl group.
+  if groupid == nvim.nvim_call_function('hlID', {'Normal'}) then
+    info.background = nil
+  end
 
   if info.foreground then
     escape = escape .. ';' .. color2escape(info.foreground, true)
@@ -185,7 +230,7 @@ local function highlight()
 	      skip_next_char = true
 	    end
 	  else
-	    syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
+	    syntax_id = get_syntax_id(lnum, cnum)
 	  end
 	end
 	if syntax_id ~= last_syntax_id then
