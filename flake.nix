@@ -13,26 +13,49 @@
     version = head (match ".*version=([0-9.]*)\n.*" (readFile ./nvimpager))
               + "-dev-${toString self.sourceInfo.lastModifiedDate}";
     withoutDarwin = filter (s: !nixpkgs.lib.strings.hasSuffix "-darwin" s);
+    nvimpager = {
+      stdenv, neovim, ncurses, procps, scdoc, lua51Packages, util-linux
+    }:
+    stdenv.mkDerivation {
+      pname = "nvimpager";
+      inherit version;
+
+      src = self;
+
+      buildInputs = [
+        ncurses # for tput
+        procps # for nvim_get_proc() which uses ps(1)
+      ];
+      nativeBuildInputs = [ scdoc ];
+
+      makeFlags = [ "PREFIX=$(out)" "VERSION=${version}" ];
+      buildFlags = [ "nvimpager.configured" "nvimpager.1" ];
+      preBuild = ''
+      patchShebangs nvimpager
+      substituteInPlace nvimpager --replace ':-nvim' ':-${neovim}/bin/nvim'
+      '';
+
+      doCheck = true;
+      nativeCheckInputs = [ lua51Packages.busted util-linux neovim ];
+      # filter out one test that fails in the sandbox of nix
+      preCheck = let
+        exclude-tags = if stdenv.isDarwin then "nix,mac" else "nix";
+      in ''
+      checkFlagsArray+=('BUSTED=busted --output TAP --exclude-tags=${exclude-tags}')
+       '';
+    };
   in ({
     overlays.default = final: prev: {
-      nvimpager = prev.nvimpager.overrideAttrs (oa: {
-        inherit version;
-        src = ./.;
-        buildFlags = oa.buildFlags ++ [ "VERSION=${version}" ];
-        checkPhase = ''
-          runHook preCheck
-          make test BUSTED='busted --output TAP --exclude-tags=nix'
-          runHook postCheck
-        '';
-      });
+      nvimpager = final.callPackage nvimpager {};
     };
   } // (eachSystem (withoutDarwin defaultSystems) (system:
   let
-    stable = import nixpkgs { overlays = [ self.overlays.default ]; inherit system; };
-    nightly = import nixpkgs { overlays = [ neovim.overlay self.overlays.default ]; inherit system; };
+    callPackage = (import nixpkgs { inherit system; }).callPackage nvimpager;
+    neovim-nightly = neovim.packages.${system}.default;
+    default = callPackage {};
+    nightly = callPackage { neovim = neovim-nightly; };
   in {
-    apps.default = flake-utils.lib.mkApp { drv = stable.nvimpager; };
-    packages.default = stable.nvimpager;
-    packages.nightly = nightly.nvimpager;
+    apps.default = flake-utils.lib.mkApp { drv = default; };
+    packages = { inherit default nightly; };
   })));
 }
