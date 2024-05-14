@@ -65,6 +65,18 @@ jobs:
       env:
         TERM: dumb
 
+  macos-nix:
+    runs-on: macos-latest
+    steps:
+    - name: Install Nix
+      uses: cachix/install-nix-action@v20
+    - uses: cachix/cachix-action@v12
+      with:
+        name: nix-community
+    - uses: actions/checkout@v3
+    - name: Run the test suite via nix
+      run: nix build  --print-build-logs
+
   nix:
     runs-on: ubuntu-latest
     strategy:
