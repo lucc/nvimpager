@@ -8,11 +8,10 @@
 
   outputs = { self, nixpkgs, flake-utils, neovim, ... }:
   let
-    inherit (builtins) filter head match readFile;
-    inherit (flake-utils.lib) eachSystem defaultSystems;
+    inherit (builtins) head match readFile;
+    inherit (flake-utils.lib) eachDefaultSystem;
     version = head (match ".*version=([0-9.]*)\n.*" (readFile ./nvimpager))
               + "-dev-${toString self.sourceInfo.lastModifiedDate}";
-    withoutDarwin = filter (s: !nixpkgs.lib.strings.hasSuffix "-darwin" s);
     nvimpager = {
       stdenv, neovim, ncurses, procps, scdoc, lua51Packages, util-linux
     }:
@@ -48,7 +47,7 @@
     overlays.default = final: prev: {
       nvimpager = final.callPackage nvimpager {};
     };
-  } // (eachSystem (withoutDarwin defaultSystems) (system:
+  } // (eachDefaultSystem (system:
   let
     callPackage = (import nixpkgs { inherit system; }).callPackage nvimpager;
     neovim-nightly = neovim.packages.${system}.default;
