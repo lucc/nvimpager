@@ -1,11 +1,12 @@
--- Functions to use neovim as a pager.
-
--- This code is a rewrite of two sources: vimcat and vimpager (which also
--- conatins a version of vimcat).
--- Vimcat back to Matthew J. Wozniski and can be found at
--- https://github.com/godlygeek/vim-files/blob/master/macros/vimcat.sh
--- Vimpager was written by Rafael Kitover and can be found at
--- https://github.com/rkitover/vimpager
+--- Functions to use neovim as a pager.
+---
+--- This code is a rewrite of two sources: vimcat and vimpager (which also
+--- conatins a version of vimcat):
+---
+--- - Vimcat goes back to Matthew J. Wozniski and can be found at
+---   <https://github.com/godlygeek/vim-files/blob/master/macros/vimcat.sh>
+--- - Vimpager was written by Rafael Kitover and can be found at
+---   <https://github.com/rkitover/vimpager>
 
 -- Information about terminal escape codes:
 -- https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -26,7 +27,7 @@ local nvimpager = require("nvimpager/options")
 -- This variable holds the name of the detected parent process for pager mode.
 local doc
 
--- Replace a string prefix in all items in a list
+--- Replace a string prefix in all items in a list
 local function replace_prefix(table, old_prefix, new_prefix)
   -- Escape all punctuation chars to protect from lua pattern chars.
   old_prefix = old_prefix:gsub('[^%w]', '%%%0')
@@ -36,8 +37,10 @@ local function replace_prefix(table, old_prefix, new_prefix)
   return table
 end
 
--- Parse the command of the given pid to detect some common
--- documentation programs (man, pydoc, perldoc, git, ...).
+--- Parse the command of the given pid to detect some common
+--- documentation programs (man, pydoc, perldoc, git, ...).
+---
+--- @param pid integer|nil
 local function detect_process(pid)
   if not pid then return nil end
   -- FIXME saving and resetting gcr after nvim_get_proc is a workaround for
@@ -63,9 +66,9 @@ local function detect_process(pid)
   return nil
 end
 
--- Parse the command of the calling process
--- $PARENT was exported by the calling bash script and points to the calling
--- program.
+--- Parse the command of the calling process
+--- $PARENT was exported by the calling bash script and points to the calling
+--- program.
 local function detect_parent_process()
   return detect_process(tonumber(os.getenv('PARENT')))
 end
@@ -95,8 +98,8 @@ local function detect_man_page_helper(line)
   return true
 end
 
--- Search the begining of the current buffer to detect if it contains a man
--- page.
+--- Search the begining of the current buffer to detect if it contains a man
+--- page.
 local function detect_man_page_in_current_buffer()
   -- Only check the first twelve lines (for speed).
   for _, line in ipairs(nvim.nvim_buf_get_lines(0, 0, 12, false)) do
@@ -107,7 +110,7 @@ local function detect_man_page_in_current_buffer()
   return false
 end
 
--- Remove ansi escape sequences from the current buffer.
+--- Remove ansi escape sequences from the current buffer.
 local function strip_ansi_escape_sequences_from_current_buffer()
   local modifiable = nvim.nvim_buf_get_option(0, "modifiable")
   nvim.nvim_buf_set_option(0, "modifiable", true)
@@ -117,8 +120,8 @@ local function strip_ansi_escape_sequences_from_current_buffer()
   nvim.nvim_buf_set_option(0, "modifiable", modifiable)
 end
 
--- Detect possible filetypes for the current buffer by looking at the pstree
--- or ansi escape sequences or manpage sequences in the current buffer.
+--- Detect possible filetypes for the current buffer by looking at the pstree
+--- or ansi escape sequences or manpage sequences in the current buffer.
 local function detect_filetype()
   if not doc and detect_man_page_in_current_buffer() then doc = 'man' end
   if doc == 'git' then
@@ -148,8 +151,7 @@ local function detect_filetype()
   end
 end
 
-
--- Setup function to be called from --cmd.
+--- Setup function to be called from --cmd.
 function nvimpager.stage1()
   -- Don't remember file names and positions
   nvim.nvim_set_option('shada', '')
@@ -180,11 +182,11 @@ function nvimpager.stage1()
   nvim.nvim_set_option('laststatus', 0)
 end
 
--- Set up autocomands to start the correct mode after startup or for each
--- file.  This function assumes that in "cat mode" we are called with
--- --headless and hence do not have a user interface.  This also means that
--- this function can only be called with -c or later as the user interface
--- would not be available in --cmd.
+--- Set up autocomands to start the correct mode after startup or for each
+--- file.  This function assumes that in "cat mode" we are called with
+--- --headless and hence do not have a user interface.  This also means that
+--- this function can only be called with -c or later as the user interface
+--- would not be available in --cmd.
 function nvimpager.stage2()
   detect_filetype()
   local callback, events

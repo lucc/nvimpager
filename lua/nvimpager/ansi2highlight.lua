@@ -1,3 +1,5 @@
+--- Functions to convert terminal escape sequences to nvim highlight groups.
+
 -- Neovim defines this object but luacheck doesn't know it.  So we define a
 -- shortcut and tell luacheck to ignore it.
 local nvim = vim.api -- luacheck: ignore
@@ -6,10 +8,10 @@ local nvim = vim.api -- luacheck: ignore
 -- buffers by this module.
 local namespace
 
--- A cache to remember which syntax groups have already been defined.
+--- A cache to remember which syntax groups have already been defined.
 local cache = {}
 
--- A mapping of ansi color numbers to neovim color names
+--- A mapping of ansi color numbers to neovim color names
 local colors = {
   [0] = "black",     [8] = "darkgray",
   [1] = "red",       [9] = "lightred",
@@ -21,10 +23,10 @@ local colors = {
   [7] = "lightgray", [15] = "white",
 }
 
--- the names of neovim's highlighting attributes that are handled by this
--- module
--- Most attributes are refered to by their highlighting attribute name in
--- neovim's :highlight command.
+--- the names of neovim's highlighting attributes that are handled by this
+--- module
+--- Most attributes are refered to by their highlighting attribute name in
+--- neovim's :highlight command.
 local attributes = {
   [1] = "bold",
   --[2] = "faint", -- not handled by neovim
@@ -38,10 +40,18 @@ local attributes = {
   -- TODO when to use the gui attribute "standout"?
 }
 
+--- Format 24 bit RGB colors in hex notation
+--- @param r integer
+--- @param g integer
+--- @param b integer
 local function hexformat_rgb_numbers(r, g, b)
   return string.format("#%06x", r * 2^16 + g * 2^8 + b)
 end
 
+--- Split one of the predefined colors for 256color terms into their RGB
+--- values
+---
+--- @param color_number integer
 local function split_predifined_terminal_color(color_number)
   local r = math.floor(color_number / 36)
   local g = math.floor(math.floor(color_number / 6) % 6)
@@ -50,10 +60,10 @@ local function split_predifined_terminal_color(color_number)
   return lookup[r], lookup[g], lookup[b]
 end
 
--- Create an iterator that tokenizes the given input string into ansi escape
--- sequences.
---
--- Lua patterns for string.gmatch
+--- Create an iterator that tokenizes the given input string into ansi escape
+--- sequences.
+---
+--- Lua patterns for string.gmatch
 local function tokenize(input_string)
   -- The empty input string is a special case where we return one single
   -- token.
@@ -116,12 +126,13 @@ local function tokenize(input_string)
   return next, input_string, nil
 end
 
+--- The internal state of the parser
 local state = {
-  -- The line and column where the currently described state starts
-  line = 1,
-  column = 1,
+  line = 1, -- the line where the currently described state starts
+  column = 1, -- the column where the currently described state starts
 }
 
+--- Reset the parser
 function state:clear()
   self.foreground = ""
   self.background = ""
@@ -130,6 +141,7 @@ function state:clear()
   for _, k in pairs(attributes) do self[k] = false end
 end
 
+--- Compute the name of the current active nvim highlight group
 function state:state2highlight_group_name()
   if self.conceal then return "NvimPagerConceal" end
   local name = "NvimPagerFG_" .. self.foreground:gsub("#", "") ..
@@ -142,6 +154,9 @@ function state:state2highlight_group_name()
   return name
 end
 
+--- Parse the terminal escape sequences in the given string
+---
+--- @param string string
 function state:parse(string)
   for token, c1, c2, c3 in tokenize(string) do
     -- First we check for 256 colors and 24 bit color sequences.
@@ -192,6 +207,10 @@ function state:parse(string)
   end
 end
 
+--- Parse an 8 bit color number into a highlight definition
+---
+--- @param fgbg "foreground"|"background"
+--- @param color string
 function state:parse8bit(fgbg, color)
   local colornr = tonumber(color)
   if colornr >= 0 and colornr <= 7 then
@@ -207,6 +226,10 @@ function state:parse8bit(fgbg, color)
   self[fgbg] = ""..color
 end
 
+--- Compute an nvim highlight command for the current internal state with the
+--- given highlight group name.
+---
+--- @param groupname string
 function state:compute_highlight_command(groupname)
   local args = ""
   if self.foreground ~= "" then
@@ -238,10 +261,15 @@ function state:compute_highlight_command(groupname)
   end
 end
 
--- Wrapper around nvim_buf_add_highlight to fix index offsets
---
--- The function nvim_buf_add_highlight expects 0 based line numbers and column
--- numbers.  Set the start column to 0, the end column to -1 if not given.
+--- Wrapper around nvim_buf_add_highlight to fix index offsets
+---
+--- The function nvim_buf_add_highlight expects 0 based line numbers and column
+--- numbers.  Set the start column to 0, the end column to -1 if not given.
+---
+--- @param groupname string nvim highlight group name
+--- @param line integer the line number for the line to highlight
+--- @param from integer|nil starting position in the line
+--- @param to integer|nil end position in the line
 local function add_highlight(groupname, line, from, to)
   local line_0 = line - 1
   local from_0 = (from or 1) - 1
@@ -249,9 +277,15 @@ local function add_highlight(groupname, line, from, to)
   nvim.nvim_buf_add_highlight(0, namespace, groupname, line_0, from_0, to_0)
 end
 
--- Apply a highlight to a range in the current buffer
---
--- The highlight attributes are generated from the current state (self).
+--- Apply a highlight to a range in the current buffer
+---
+--- The highlight attributes are generated from the current state (self).
+---
+--- @local
+--- @param from_line integer
+--- @param from_column integer
+--- @param to_line integer
+--- @param to_column integer
 function state:render(from_line, from_column, to_line, to_column)
   if from_line == to_line and from_column == to_column then
     return
@@ -274,8 +308,8 @@ function state:render(from_line, from_column, to_line, to_column)
   end
 end
 
--- Parse the current buffer for ansi escape sequences and add buffer
--- highlights to the buffer instead.
+--- Parse the current buffer for ansi escape sequences and add buffer
+--- highlights to the buffer instead.
 local function ansi2highlight()
   nvim.nvim_command(
     "syntax match NvimPagerEscapeSequence conceal '\\e\\[[0-9;]*m'")

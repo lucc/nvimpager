@@ -1,3 +1,5 @@
+--- Functions for the pager mode of nvimpager.
+
 -- Neovim defines this object but luacheck doesn't know it.  So we define a
 -- shortcut and tell luacheck to ignore it.
 local vim = vim      -- luacheck: ignore
@@ -24,7 +26,7 @@ local function toggle_follow()
   end
 end
 
--- Set up mappings to make nvim behave a little more like a pager.
+--- Set up mappings to make nvim behave a little more like a pager.
 local function set_maps()
   local function map(lhs, rhs, mode)
     -- we are using buffer local maps because we want to overwrite the buffer
@@ -43,8 +45,8 @@ local function set_maps()
   map('F', toggle_follow)
 end
 
--- Setup function for the VimEnter autocmd.
--- This function will be called for each buffer once
+--- Setup function for the VimEnter autocmd.
+--- This function will be called for each buffer once
 local function pager_mode()
   if util.check_escape_sequences() then
     -- Try to highlight ansi escape sequences.
@@ -71,6 +73,7 @@ local function pager_mode()
   end
 end
 
+--- @export
 return {
   pager_mode = pager_mode,
 }

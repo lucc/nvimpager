@@ -1,3 +1,5 @@
+--- Functions for nvimpager's cat mode
+
 -- Neovim defines this object but luacheck doesn't know it.  So we define a
 -- shortcut and tell luacheck to ignore it.
 local vim = vim      -- luacheck: ignore
@@ -12,11 +14,13 @@ local util = require("nvimpager/util")
 local colors_24_bit
 local color2escape
 
--- A cache to map syntax groups to ansi escape sequences in cat mode or
--- remember defined syntax groups in the ansi rendering functions.
+--- A cache to map syntax groups to ansi escape sequences in cat mode or
+--- remember defined syntax groups in the ansi rendering functions.
 local cache = {}
 
--- Split a 24 bit color number into the three red, green and blue values
+--- Split a 24 bit color number into the three red, green and blue values
+---
+--- @param color_number number
 local function split_rgb_number(color_number)
   -- The lua implementation of these bit shift operations is taken from
   -- http://nova-fusion.com/2011/03/21/simulate-bitwise-shift-operators-in-lua
@@ -26,7 +30,11 @@ local function split_rgb_number(color_number)
   return r, g, b
 end
 
--- Compute the escape sequences for a 24 bit color number.
+--- Compute the escape sequences for a 24 bit color number.
+---
+--- @param color_number number a 24 bit color number
+--- @param foreground boolean wether to return the escape sequences for fg or
+--- bg colors
 local function color2escape_24bit(color_number, foreground)
   local red, green, blue = split_rgb_number(color_number)
   local escape
@@ -38,7 +46,11 @@ local function color2escape_24bit(color_number, foreground)
   return escape .. red .. ';' .. green .. ';' .. blue
 end
 
--- Compute the escape sequences for a 8 bit color number.
+--- Compute the escape sequences for a 8 bit color number.
+---
+--- @param color_number number an 8 bit color number
+--- @param foreground boolean wether to return the escape sequences for fg or
+--- bg colors
 local function color2escape_8bit(color_number, foreground)
   local prefix
   if color_number < 8 then
@@ -62,7 +74,9 @@ local function color2escape_8bit(color_number, foreground)
   return prefix .. color_number
 end
 
--- Compute a ansi escape sequences to render a syntax group on the terminal.
+--- Compute a ansi escape sequences to render a syntax group on the terminal.
+---
+--- @param groupid integer
 local function group2ansi(groupid)
   if cache[groupid] then
     return cache[groupid]
@@ -109,7 +123,7 @@ local function group2ansi(groupid)
   return escape
 end
 
--- Check if the current buffer is empty
+--- Check if the current buffer is empty
 local function check_empty()
   if nvim.nvim_buf_line_count(0) <= 1 and nvim.nvim_buf_get_offset(0, 0) <= 0 then
     local handle = io.open(nvim.nvim_buf_get_name(0))
@@ -125,8 +139,8 @@ local function check_empty()
   return false
 end
 
--- Iterate through the current buffer and print it to stdout with terminal
--- color codes for highlighting.
+--- Iterate through the current buffer and print it to stdout with terminal
+--- color codes for highlighting.
 local function highlight()
   -- Detect an empty buffer.
   if check_empty() then
@@ -210,7 +224,7 @@ local function highlight()
   end
 end
 
--- Initialize some module level variables for cat mode.
+--- Initialize some module level variables for cat mode.
 local function init()
   -- Get the value of &termguicolors from neovim.
   colors_24_bit = nvim.nvim_get_option('termguicolors')
@@ -224,8 +238,8 @@ local function init()
   cache[0] = group2ansi(nvim.nvim_call_function('hlID', {'Normal'}))
 end
 
--- Call the highlight function to write the highlighted version of all buffers
--- to stdout and quit nvim.
+--- Call the highlight function to write the highlighted version of all buffers
+--- to stdout and quit nvim.
 local function cat_mode()
   init()
   highlight()
@@ -239,6 +253,7 @@ local function cat_mode()
   nvim.nvim_command('quitall!')
 end
 
+--- @export
 return {
   cat_mode = cat_mode,
   init = init,

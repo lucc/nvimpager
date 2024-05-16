@@ -1,4 +1,5 @@
--- Unit tests for nvimpager
+--- Unit tests for nvimpager
+--- @module test.unit_spec
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.

@@ -1,4 +1,5 @@
--- Wrapper for test cases written with neovim's native assert funtions.
+--- Wrapper for test cases written with neovim's native assert funtions.
+--- @module test.native_spec
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
 -- redefine them and tell luacheck to ignore it.
@@ -6,11 +7,11 @@ local describe, it, assert = describe, it, assert  -- luacheck: ignore
 
 local helpers = require("test/helpers")
 
--- Run a test file in nvimpager's pager mode
---
--- The test case will start nvimpager in pager mode and source the given file.
--- The messages from v:errors will be collected from within nvimpager and
--- returned by this function (as a single string)
+--- Run a test file in nvimpager's pager mode
+---
+--- The test case will start nvimpager in pager mode and source the given file.
+--- The messages from v:errors will be collected from within nvimpager and
+--- returned by this function (as a single string)
 local function run_test_file(filename, extra_args)
   extra_args = extra_args or ""
   -- create an output file to transport the errors from within neovim to

@@ -1,8 +1,10 @@
+--- Utility functions for nvimpager
+
 local nvim = vim.api -- luacheck: ignore
 
--- Check if the begining of the current buffer contains ansi escape sequences.
---
--- For performance only the first 100 lines are checked.
+--- Check if the begining of the current buffer contains ansi escape sequences.
+---
+--- For performance only the first 100 lines are checked.
 local function check_escape_sequences()
   local filetype = nvim.nvim_buf_get_option(0, 'filetype')
   if filetype == '' or filetype == 'text' then
@@ -13,6 +15,7 @@ local function check_escape_sequences()
   return false
 end
 
+--- @export
 return {
   check_escape_sequences = check_escape_sequences,
 }
