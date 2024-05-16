@@ -49,12 +49,15 @@
     };
   } // (eachDefaultSystem (system:
   let
-    callPackage = (import nixpkgs { inherit system; }).callPackage nvimpager;
+    pkgs = import nixpkgs { inherit system; };
+    callPackage = pkgs.callPackage nvimpager;
     neovim-nightly = neovim.packages.${system}.default;
     default = callPackage {};
     nightly = callPackage { neovim = neovim-nightly; };
   in {
     apps.default = flake-utils.lib.mkApp { drv = default; };
     packages = { inherit default nightly; };
+    packages.ldoc = pkgs.runCommandLocal "nvimpager-api-docs" {}
+      "cd ${self} && ${pkgs.luaPackages.ldoc}/bin/ldoc . --dir $out";
   })));
 }
