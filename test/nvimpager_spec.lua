@@ -74,13 +74,13 @@ describe("cat mode", function()
     end)
   end)
 
-  it("displays a small file with syntax highlighting to stdout", function()
+  it("displays a small file with syntax highlighting to stdout #v10", function()
     local output = run("./nvimpager -c test/fixtures/makefile")
     local expected = read("test/fixtures/makefile.ansi")
     assert.equal(expected, output)
   end)
 
-  it("reads stdin with syntax highlighting", function()
+  it("reads stdin with syntax highlighting #v10", function()
     local output = run("./nvimpager -c -- " ..
 		       "-c 'set filetype=make' " ..
                        "< test/fixtures/makefile")
@@ -94,14 +94,14 @@ describe("cat mode", function()
     assert.equal(expected, output)
   end)
 
-  it("handles color schemes with a non trivial Normal group", function()
+  it("handles color schemes with a non trivial Normal group #v10", function()
     local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
 		       "--cmd 'hi Normal ctermfg=Red'")
     local expected = read("test/fixtures/conceal.tex.red")
     assert.equal(expected, output)
   end)
 
-  it("highlights all files", function()
+  it("highlights all files #v10", function()
     local output = run("./nvimpager -c test/fixtures/makefile " ..
                                       "test/fixtures/help.txt ")
     local expected = read("test/fixtures/makefile.ansi") ..
@@ -109,7 +109,7 @@ describe("cat mode", function()
     assert.equal(expected, output)
   end)
 
-  it("concatenates the same file twice", function()
+  it("concatenates the same file twice #v10", function()
     local output = run("./nvimpager -c test/fixtures/makefile " ..
                                       "test/fixtures/makefile ")
     local expected = read("test/fixtures/makefile.ansi")
@@ -130,7 +130,7 @@ describe("cat mode", function()
     assert.equal('', output)
   end)
 
-  it("explicit - as file argument means stdin", function()
+  it("explicit - as file argument means stdin #v10", function()
     local shell_command = "echo foo | ./nvimpager -c - test/fixtures/makefile"
     local output = run("sh -c '" .. shell_command .. "'")
     local expected = "\27[0mfoo\27[0m\n" ..
@@ -138,19 +138,19 @@ describe("cat mode", function()
     assert.equal(expected, output)
   end)
 
-  it("prefers file arguments over stdin", function()
+  it("prefers file arguments over stdin #v10", function()
     local shell_command = "echo foo | ./nvimpager -c test/fixtures/makefile"
     local output = run("sh -c '" .. shell_command .. "'")
     assert.equal(read("test/fixtures/makefile.ansi"), output)
   end)
 
-  it("can show stdin as the second file",  function()
+  it("can show stdin as the second file #v10",  function()
     local output = run("echo foo | ./nvimpager -c test/fixtures/makefile -")
     local expected = read("test/fixtures/makefile.ansi") .. "\27[0mfoo\27[0m\n"
     assert.equal(expected, output)
   end)
 
-  describe("can change the default foreground color", function()
+  describe("can change the default foreground color #v10", function()
     for termguicolors, extension in pairs({termguicolors = "red24", notermguicolors = "red"}) do
       for _, command in pairs({"--cmd", "-c"}) do
 	for stdin, redirect in pairs({[false] = "", [true] = "<"}) do
@@ -168,7 +168,7 @@ describe("cat mode", function()
   end)
 
   describe("with modeline", function()
-    it("highlights files even after mode line files", function()
+    it("highlights files even after mode line files #v10", function()
       local output = run("./nvimpager -c test/fixtures/conceal.tex " ..
 			 "test/fixtures/makefile " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
@@ -177,7 +177,7 @@ describe("cat mode", function()
       assert.equal(expected, output)
     end)
 
-    it("honors mode lines in later files", function()
+    it("honors mode lines in later files #v10", function()
       local output = run("./nvimpager -c test/fixtures/makefile " ..
 			 "test/fixtures/conceal.tex " ..
 			 "--cmd \"let g:tex_flavor='latex'\"")
@@ -186,20 +186,20 @@ describe("cat mode", function()
       assert.equal(expected, output)
     end)
 
-    it("ignores mode lines in diffs", function()
+    it("ignores mode lines in diffs #v10", function()
       local output = run("./nvimpager -c test/fixtures/diff-modeline 2>&1")
       local expected = read("test/fixtures/diff-modeline.ansi")
       assert.equal(expected, output)
     end)
 
-    it("ignores mode lines in git diffs", function()
+    it("ignores mode lines in git diffs #v10", function()
       local output = run("test/fixtures/bin/git ./nvimpager -c " ..
 			 "test/fixtures/diff-modeline 2>&1")
       local expected = read("test/fixtures/diff-modeline.ansi")
       assert.equal(expected, output)
     end)
 
-    it("ignores mode lines in git log diffs #mac", function()
+    it("ignores mode lines in git log diffs #mac #v10", function()
       local output = run("test/fixtures/bin/git ./nvimpager -c " ..
 			 "test/fixtures/git-log 2>&1")
       local expected = read("test/fixtures/git-log.ansi")
@@ -207,7 +207,7 @@ describe("cat mode", function()
     end)
   end)
 
-  describe("conceals", function()
+  describe("conceals #v10", function()
     local function test_level(level)
       local output = run("./nvimpager -c test/fixtures/help.txt " ..
 				      "-c 'set cole="..level.."'")
@@ -219,7 +219,7 @@ describe("cat mode", function()
     it("are highlighted at conceallevel=0", function() test_level(0) end)
   end)
 
-  describe("conceal replacements", function()
+  describe("conceal replacements #v10", function()
     local function test_replace(level)
       local output = run("./nvimpager -c test/fixtures/conceal.tex "..
 			 "--cmd \"let g:tex_flavor='latex'\" "..
@@ -233,13 +233,13 @@ describe("cat mode", function()
   end)
 
   describe("listchars", function()
-    it("handle spaces, trailing spaces and eol with termguicolors", function()
+    it("handle spaces, trailing spaces and eol with termguicolors #v10", function()
       local output = run("./nvimpager -c test/fixtures/listchars1.txt " ..
 			 "--cmd 'se tgc list lcs+=space:_,eol:$'")
       local expected = read("test/fixtures/listchars1.txt.24bit")
       assert.equal(expected, output)
     end)
-    it("handle spaces, trailing spaces and eol with 256 colors", function()
+    it("handle spaces, trailing spaces and eol with 256 colors #v10", function()
       local output = run("./nvimpager -c test/fixtures/listchars1.txt " ..
 			 "--cmd 'se list lcs+=space:_,eol:$'")
       local expected = read("test/fixtures/listchars1.txt.8bit")
@@ -247,12 +247,12 @@ describe("cat mode", function()
     end)
     describe("handles non breaking spaces", function()
       local expected = read("test/fixtures/nbsp.ansi")
-      it("in utf8 files", function()
+      it("in utf8 files #v10", function()
 	local output = run("./nvimpager -c test/fixtures/nbsp.utf8.txt " ..
 			   "--cmd 'se list'")
 	assert.equal(expected, output)
       end)
-      it("in latin1 files", function()
+      it("in latin1 files #v10", function()
 	local output = run("./nvimpager -c test/fixtures/nbsp.latin1.txt " ..
 			   "--cmd 'se list'")
 	assert.equal(expected, output)
@@ -303,7 +303,7 @@ describe("parent detection", function()
     assert.equal("man", output)
   end)
 
-  it("handles git", function()
+  it("handles git #v10", function()
     local output = run("test/fixtures/bin/git ./nvimpager -c " ..
 		       "test/fixtures/diff")
     local expected = read("test/fixtures/diff.ansi")
@@ -317,7 +317,7 @@ describe("parent detection", function()
     assert.equal(expected, output)
   end)
 
-  it("handles man #mac #nix", function()
+  it("handles man #mac #nix #v10", function()
     local output = run("test/fixtures/bin/man ./nvimpager -c " ..
 		       "test/fixtures/man.cat")
     local expected = read("test/fixtures/man.ansi")

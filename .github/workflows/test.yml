@@ -22,7 +22,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -yqq --no-install-recommends neovim scdoc lua-busted
     - name: Run the test suite
-      run: make test BUSTED='busted --exclude-tags=ppa'
+      run: make test BUSTED='busted --exclude-tags=ppa,v10'
       env:
         TERM: dumb
 
@@ -30,10 +30,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        appimage-version:
-          - v0.9.0
-          - v0.10.0
-          - nightly
+        x:
+          - version: v0.9.0
+            tags: [appimage]
+          - version: v0.10.0
+            tags: [appimage, v10]
+          - version: nightly
+            tags: [appimage, v10]
     steps:
     - uses: actions/checkout@v3
     - name: install dependencies
@@ -42,15 +45,16 @@ jobs:
         sudo apt-get install -yqq --no-install-recommends scdoc lua-busted
     - name: Download official neovim appimage
       run: |
-        wget https://github.com/neovim/neovim/releases/download/${{ matrix.appimage-version }}/nvim.appimage{,.sha256sum}
+        wget https://github.com/neovim/neovim/releases/download/${{ matrix.x.version }}/nvim.appimage{,.sha256sum}
         sha256sum -c nvim.appimage.sha256sum
         chmod +x nvim.appimage
         ./nvim.appimage --appimage-extract
     - name: Run the test suite
-      run: make test BUSTED='busted --exclude-tags=appimage'
+      run: make test "BUSTED=busted --exclude-tags=${{ join(matrix.x.tags, ',') }}"
       env:
         TERM: dumb
         NVIMPAGER_NVIM: squashfs-root/usr/bin/nvim
+
 
   macos:
     runs-on: macos-latest
@@ -62,7 +66,7 @@ jobs:
         brew install neovim scdoc luarocks
         luarocks --local install busted
     - name: Run the test suite
-      run: make test BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=mac"
+      run: make test BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=mac,v10"
       env:
         TERM: dumb
 
@@ -76,7 +80,7 @@ jobs:
         name: nix-community
     - uses: actions/checkout@v3
     - name: Run the test suite via nix
-      run: nix build  --print-build-logs
+      run: nix build --print-build-logs
 
   nix:
     runs-on: ubuntu-latest
@@ -102,4 +106,4 @@ jobs:
       run: nix flake update
       if: matrix.update
     - name: Run the test suite with ${{ matrix.package }} neovim
-      run: nix build  --print-build-logs '.#${{ matrix.package }}'
+      run: nix build --print-build-logs '.#${{ matrix.package }}'

@@ -12,6 +12,7 @@
     inherit (flake-utils.lib) eachDefaultSystem;
     version = head (match ".*version=([0-9.]*)\n.*" (readFile ./nvimpager))
               + "-dev-${toString self.sourceInfo.lastModifiedDate}";
+    inherit (nixpkgs.lib.strings) optionalString;
     nvimpager = {
       stdenv, neovim, ncurses, procps, scdoc, lua51Packages, util-linux
     }:
@@ -38,7 +39,10 @@
       nativeCheckInputs = [ lua51Packages.busted util-linux neovim ];
       # filter out one test that fails in the sandbox of nix
       preCheck = let
-        exclude-tags = if stdenv.isDarwin then "nix,mac" else "nix";
+        neovim-version = neovim.version or neovim.passthru.unwrapped.version;
+        neovim-new = null == match "^0\\.9\\..*" neovim-version;
+        exclude-tags = "nix" + optionalString stdenv.isDarwin ",mac"
+                             + optionalString neovim-new ",v10";
       in ''
       checkFlagsArray+=('BUSTED=busted --output TAP --exclude-tags=${exclude-tags}')
        '';
@@ -56,7 +60,7 @@
     nightly = callPackage { neovim = neovim-nightly; };
   in {
     apps.default = flake-utils.lib.mkApp { drv = default; };
-    packages = { inherit default nightly; };
+    packages = { inherit default nightly neovim-nightly; inherit (pkgs) neovim; };
     packages.ldoc = pkgs.runCommandLocal "nvimpager-api-docs" {}
       "cd ${self} && ${pkgs.luaPackages.ldoc}/bin/ldoc . --dir $out";
   })));
