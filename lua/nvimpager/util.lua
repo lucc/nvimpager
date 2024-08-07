@@ -2,7 +2,7 @@
 
 local nvim = vim.api -- luacheck: ignore
 
---- Check if the begining of the current buffer contains ansi escape sequences.
+--- Check if the beginning of the current buffer contains ansi escape sequences.
 ---
 --- For performance only the first 100 lines are checked.
 local function check_escape_sequences()

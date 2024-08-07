@@ -1,7 +1,7 @@
 --- Functions to use neovim as a pager.
 ---
 --- This code is a rewrite of two sources: vimcat and vimpager (which also
---- conatins a version of vimcat):
+--- contains a version of vimcat):
 ---
 --- - Vimcat goes back to Matthew J. Wozniski and can be found at
 ---   <https://github.com/godlygeek/vim-files/blob/master/macros/vimcat.sh>
@@ -76,7 +76,7 @@ end
 --- Check if a string uses poor man's bold or underline tricks
 ---
 --- Return true if all characters are followed by backspace and themself again
---- or if all characters are preceeded by underscore and backspace.  Spaces
+--- or if all characters are preceded by underscore and backspace.  Spaces
 --- are ignored.
 ---
 --- @param line string
@@ -98,7 +98,7 @@ local function detect_man_page_helper(line)
   return true
 end
 
---- Search the begining of the current buffer to detect if it contains a man
+--- Search the beginning of the current buffer to detect if it contains a man
 --- page.
 local function detect_man_page_in_current_buffer()
   -- Only check the first twelve lines (for speed).

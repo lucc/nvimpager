@@ -33,7 +33,7 @@ end
 --- Compute the escape sequences for a 24 bit color number.
 ---
 --- @param color_number number a 24 bit color number
---- @param foreground boolean wether to return the escape sequences for fg or
+--- @param foreground boolean whether to return the escape sequences for fg or
 --- bg colors
 local function color2escape_24bit(color_number, foreground)
   local red, green, blue = split_rgb_number(color_number)
@@ -49,7 +49,7 @@ end
 --- Compute the escape sequences for a 8 bit color number.
 ---
 --- @param color_number number an 8 bit color number
---- @param foreground boolean wether to return the escape sequences for fg or
+--- @param foreground boolean whether to return the escape sequences for fg or
 --- bg colors
 local function color2escape_8bit(color_number, foreground)
   local prefix

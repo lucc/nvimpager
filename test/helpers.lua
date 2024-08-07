@@ -81,7 +81,7 @@ local function write(filename, contents)
   handle:close()
 end
 
---- Freshly require a nvimpager module, optinally with mocks
+--- Freshly require a nvimpager module, optionally with mocks
 ---
 --- @param module string -- the module name under lua/nvimpager to require
 --- @param api table|nil -- a mock for the neovim api table (:help lua-api)
