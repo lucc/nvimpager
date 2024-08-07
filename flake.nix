@@ -1,5 +1,5 @@
 {
-  description = "Developmet flake for nvimpager";
+  description = "Development flake for nvimpager";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";

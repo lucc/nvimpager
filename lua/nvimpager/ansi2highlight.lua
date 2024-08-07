@@ -25,7 +25,7 @@ local colors = {
 
 --- the names of neovim's highlighting attributes that are handled by this
 --- module
---- Most attributes are refered to by their highlighting attribute name in
+--- Most attributes are referred to by their highlighting attribute name in
 --- neovim's :highlight command.
 local attributes = {
   [1] = "bold",
@@ -52,7 +52,7 @@ end
 --- values
 ---
 --- @param color_number integer
-local function split_predifined_terminal_color(color_number)
+local function split_predefined_terminal_color(color_number)
   local r = math.floor(color_number / 36)
   local g = math.floor(math.floor(color_number / 6) % 6)
   local b = math.floor(color_number % 6)
@@ -218,7 +218,7 @@ function state:parse8bit(fgbg, color)
   elseif colornr >= 8 and colornr <= 15 then -- high pallet colors
     color = colors[colornr] -- + 82 + 10 * (fgbg == "background" and 1 or 0)
   elseif colornr >= 16 and colornr <= 231 then -- color cube
-    color = hexformat_rgb_numbers(split_predifined_terminal_color(colornr-16))
+    color = hexformat_rgb_numbers(split_predefined_terminal_color(colornr-16))
   else -- grayscale ramp
     colornr = 8 + 10 * (colornr - 232)
     color = hexformat_rgb_numbers(colornr, colornr, colornr)
@@ -342,7 +342,7 @@ end
 return {
   hexformat_rgb_numbers = hexformat_rgb_numbers,
   run = ansi2highlight,
-  split_predifined_terminal_color = split_predifined_terminal_color,
+  split_predefined_terminal_color = split_predefined_terminal_color,
   state = state,
   tokenize = tokenize,
 }

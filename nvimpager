@@ -32,7 +32,7 @@ description () {
 
 	All further arguments are passed to neovim.  But one has to add "--"
 	if the first argument is an option in order to stop this script from
-	interpeting it.
+	interpreting it.
 
 	If "-" or no files are given stdin is read.
 

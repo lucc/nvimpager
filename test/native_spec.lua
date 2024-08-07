@@ -1,4 +1,4 @@
---- Wrapper for test cases written with neovim's native assert funtions.
+--- Wrapper for test cases written with neovim's native assert functions.
 --- @module test.native_spec
 
 -- Busted defines these objects but luacheck doesn't know them.  So we
