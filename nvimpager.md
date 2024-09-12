@@ -136,6 +136,8 @@ The following mappings are defined by default:
   files.  It is modeled after the *F* command in *less*(1) or the *-f* option
   of *tail*(1)
 
+You can remap the lua function `nvimpager.toggle_follow` if you disabled the
+default keymappings
 
 # EXAMPLES
 

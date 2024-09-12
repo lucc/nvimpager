@@ -10,7 +10,7 @@ local util = require("nvimpager/util")
 local ansi2highlight = require("nvimpager/ansi2highlight")
 
 local follow_timer = nil
-local function toggle_follow()
+function nvimpager.toggle_follow()
   if follow_timer ~= nil then
     vim.fn.timer_pause(follow_timer, nvimpager.follow)
     nvimpager.follow = not nvimpager.follow
@@ -42,7 +42,7 @@ local function set_maps()
   map('<Down>', '<C-E>')
   map('k', '<C-Y>')
   map('j', '<C-E>')
-  map('F', toggle_follow)
+  map('F', nvimpager.toggle_follow)
 end
 
 --- Setup function for the VimEnter autocmd.
@@ -69,7 +69,7 @@ local function pager_mode()
   if nvimpager.follow then
     -- turn follow mode of so that we can use the init logic in toggle_follow
     nvimpager.follow = false
-    toggle_follow()
+    nvimpager.toggle_follow()
   end
 end
 
