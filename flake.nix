@@ -58,10 +58,11 @@
     neovim-nightly = neovim.packages.${system}.default;
     default = callPackage {};
     nightly = callPackage { neovim = neovim-nightly; };
+    ldoc = pkgs.runCommandLocal "nvimpager-api-docs" {}
+      "cd ${self} && ${pkgs.luaPackages.ldoc}/bin/ldoc . --dir $out";
   in {
     apps.default = flake-utils.lib.mkApp { drv = default; };
-    packages = { inherit default nightly neovim-nightly; inherit (pkgs) neovim; };
-    packages.ldoc = pkgs.runCommandLocal "nvimpager-api-docs" {}
-      "cd ${self} && ${pkgs.luaPackages.ldoc}/bin/ldoc . --dir $out";
+    packages = { inherit default nightly ldoc neovim-nightly; inherit (pkgs) neovim; };
+    checks = { inherit default nightly ldoc; };
   })));
 }
