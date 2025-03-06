@@ -30,13 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        x:
+        version: [v0.10.0, v0.10.1, v0.10.2, v0.10.3, v0.10.4, nightly]
+        tags:
+          - [appimage, v10]
+        include:
           - version: v0.9.0
             tags: [appimage]
-          - version: v0.10.0
-            tags: [appimage, v10]
-          - version: nightly
-            tags: [appimage, v10]
     steps:
     - uses: actions/checkout@v3
     - name: install dependencies
@@ -45,12 +44,12 @@ jobs:
         sudo apt-get install -yqq --no-install-recommends scdoc lua-busted
     - name: Download official neovim appimage
       run: |
-        wget https://github.com/neovim/neovim/releases/download/${{ matrix.x.version }}/nvim.appimage{,.sha256sum}
+        wget https://github.com/neovim/neovim/releases/download/${{ matrix.version }}/nvim.appimage{,.sha256sum}
         sha256sum -c nvim.appimage.sha256sum
         chmod +x nvim.appimage
         ./nvim.appimage --appimage-extract
     - name: Run the test suite
-      run: make test "BUSTED=busted --exclude-tags=${{ join(matrix.x.tags, ',') }}"
+      run: make test "BUSTED=busted --exclude-tags=${{ join(matrix.tags, ',') }}"
       env:
         TERM: dumb
         NVIMPAGER_NVIM: squashfs-root/usr/bin/nvim
