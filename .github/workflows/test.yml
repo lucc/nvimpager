@@ -32,10 +32,19 @@ jobs:
       matrix:
         x:
           - version: v0.9.0
+            file: nvim
+            hash: 0e1e6d53c6c8055de23bdb33f60bb64af0baf11390669c1b40ecbbf2c7a34547
             tags: [appimage]
           - version: v0.10.0
+            file: nvim
+            hash: 6a021e9465fe3d3375e28c3e94c1c2c4f7d1a5a67e4a78cf52d18d77b1471390
+            tags: [appimage, v10]
+          - version: v0.11.0
+            file: nvim-linux-x86_64
+            hash: ca44cd43fe8d55418414496e8ec7bac83f611705ece167f4ccb93cbf46fec6c0
             tags: [appimage, v10]
           - version: nightly
+            file: nvim-linux-x86_64
             tags: [appimage, v10]
     steps:
     - uses: actions/checkout@v3
@@ -45,10 +54,12 @@ jobs:
         sudo apt-get install -yqq --no-install-recommends scdoc lua-busted
     - name: Download official neovim appimage
       run: |
-        wget https://github.com/neovim/neovim/releases/download/${{ matrix.x.version }}/nvim.appimage{,.sha256sum}
-        sha256sum -c nvim.appimage.sha256sum
-        chmod +x nvim.appimage
-        ./nvim.appimage --appimage-extract
+        wget --no-verbose https://github.com/neovim/neovim/releases/download/${{ matrix.x.version }}/${{ matrix.x.file }}.appimage
+        if [ -n '${{ matrix.x.hash }}' ]; then
+          echo ${{ matrix.x.hash }} ${{ matrix.x.file }}.appimage | sha256sum -c -
+        fi
+        chmod +x ${{ matrix.x.file }}.appimage
+        ./${{ matrix.x.file }}.appimage --appimage-extract
     - name: Run the test suite
       run: make test "BUSTED=busted --exclude-tags=${{ join(matrix.x.tags, ',') }}"
       env:
