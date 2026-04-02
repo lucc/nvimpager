@@ -45,6 +45,10 @@ jobs:
             file: nvim-linux-x86_64
             hash: ca44cd43fe8d55418414496e8ec7bac83f611705ece167f4ccb93cbf46fec6c0
             tags: [appimage, v10]
+          - version: v0.12.0
+            file: nvim-linux-x86_64
+            hash: 7876b67462af08abdc884818b398b3e82907d6a4c89edfe7c6b1ff168eb7c4d6
+            tags: [appimage, v10]
           - version: nightly
             file: nvim-linux-x86_64
             tags: [appimage, v10]
