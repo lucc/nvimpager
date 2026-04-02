@@ -90,8 +90,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Install Nix
-        uses: cachix/install-nix-action@v20
-      - uses: cachix/cachix-action@v12
+        uses: cachix/install-nix-action@v31
+      - uses: cachix/cachix-action@v17
         with:
           name: nix-community
       - uses: actions/checkout@v6
@@ -113,8 +113,8 @@ jobs:
             update: false
     steps:
       - name: Install Nix
-        uses: cachix/install-nix-action@v20
-      - uses: cachix/cachix-action@v12
+        uses: cachix/install-nix-action@v31
+      - uses: cachix/cachix-action@v17
         with:
           name: nix-community
       - uses: actions/checkout@v6
