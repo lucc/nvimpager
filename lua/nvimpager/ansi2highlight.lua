@@ -158,7 +158,8 @@ end
 ---
 --- @param string string
 function state:parse(string)
-  for token, c1, c2, c3 in tokenize(string) do
+  for _token, c1, c2, c3 in tokenize(string) do
+    local token = _token
     -- First we check for 256 colors and 24 bit color sequences.
     if c3 ~= nil then
 	self[token] = hexformat_rgb_numbers(tonumber(c1), tonumber(c2),
