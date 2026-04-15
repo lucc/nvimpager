@@ -11,6 +11,8 @@ local tmp = os.getenv("TMPDIR") or "/tmp"
 local confdir = tmp .. "/nvimpager-testsuite/no-config"
 --- the $XDG_DATA_HOME for the tests
 local datadir = tmp .. "/nvimpager-testsuite/no-data"
+--- the $XDG_STATE_HOME for the tests
+local statedir = tmp .. "/nvimpager-testsuite/no-state"
 
 --- Run a shell command, assert it terminates with return code 0 and return its
 --- output.
@@ -33,8 +35,8 @@ local function run(command)
   -- https://www.lua.org/manual/5.2/manual.html#pdf-os.execute
   -- https://stackoverflow.com/questions/7607384
   command = string.format(
-    "export XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s; (%s) 2>&1; echo $?",
-    confdir, datadir, command)
+    "export XDG_CONFIG_HOME=%s XDG_DATA_HOME=%s XDG_STATE_HOME=%s; (%s) 2>&1; echo $?",
+    confdir, datadir, statedir, command)
   local proc = io.popen(command)
   if proc == nil then error("Could not open pipe to child process") end
   local output = proc:read('*a')
@@ -116,6 +118,7 @@ end
 return {
   confdir = confdir,
   datadir = datadir,
+  statedir = statedir,
   load_nvimpager = load_nvimpager,
   read = read,
   run = run,
