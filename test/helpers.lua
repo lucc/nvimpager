@@ -105,7 +105,10 @@ local function load_nvimpager(module, api)
   end
   local vim = {
     api = api,
-    o = setmetatable({}, { __index = function() return "" end })
+    o = setmetatable({}, { __index = function() return "" end }),
+    fn = setmetatable({}, { __index = function()
+      return setmetatable({}, { __call = function() return 42 end })
+    end })
   }
   -- Register the api mock in the globals.
   _G.vim = vim

@@ -152,9 +152,9 @@ local function highlight()
     return
   end
   local conceallevel = nvim.nvim_win_get_option(0, 'conceallevel')
-  local syntax_id_conceal = nvim.nvim_call_function('hlID', {'Conceal'})
-  local syntax_id_whitespace = nvim.nvim_call_function('hlID', {'Whitespace'})
-  local syntax_id_non_text = nvim.nvim_call_function('hlID', {'NonText'})
+  local syntax_id_conceal = vim.fn.hlID('Conceal')
+  local syntax_id_whitespace = vim.fn.hlID('Whitespace')
+  local syntax_id_non_text = vim.fn.hlID('NonText')
   local list = nvim.nvim_win_get_option(0, "list")
   local listchars = list and vim.opt.listchars:get() or {}
   local last_syntax_id = -1
@@ -165,8 +165,7 @@ local function highlight()
     local skip_next_char = false
     local syntax_id
     for cnum = 1, line:len() do
-      local conceal_info = nvim.nvim_call_function('synconcealed',
-	{lnum, cnum})
+      local conceal_info = vim.fn.synconcealed(lnum, cnum)
       local conceal = conceal_info[1] == 1
       local replace = conceal_info[2]
       local conceal_id = conceal_info[3]
@@ -199,7 +198,7 @@ local function highlight()
 	      skip_next_char = true
 	    end
 	  else
-	    syntax_id = nvim.nvim_call_function('synID', {lnum, cnum, true})
+	    syntax_id = vim.fn.synID(lnum, cnum, true)
 	  end
 	end
 	if syntax_id ~= last_syntax_id then
@@ -235,7 +234,7 @@ local function init()
     color2escape = color2escape_8bit
   end
   -- Initialize the ansi group to color cache with the "Normal" hl group.
-  cache[0] = group2ansi(nvim.nvim_call_function('hlID', {'Normal'}))
+  cache[0] = group2ansi(vim.fn.hlID('Normal'))
 end
 
 --- Call the highlight function to write the highlighted version of all buffers
@@ -246,7 +245,7 @@ local function cat_mode()
   -- We can not use nvim_list_bufs() as a file might appear on the command
   -- line twice.  In this case we want to behave like cat(1) and display the
   -- file twice.
-  for _ = 2, nvim.nvim_call_function('argc', {}) do
+  for _ = 2, vim.fn.argc() do
     nvim.nvim_command('next')
     highlight()
   end

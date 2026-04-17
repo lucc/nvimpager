@@ -40,7 +40,6 @@ describe("lua functions", function()
 	local api = {
 	  nvim_get_hl = function() return {} end,
 	  nvim_get_option = function() return termguicolors end,
-	  nvim_call_function = function() return 0 end,
 	}
 	local m = mock(api)
 	local cat = load_nvimpager("cat", api)
